@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-brand-background text-brand-text font-sans antialiased selection:bg-brand-accent selection:text-white;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif text-brand-primary;
+  }
+}
+
+/* Note: .btn-primary, .btn-secondary, .card, and .input-field utilities
+   have been removed. Use the React components instead:
+   - <Button variant="primary" /> or <Button variant="secondary" />
+   - <Card> / <CardContent> / <CardHeader> / <CardFooter>
+   - <Input />
+*/

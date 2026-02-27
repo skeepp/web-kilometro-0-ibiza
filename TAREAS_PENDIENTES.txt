@@ -1,0 +1,117 @@
+═══════════════════════════════════════════════════════════════════════
+  DE LA FINCA — TAREAS PENDIENTES Y PROBLEMAS A RESOLVER
+  Marketplace Km0 · Mallorca & Ibiza
+  Generado: 27/02/2026
+═══════════════════════════════════════════════════════════════════════
+
+
+🔴 PRIORIDAD ALTA — Sin esto no funciona en producción
+────────────────────────────────────────────────────────
+
+1. CREAR PÁGINA DE LOGIN / REGISTRO
+   Los archivos redirigen a /login pero NO EXISTE esa página.
+   Tienes que crear:
+   - src/app/[locale]/(storefront)/login/page.tsx
+   - src/app/[locale]/(storefront)/registro/page.tsx
+   Usa Supabase Auth (supabase.auth.signUp / signInWithPassword).
+   Ya tienes el helper createClient() en src/utils/supabase/client.ts.
+
+2. CREAR WEBHOOK DE STRIPE (el checkout NO guarda pedidos)
+   Ahora mismo el checkout solo crea un PaymentIntent en Stripe,
+   pero NUNCA inserta el pedido en la tabla `orders` ni `order_items`.
+   
+   Necesitas:
+   - src/app/api/webhooks/stripe/route.ts  
+   - Escuchar evento `payment_intent.succeeded`
+   - En ese handler: insertar en `orders` + `order_items`
+   - Llamar a sendOrderConfirmationConsumer() y sendOrderNotificationProducer()
+   
+   Referencia: https://stripe.com/docs/webhooks
+
+3. ADMIN: funcionalidad de "Aprobar/Suspender" productores
+   Los botones existen en admin/productores pero no hacen nada.
+   Necesitas server actions que cambien el campo `status` en la tabla `producers`.
+
+
+🟠 PRIORIDAD MEDIA — Debería hacerse pronto
+────────────────────────────────────────────
+
+4. INTERNACIONALIZACIÓN (i18n)
+   Tienes next-intl configurado pero el archivo messages/es.json solo tiene 
+   3 traducciones. Hay CIENTOS de strings hardcoded en español por todo el JSX.
+   Si quieres soporte multi-idioma, necesitas mover todos los textos a es.json
+   y usar useTranslations() en los componentes.
+
+5. GENERAR TIPOS DE SUPABASE
+   Ahora mismo usas `any` en todas las consultas a Supabase.
+   Ejecuta: npx supabase gen types typescript --project-id TU_ID > src/types/database.ts
+   Luego úsalos: const supabase = createClient<Database>()
+
+6. IMPLEMENTAR MAPBOX
+   La dependencia react-map-gl está instalada pero no se usa.
+   Estaba previsto para mostrar ubicaciones de productores en un mapa.
+   Necesitas:
+   - Variable de entorno NEXT_PUBLIC_MAPBOX_TOKEN
+   - Componente MapView en la landing o en la página de productores
+
+7. HACER EL ENVÍO DINÁMICO
+   Ahora el envío es 3.90€ fijo (ver src/lib/constants.ts → SHIPPING_FLAT_EUR).
+   En el futuro deberías calcular según:
+   - Distancia al consumidor
+   - Peso del pedido
+   - Zona de reparto (Mallorca vs Ibiza)
+
+8. FORMULARIO DE "NUEVO PRODUCTO" PARA PRODUCTORES
+   El botón "+ Nuevo Producto" existe pero no hay formulario.
+   Necesitas una página o modal con:
+   - Campos: name, description, category, price, unit, stock, images
+   - Subida de imágenes a Cloudinary (ya tienes el preset configurado)
+   - Server action para insertar en tabla `products`
+
+
+🟡 PRIORIDAD BAJA — Mejoras y pulido
+─────────────────────────────────────
+
+9. EDICIÓN DE PRODUCTOS
+   Los botones "Editar" y "Ocultar" en la lista de productos no hacen nada.
+   Necesitan server actions + formulario de edición.
+
+10. BÚSQUEDA FUNCIONAL EN ADMIN
+    Los inputs de búsqueda en admin/productores y admin/usuarios son decorativos.
+    Necesitas filtrado client-side o parámetros de URL con queries a Supabase.
+
+11. README CON INSTRUCCIONES
+    Ya actualicé el README.md con la documentación completa.
+    Léelo para saber cómo configurar las env vars.
+
+12. STRIPE LIVE MODE
+    Para lanzar, cambia las claves de Stripe de sk_test_/pk_test_ a sk_live_/pk_live_.
+    Asegúrate de tener el webhook configurado en el dashboard de Stripe.
+
+13. SENTRY
+    La dependencia está instalada pero no se ve configuración.
+    Necesitas sentry.client.config.ts y sentry.server.config.ts.
+
+
+📁 ARCHIVOS CLAVE QUE CREÉ EN LA LIMPIEZA
+──────────────────────────────────────────
+
+  src/lib/constants.ts       → Comisión (12%), envío (3.90€), categorías, estados
+  src/lib/auth.ts            → requireAuth(), requireAdmin(), requireProducer()
+  src/components/ui/DataTable.tsx   → Tabla genérica reutilizable
+  src/components/layout/DashboardLayout.tsx → Layout compartido admin/productor
+  preview.html               → Device Lab para testing visual
+
+
+💡 COMANDOS ÚTILES
+──────────────────
+
+  npm install               → Instalar dependencias
+  npm run dev               → Lanzar servidor de desarrollo
+  npx supabase db push      → Aplicar migraciones SQL
+  npx supabase gen types    → Generar tipos TypeScript
+
+
+═══════════════════════════════════════════════════════════════════════
+  FIN. ¡Ánimo con el marketplace! 🌿
+═══════════════════════════════════════════════════════════════════════
