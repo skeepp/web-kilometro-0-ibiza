@@ -12,9 +12,11 @@ export default async function AdminOrders() {
         .select('*, profiles!orders_consumer_id_fkey(full_name, phone), producers(brand_name)')
         .order('created_at', { ascending: false });
 
+    type OrderRow = { id: string; created_at: string; total: string | number; status: 'pending' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'; profiles?: { full_name: string; phone?: string }; producers?: { brand_name: string } };
+
     const columns = [
         {
-            key: 'id', header: 'ID / Fecha', render: (o: any) => (
+            key: 'id', header: 'ID / Fecha', render: (o: OrderRow) => (
                 <div>
                     <div className="font-mono font-bold text-gray-900 text-sm">#{o.id.split('-')[0].toUpperCase()}</div>
                     <div className="text-xs text-brand-text/50">{new Date(o.created_at).toLocaleDateString('es-ES')}</div>
@@ -22,16 +24,16 @@ export default async function AdminOrders() {
             )
         },
         {
-            key: 'client', header: 'Cliente', render: (o: any) => (
+            key: 'client', header: 'Cliente', render: (o: OrderRow) => (
                 <div>
                     <div className="text-sm font-medium text-gray-900">{o.profiles?.full_name ?? '—'}</div>
                     {o.profiles?.phone && <div className="text-xs text-gray-400">📞 {o.profiles.phone}</div>}
                 </div>
             )
         },
-        { key: 'producer', header: 'Productor', render: (o: any) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name ?? '—'}</span> },
+        { key: 'producer', header: 'Productor', render: (o: OrderRow) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name ?? '—'}</span> },
         {
-            key: 'total', header: 'Importe', render: (o: any) => (
+            key: 'total', header: 'Importe', render: (o: OrderRow) => (
                 <div>
                     <div className="text-sm font-bold text-gray-900">{Number(o.total).toFixed(2)}€</div>
                     <div className="text-xs text-green-600">+{(Number(o.total) * PLATFORM_FEE_RATE).toFixed(2)}€ fee</div>
@@ -40,7 +42,7 @@ export default async function AdminOrders() {
         },
         {
             key: 'status', header: 'Estado', headerClassName: 'text-right',
-            render: (o: any) => <OrderStatusSelect orderId={o.id} currentStatus={o.status} />
+            render: (o: OrderRow) => <OrderStatusSelect orderId={o.id} currentStatus={o.status} />
         },
     ];
 

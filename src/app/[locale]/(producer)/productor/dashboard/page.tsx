@@ -1,6 +1,5 @@
 import React from 'react';
 import { requireProducer } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/Card';
 import { PRODUCER_PAYOUT_RATE } from '@/lib/constants';
 

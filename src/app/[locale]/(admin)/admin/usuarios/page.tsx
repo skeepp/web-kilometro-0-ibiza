@@ -9,9 +9,11 @@ export default async function AdminUsers() {
         .select('*')
         .order('created_at', { ascending: false });
 
+    type UserRow = { id: string; full_name: string; role: string; phone?: string; created_at: string };
+
     const columns = [
         {
-            key: 'user', header: 'Usuario', render: (u: any) => (
+            key: 'user', header: 'Usuario', render: (u: UserRow) => (
                 <div>
                     <div className="font-bold text-brand-primary">{u.full_name || 'Sin nombre'}</div>
                     <div className="text-xs text-brand-text/50">{u.id.split('-')[0]}</div>
@@ -19,14 +21,14 @@ export default async function AdminUsers() {
             )
         },
         {
-            key: 'role', header: 'Rol', render: (u: any) => (
+            key: 'role', header: 'Rol', render: (u: UserRow) => (
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${u.role === 'admin' ? 'bg-purple-100 text-purple-800' : u.role === 'producer' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                     {u.role}
                 </span>
             )
         },
-        { key: 'phone', header: 'Teléfono', render: (u: any) => <span className="text-sm text-gray-900">{u.phone || '-'}</span> },
-        { key: 'date', header: 'Fecha Registro', render: (u: any) => <span className="text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString('es-ES')}</span> },
+        { key: 'phone', header: 'Teléfono', render: (u: UserRow) => <span className="text-sm text-gray-900">{u.phone || '-'}</span> },
+        { key: 'date', header: 'Fecha Registro', render: (u: UserRow) => <span className="text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString('es-ES')}</span> },
     ];
 
     return (

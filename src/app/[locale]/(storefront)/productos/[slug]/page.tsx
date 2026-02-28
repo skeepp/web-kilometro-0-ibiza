@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { AddToCartButton } from '../../productores/[slug]/AddToCartButton'; // Reusing the same button
+import Image from 'next/image';
 
 export default async function ProductProfilePage({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
@@ -31,9 +32,9 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
             <div className="flex flex-col md:flex-row gap-12">
                 {/* Gallery placeholder */}
                 <div className="md:w-1/2">
-                    <div className="bg-brand-background/30 rounded-3xl aspect-square flex items-center justify-center text-8xl border border-brand-primary/10 overflow-hidden">
+                    <div className="bg-brand-background/30 rounded-3xl aspect-square flex items-center justify-center text-8xl border border-brand-primary/10 overflow-hidden relative">
                         {product.images?.[0] ? (
-                            <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
+                            <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                         ) : '🥦'}
                     </div>
                 </div>

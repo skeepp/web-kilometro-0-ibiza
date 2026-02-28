@@ -3,7 +3,7 @@ import { requireProducer } from '@/lib/auth';
 import { ProducerProfileForm } from './ProducerProfileForm';
 
 export default async function ProducerProfile() {
-    const { supabase, producer } = await requireProducer();
+    const { producer } = await requireProducer();
 
     if (!producer) {
         return (

@@ -13,9 +13,11 @@ export default async function ProducerProducts() {
 
     const categoryIcons: Record<string, string> = { verdura: '🥬', fruta: '🍎', carne: '🥩', lacteos: '🧀', huevos: '🥚', conservas: '🍯' };
 
+    type ProductRow = { id: string; name: string; category: string; price: number | string; unit: string; stock: number; available: boolean };
+
     const columns = [
         {
-            key: 'product', header: 'Producto', render: (p: any) => (
+            key: 'product', header: 'Producto', render: (p: ProductRow) => (
                 <div className="flex items-center">
                     <div className="h-10 w-10 flex-shrink-0 bg-brand-background rounded-md flex items-center justify-center text-xl">
                         {categoryIcons[p.category] || '📦'}
@@ -27,16 +29,16 @@ export default async function ProducerProducts() {
             )
         },
         {
-            key: 'category', header: 'Categoría', render: (p: any) => (
+            key: 'category', header: 'Categoría', render: (p: ProductRow) => (
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-brand-primary/10 text-brand-primary">
                     {p.category}
                 </span>
             )
         },
-        { key: 'price', header: 'Precio', render: (p: any) => <span className="text-sm text-gray-500">{p.price}€ / {p.unit}</span> },
-        { key: 'stock', header: 'Stock', render: (p: any) => <span className="text-sm text-gray-500">{p.stock}</span> },
+        { key: 'price', header: 'Precio', render: (p: ProductRow) => <span className="text-sm text-gray-500">{p.price}€ / {p.unit}</span> },
+        { key: 'stock', header: 'Stock', render: (p: ProductRow) => <span className="text-sm text-gray-500">{p.stock}</span> },
         {
-            key: 'status', header: 'Estado', render: (p: any) => (
+            key: 'status', header: 'Estado', render: (p: ProductRow) => (
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${p.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {p.available ? 'Activo' : 'Inactivo'}
                 </span>
@@ -44,7 +46,7 @@ export default async function ProducerProducts() {
         },
         {
             key: 'actions', header: 'Acciones', headerClassName: 'text-right', cellClassName: 'text-right text-sm font-medium',
-            render: (p: any) => (
+            render: () => (
                 <>
                     <a href="#" className="text-brand-primary hover:text-brand-accent mr-4">Editar</a>
                     <a href="#" className="text-red-600 hover:text-red-900">Ocultar</a>

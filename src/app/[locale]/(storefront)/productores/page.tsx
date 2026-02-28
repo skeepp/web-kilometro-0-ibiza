@@ -3,9 +3,11 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { createClient } from '@/utils/supabase/server';
 import { Button } from '@/components/ui/Button';
 
-export default async function ProductoresPage({ searchParams }: { searchParams: { category?: string } }) {
+import Image from 'next/image';
+
+export default async function ProductoresPage() {
     const supabase = await createClient();
-    let query = supabase.from('producers').select('*, products(count)').eq('status', 'active');
+    const query = supabase.from('producers').select('*, products(count)').eq('status', 'active');
 
     // If we had a complex category filter we could join it, but for MVP let's just fetch all or filter basic.
     // In a real scenario we could filter directly by products if categories were mapped.
@@ -28,12 +30,12 @@ export default async function ProductoresPage({ searchParams }: { searchParams: 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {producers && producers.length > 0 ? producers.map((producer: any) => (
+                {producers && producers.length > 0 ? producers.map((producer: { id: string; slug: string; cover_image_url?: string; brand_name: string; municipality: string; description?: string; products?: { count: number }[] }) => (
                     <Link key={producer.id} href={`/productores/${producer.slug}`}>
                         <Card className="h-full hover:shadow-lg transition-all group cursor-pointer">
                             <div className="h-48 w-full bg-brand-earth/10 relative overflow-hidden flex items-center justify-center">
                                 {producer.cover_image_url ? (
-                                    <img src={producer.cover_image_url} alt={producer.brand_name} className="object-cover w-full h-full" />
+                                    <Image src={producer.cover_image_url} alt={producer.brand_name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                 ) : (
                                     <span className="text-4xl">🚜</span>
                                 )}

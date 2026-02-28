@@ -33,7 +33,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (saved) {
             try {
                 setItems(JSON.parse(saved));
-            } catch (e) {
+            } catch {
                 console.error('Failed to parse cart');
             }
         }

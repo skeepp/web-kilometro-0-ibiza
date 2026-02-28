@@ -21,13 +21,13 @@ export async function POST(request: Request) {
 
         // In a real app we'd verify item prices against DB. For MVP we'll trust the client total or re-calculate.
         // Let's re-calculate from DB to be safe
-        const productIds = items.map((i: any) => i.id);
+        const productIds = items.map((i: { id: string }) => i.id);
         const { data: dbProducts } = await supabase.from('products').select('*').in('id', productIds);
 
         if (!dbProducts) throw new Error('Products not found');
 
         let subtotal = 0;
-        items.forEach((item: any) => {
+        items.forEach((item: { id: string, quantity: number }) => {
             const dbProd = dbProducts.find(p => p.id === item.id);
             if (dbProd) {
                 subtotal += dbProd.price * item.quantity;
@@ -61,8 +61,8 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error creating payment intent:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }

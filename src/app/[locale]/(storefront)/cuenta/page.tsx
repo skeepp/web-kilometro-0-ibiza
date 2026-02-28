@@ -22,6 +22,8 @@ export default async function ConsumerDashboard() {
         cancelled: 'Cancelado'
     };
 
+    type OrderRow = { id: string; created_at: string; total: string | number; status: string; producers?: { brand_name: string } };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <h1 className="text-3xl font-serif font-bold text-brand-primary mb-8">Mi Cuenta</h1>
@@ -44,7 +46,7 @@ export default async function ConsumerDashboard() {
 
                     {orders && orders.length > 0 ? (
                         <div className="space-y-4">
-                            {orders.map((order: any) => (
+                            {orders.map((order: OrderRow) => (
                                 <Card key={order.id}>
                                     <CardContent className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
                                         <div>
@@ -56,7 +58,7 @@ export default async function ConsumerDashboard() {
                                         </div>
                                         <div className="mt-4 sm:mt-0 text-right">
                                             <span className="inline-block px-3 py-1 bg-brand-primary/10 text-brand-primary text-xs rounded-full font-medium">
-                                                {statusMap[order.status as string] || order.status}
+                                                {statusMap[order.status] || order.status}
                                             </span>
                                         </div>
                                     </CardContent>

@@ -4,7 +4,8 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
 
-export function AddToCartButton({ product }: { product: any }) {
+export type ProductToCart = { id: string; name: string; price: number; producerId: string; producerName: string; unit: string };
+export function AddToCartButton({ product }: { product: ProductToCart }) {
     const { addItem, items } = useCart();
 
     const inCart = items.find(i => i.id === product.id)?.quantity || 0;

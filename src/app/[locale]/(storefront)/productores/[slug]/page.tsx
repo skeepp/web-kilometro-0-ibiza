@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/server';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from './AddToCartButton'; // We will create this client component
+import Image from 'next/image';
 
 export default async function ProducerProfilePage({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
@@ -22,7 +23,7 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
             {/* Cover Image */}
             <div className="h-64 sm:h-96 w-full bg-brand-earth/20 relative">
                 {producer.cover_image_url ? (
-                    <img src={producer.cover_image_url} alt="Cover" className="object-cover w-full h-full" />
+                    <Image src={producer.cover_image_url} alt="Cover" fill className="object-cover" sizes="100vw" />
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center text-6xl">🏡</div>
                 )}
@@ -34,9 +35,9 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                     {/* Producer Info Sidebar */}
                     <div className="md:w-1/3">
                         <div className="bg-white p-8 rounded-2xl shadow-soft -mt-24 relative z-10 border border-brand-primary/10">
-                            <div className="w-24 h-24 rounded-full bg-brand-background mb-6 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden text-3xl">
+                            <div className="w-24 h-24 rounded-full bg-brand-background mb-6 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden text-3xl relative">
                                 {producer.profile_image_url ? (
-                                    <img src={producer.profile_image_url} alt="Profile" className="object-cover w-full h-full" />
+                                    <Image src={producer.profile_image_url} alt="Profile" fill className="object-cover" sizes="96px" />
                                 ) : '👨‍🌾'}
                             </div>
                             <h1 className="text-3xl font-serif font-bold text-brand-primary mb-2">{producer.brand_name}</h1>
@@ -66,11 +67,11 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                         </h2>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {producer.products?.map((product: any) => (
+                            {producer.products?.map((product: { id: string; slug: string; name: string; price: number; unit: string; description?: string; images?: string[] }) => (
                                 <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow">
-                                    <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl">
+                                    <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative">
                                         {product.images?.[0] ? (
-                                            <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
+                                            <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
                                         ) : '🥬'}
                                     </div>
                                     <CardContent className="p-6 flex flex-col flex-1">

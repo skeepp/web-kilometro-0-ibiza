@@ -14,21 +14,23 @@ export default async function AdminCommissions() {
     const totalGmv = orders?.reduce((acc, o) => acc + Number(o.total), 0) || 0;
     const totalCommissions = orders?.reduce((acc, o) => acc + Number(o.platform_fee || o.total * PLATFORM_FEE_RATE), 0) || 0;
 
+    type OrderRow = { id: string; created_at: string; total: string | number; platform_fee?: string | number; producers?: { brand_name: string } };
+
     const columns = [
         {
-            key: 'id', header: 'ID Pedido / Fecha', render: (o: any) => (
+            key: 'id', header: 'ID Pedido / Fecha', render: (o: OrderRow) => (
                 <div>
                     <div className="font-medium text-gray-900">#{o.id.split('-')[0]}</div>
                     <div className="text-xs text-gray-500">{new Date(o.created_at).toLocaleDateString('es-ES')}</div>
                 </div>
             )
         },
-        { key: 'producer', header: 'Productor', render: (o: any) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name}</span> },
-        { key: 'gmv', header: 'GMV Total', headerClassName: 'text-right', cellClassName: 'text-right', render: (o: any) => <span className="text-sm text-gray-900">{Number(o.total).toFixed(2)}€</span> },
+        { key: 'producer', header: 'Productor', render: (o: OrderRow) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name}</span> },
+        { key: 'gmv', header: 'GMV Total', headerClassName: 'text-right', cellClassName: 'text-right', render: (o: OrderRow) => <span className="text-sm text-gray-900">{Number(o.total).toFixed(2)}€</span> },
         {
             key: 'commission', header: `Comisión (${PLATFORM_FEE_RATE * 100}%)`, headerClassName: 'text-right text-green-600', cellClassName: 'text-right',
-            render: (o: any) => {
-                const commission = Number(o.platform_fee || o.total * PLATFORM_FEE_RATE);
+            render: (o: OrderRow) => {
+                const commission = Number(o.platform_fee || Number(o.total) * PLATFORM_FEE_RATE);
                 return <span className="text-sm text-green-600 font-bold">+{commission.toFixed(2)}€</span>;
             }
         },

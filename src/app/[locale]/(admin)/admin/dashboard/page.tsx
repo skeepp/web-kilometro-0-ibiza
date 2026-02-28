@@ -9,7 +9,6 @@ export default async function AdminDashboard() {
 
     // Global KPIs
     const { count: totalProducers } = await supabase.from('producers').select('*', { count: 'exact', head: true }).eq('status', 'active');
-    const { count: totalConsumers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'consumer');
     const { count: totalOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true });
 
     // GMV this month
@@ -30,12 +29,14 @@ export default async function AdminDashboard() {
         { label: 'Total Pedidos', value: totalOrders || 0, color: 'text-brand-primary' },
     ];
 
+    type OrderRow = { id: string; profiles?: { full_name: string }; producers?: { brand_name: string }; total: string | number; status: string };
+
     const columns = [
-        { key: 'id', header: 'ID', render: (o: any) => <span className="font-mono text-sm text-gray-900">#{o.id.split('-')[0]}</span> },
-        { key: 'client', header: 'Cliente', render: (o: any) => <span className="text-sm text-gray-500">{o.profiles?.full_name || 'Desconocido'}</span> },
-        { key: 'producer', header: 'Productor', render: (o: any) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name}</span> },
-        { key: 'total', header: 'Total', render: (o: any) => <span className="text-sm text-gray-900">{o.total}€</span> },
-        { key: 'status', header: 'Estado', render: (o: any) => <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{o.status}</span> },
+        { key: 'id', header: 'ID', render: (o: OrderRow) => <span className="font-mono text-sm text-gray-900">#{o.id.split('-')[0]}</span> },
+        { key: 'client', header: 'Cliente', render: (o: OrderRow) => <span className="text-sm text-gray-500">{o.profiles?.full_name || 'Desconocido'}</span> },
+        { key: 'producer', header: 'Productor', render: (o: OrderRow) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name}</span> },
+        { key: 'total', header: 'Total', render: (o: OrderRow) => <span className="text-sm text-gray-900">{o.total}€</span> },
+        { key: 'status', header: 'Estado', render: (o: OrderRow) => <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{o.status}</span> },
     ];
 
     return (

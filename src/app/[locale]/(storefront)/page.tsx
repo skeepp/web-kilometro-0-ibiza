@@ -8,9 +8,10 @@ export default async function LandingPage() {
     const t = await getTranslations('Index');
     const supabase = await createClient();
 
-    let producers: any[] = [];
+    type ProducerSummaryRow = { id: string; brand_name: string; slug: string; municipality: string; description?: string };
+    let producers: ProducerSummaryRow[] = [];
     try {
-        const { data } = await supabase.from('producers').select('*').limit(6);
+        const { data } = await supabase.from('producers').select('id, brand_name, slug, municipality, description').limit(6);
         if (data) producers = data;
     } catch (error) {
         console.error('Failed to fetch producers. Is local Supabase running?', error);

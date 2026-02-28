@@ -10,9 +10,11 @@ export default async function AdminProducers() {
         .select('*, profiles!producers_user_id_fkey(email, full_name, phone)')
         .order('created_at', { ascending: false });
 
+    type ProducerRow = { id: string; brand_name: string; municipality: string; stripe_account_id?: string | null; status: string; profiles?: { email: string; full_name: string; phone?: string } };
+
     const columns = [
         {
-            key: 'name', header: 'Productor', render: (p: any) => (
+            key: 'name', header: 'Productor', render: (p: ProducerRow) => (
                 <div>
                     <div className="font-bold text-brand-primary">{p.brand_name}</div>
                     <div className="text-xs text-brand-text/50">ID: {p.id.split('-')[0]}</div>
@@ -20,29 +22,29 @@ export default async function AdminProducers() {
             )
         },
         {
-            key: 'contact', header: 'Contacto', render: (p: any) => (
+            key: 'contact', header: 'Contacto', render: (p: ProducerRow) => (
                 <div>
                     <div className="text-sm text-gray-900">{p.profiles?.full_name}</div>
                     <div className="text-xs text-gray-500">{p.profiles?.email}</div>
                 </div>
             )
         },
-        { key: 'municipality', header: 'Municipio', render: (p: any) => <span className="text-sm text-gray-900">{p.municipality}</span> },
+        { key: 'municipality', header: 'Municipio', render: (p: ProducerRow) => <span className="text-sm text-gray-900">{p.municipality}</span> },
         {
-            key: 'stripe', header: 'Estado Stripe', render: (p: any) =>
+            key: 'stripe', header: 'Estado Stripe', render: (p: ProducerRow) =>
                 p.stripe_account_id
                     ? <span className="text-xs font-medium text-green-600">Conectado</span>
                     : <span className="text-xs font-medium text-red-500">Pendiente</span>
         },
         {
-            key: 'status', header: 'Verificación', render: (p: any) => (
+            key: 'status', header: 'Verificación', render: (p: ProducerRow) => (
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${p.status === 'active' ? 'bg-green-100 text-green-800' : p.status === 'suspended' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
                     {p.status}
                 </span>
             )
         },
         {
-            key: 'actions', header: 'Acciones', headerClassName: 'text-right', render: (p: any) => (
+            key: 'actions', header: 'Acciones', headerClassName: 'text-right', render: (p: ProducerRow) => (
                 <div className="text-right text-sm font-medium">
                     {p.status === 'pending' && <Button size="sm" variant="outline" className="mr-2">Aprobar</Button>}
                     {p.status === 'active' && <button className="text-red-500 hover:text-red-700 text-xs font-bold">Suspender</button>}

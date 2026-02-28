@@ -16,9 +16,12 @@ export default async function ProducerOrders() {
         .eq('producer_id', producer.id)
         .order('created_at', { ascending: false });
 
+    type StatusType = 'pending' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
+    type OrderRow = { id: string; created_at: string; total: string | number; status: StatusType; delivery_name?: string; delivery_address?: string; profiles?: { full_name: string; phone?: string } };
+
     const columns = [
         {
-            key: 'id', header: 'ID Pedido / Fecha', render: (o: any) => (
+            key: 'id', header: 'ID Pedido / Fecha', render: (o: OrderRow) => (
                 <div>
                     <div className="text-sm font-mono font-medium text-gray-900">#{o.id.split('-')[0].toUpperCase()}</div>
                     <div className="text-xs text-gray-500">{new Date(o.created_at).toLocaleDateString('es-ES')}</div>
@@ -26,7 +29,7 @@ export default async function ProducerOrders() {
             )
         },
         {
-            key: 'client', header: 'Cliente', render: (o: any) => (
+            key: 'client', header: 'Cliente', render: (o: OrderRow) => (
                 <div>
                     <div className="text-sm font-medium text-gray-900">{o.delivery_name || o.profiles?.full_name}</div>
                     <div className="text-xs text-gray-500">{o.delivery_address}</div>
@@ -35,7 +38,7 @@ export default async function ProducerOrders() {
             )
         },
         {
-            key: 'total', header: 'Total (Neto)', render: (o: any) => (
+            key: 'total', header: 'Total (Neto)', render: (o: OrderRow) => (
                 <div>
                     <div className="text-sm font-bold text-gray-900">{(Number(o.total) * PRODUCER_PAYOUT_RATE).toFixed(2)}€</div>
                     <div className="text-xs text-gray-400">Total: {Number(o.total).toFixed(2)}€</div>
@@ -43,15 +46,15 @@ export default async function ProducerOrders() {
             )
         },
         {
-            key: 'currentStatus', header: 'Estado Actual', render: (o: any) => (
-                <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${STATUS_COLORS[o.status as keyof typeof STATUS_COLORS] ?? 'bg-gray-100 text-gray-800'}`}>
+            key: 'currentStatus', header: 'Estado Actual', render: (o: OrderRow) => (
+                <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${STATUS_COLORS[o.status] ?? 'bg-gray-100 text-gray-800'}`}>
                     {o.status}
                 </span>
             )
         },
         {
             key: 'updateStatus', header: 'Actualizar Estado', headerClassName: 'text-right',
-            render: (o: any) => <OrderStatusSelect orderId={o.id} currentStatus={o.status} />
+            render: (o: OrderRow) => <OrderStatusSelect orderId={o.id} currentStatus={o.status} />
         },
     ];
 
