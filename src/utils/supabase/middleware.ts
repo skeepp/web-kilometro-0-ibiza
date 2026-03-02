@@ -39,8 +39,9 @@ export async function updateSession(request: NextRequest) {
     const pathname = request.nextUrl.pathname
 
     // Check if it's an admin or producer route, accounting for locale prefix (e.g., /es/admin)
+    // IMPORTANT: /es/productores is the PUBLIC storefront, /es/productor/ is the PRIVATE panel
     const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/es/admin')
-    const isProducerRoute = pathname.startsWith('/productor') || pathname.startsWith('/es/productor')
+    const isProducerRoute = pathname.startsWith('/productor/') || pathname.startsWith('/es/productor/')
 
     if (!user && (isAdminRoute || isProducerRoute)) {
         const url = request.nextUrl.clone()
