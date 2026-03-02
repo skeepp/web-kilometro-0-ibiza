@@ -15,7 +15,7 @@ export default function CartPage() {
                 <div className="text-6xl mb-6">🛒</div>
                 <h1 className="text-3xl font-serif font-bold text-brand-primary mb-4">Tu carrito está vacío</h1>
                 <p className="text-brand-text/70 mb-8">Aún no has añadido ningún producto artesanal a tu carrito.</p>
-                <Link href="/productores">
+                <Link href="/es/productores">
                     <Button>Descubrir productores locales</Button>
                 </Link>
             </div>
@@ -65,7 +65,7 @@ export default function CartPage() {
                         </ul>
                         <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-between">
                             <button onClick={clearCart} className="text-sm text-red-500 hover:underline">Vaciar carrito</button>
-                            <Link href="/productores" className="text-sm text-brand-primary hover:underline">Continuar comprando</Link>
+                            <Link href="/es/productores" className="text-sm text-brand-primary hover:underline">Continuar comprando</Link>
                         </div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@ export default function CartPage() {
                             <span>{(cartTotal + SHIPPING_FLAT_EUR).toFixed(2)}€</span>
                         </div>
 
-                        <Link href="/checkout" className="block w-full">
+                        <Link href="/es/checkout" className="block w-full">
                             <Button fullWidth size="lg">Ir al pago</Button>
                         </Link>
 

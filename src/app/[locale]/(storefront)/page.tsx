@@ -38,7 +38,7 @@ export default async function LandingPage() {
                         {t('subtitle')}
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-center">
-                        <Link href="/productores">
+                        <Link href="/es/productores">
                             <Button size="lg" className="bg-brand-background text-brand-primary hover:bg-white">{t('cta')}</Button>
                         </Link>
                     </div>
@@ -75,7 +75,7 @@ export default async function LandingPage() {
                     <h2 className="text-3xl font-serif font-bold mb-12 text-center">Categorías destacadas</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         {categories.map((cat) => (
-                            <Link key={cat.name} href={`/productores?category=${cat.name.toLowerCase()}`}>
+                            <Link key={cat.name} href={`/es/productores?category=${cat.name.toLowerCase()}`}>
                                 <Card className="hover:border-brand-primary cursor-pointer text-center py-8">
                                     <div className="text-4xl mb-4">{cat.icon}</div>
                                     <h3 className="font-medium text-brand-text">{cat.name}</h3>
@@ -94,7 +94,7 @@ export default async function LandingPage() {
                             <h2 className="text-3xl font-serif font-bold text-brand-primary">Productores Destacados</h2>
                             <p className="text-brand-text/70 mt-2">Apoya el comercio local en Mallorca.</p>
                         </div>
-                        <Link href="/productores">
+                        <Link href="/es/productores">
                             <Button variant="ghost">Ver todos &rarr;</Button>
                         </Link>
                     </div>

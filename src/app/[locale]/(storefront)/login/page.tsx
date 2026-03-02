@@ -94,7 +94,7 @@ export default function LoginPage() {
                 {/* Register Link */}
                 <p className="text-center text-sm text-brand-muted mt-6">
                     ¿No tienes cuenta?{' '}
-                    <Link href="/registro" className="text-brand-primary font-semibold hover:text-brand-accent transition-colors">
+                    <Link href="/es/registro" className="text-brand-primary font-semibold hover:text-brand-accent transition-colors">
                         Crear una cuenta
                     </Link>
                 </p>

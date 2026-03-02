@@ -144,7 +144,7 @@ export default function RegisterPage() {
                 {/* Login Link */}
                 <p className="text-center text-sm text-brand-muted mt-6">
                     ¿Ya tienes cuenta?{' '}
-                    <Link href="/login" className="text-brand-primary font-semibold hover:text-brand-accent transition-colors">
+                    <Link href="/es/login" className="text-brand-primary font-semibold hover:text-brand-accent transition-colors">
                         Iniciar sesión
                     </Link>
                 </p>
