@@ -17,11 +17,18 @@ export async function login(formData: FormData) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-        return { error: 'Credenciales incorrectas. Revisa tu email y contraseña.' };
+        console.error('[Login Error]', error.message);
+        if (error.message.includes('Invalid login credentials')) {
+            return { error: 'Credenciales incorrectas. Revisa tu email y contraseña.' };
+        }
+        if (error.message.includes('Email not confirmed')) {
+            return { error: 'Tu email aún no ha sido confirmado. Revisa tu bandeja de entrada.' };
+        }
+        return { error: `Error de autenticación: ${error.message}` };
     }
 
     revalidatePath('/', 'layout');
-    redirect('/cuenta');
+    redirect('/es/cuenta');
 }
 
 export async function register(formData: FormData) {
@@ -50,29 +57,55 @@ export async function register(formData: FormData) {
     });
 
     if (error) {
-        if (error.message.includes('already registered')) {
+        console.error('[Register Error]', error.message, error.status);
+        if (error.message.includes('already registered') || error.message.includes('already been registered')) {
             return { error: 'Este email ya está registrado. Prueba a iniciar sesión.' };
         }
-        return { error: 'Error al crear la cuenta. Inténtalo de nuevo.' };
+        if (error.message.includes('not authorized') || error.message.includes('Signups not allowed')) {
+            return { error: 'El registro de nuevos usuarios está deshabilitado en este momento.' };
+        }
+        return { error: `Error al crear la cuenta: ${error.message}` };
     }
 
-    // Insert profile record
+    // Handle email confirmation requirement
+    // When email confirmation is enabled, signUp succeeds but user.identities may be empty
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+        return { error: 'Este email ya está registrado. Prueba a iniciar sesión.' };
+    }
+
+    // If Supabase requires email confirmation, the user won't be logged in yet
+    if (data.user && !data.session) {
+        return {
+            success: true,
+            error: '¡Cuenta creada! Revisa tu email para confirmar tu cuenta antes de iniciar sesión.'
+        };
+    }
+
+    // Insert profile record (only if user was auto-confirmed and we have a session)
     if (data.user) {
-        await supabase.from('profiles').upsert({
-            id: data.user.id,
-            full_name: fullName,
-            email: email,
-            role: 'consumer',
-        });
+        try {
+            const { error: profileError } = await supabase.from('profiles').upsert({
+                id: data.user.id,
+                full_name: fullName,
+                role: 'consumer',
+            });
+            if (profileError) {
+                console.error('[Profile Upsert Error]', profileError.message);
+                // Don't block the registration - the profile can be created later
+            }
+        } catch (err) {
+            console.error('[Profile Upsert Exception]', err);
+        }
     }
 
     revalidatePath('/', 'layout');
-    redirect('/cuenta');
+    redirect('/es/cuenta');
 }
 
 export async function logout() {
     const supabase = await createClient();
     await supabase.auth.signOut();
     revalidatePath('/', 'layout');
-    redirect('/');
+    redirect('/es');
 }
+

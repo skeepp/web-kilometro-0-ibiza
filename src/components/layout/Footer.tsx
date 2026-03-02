@@ -20,7 +20,7 @@ export function Footer() {
                         <ul className="space-y-2">
                             <li><Link href="/productores" className="text-white/80 hover:text-white transition-colors">Productores</Link></li>
                             <li><Link href="/nosotros" className="text-white/80 hover:text-white transition-colors">Cómo funciona</Link></li>
-                            <li><Link href="/productor/dashboard" className="text-white/80 hover:text-white transition-colors">Soy productor</Link></li>
+                            <li><Link href="/es/productor/dashboard" className="text-white/80 hover:text-white transition-colors">Soy productor</Link></li>
                         </ul>
                     </div>
 

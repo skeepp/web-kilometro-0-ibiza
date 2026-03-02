@@ -1,7 +1,7 @@
 import React from 'react';
 import { requireAdmin } from '@/lib/auth';
-import { Button } from '@/components/ui/Button';
 import { DataTable } from '@/components/ui/DataTable';
+import { ProducerStatusButtons } from '@/components/admin/ProducerStatusButtons';
 
 export default async function AdminProducers() {
     const { supabase } = await requireAdmin();
@@ -39,16 +39,13 @@ export default async function AdminProducers() {
         {
             key: 'status', header: 'Verificación', render: (p: ProducerRow) => (
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${p.status === 'active' ? 'bg-green-100 text-green-800' : p.status === 'suspended' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                    {p.status}
+                    {p.status === 'active' ? 'Activo' : p.status === 'suspended' ? 'Suspendido' : 'Pendiente'}
                 </span>
             )
         },
         {
             key: 'actions', header: 'Acciones', headerClassName: 'text-right', render: (p: ProducerRow) => (
-                <div className="text-right text-sm font-medium">
-                    {p.status === 'pending' && <Button size="sm" variant="outline" className="mr-2">Aprobar</Button>}
-                    {p.status === 'active' && <button className="text-red-500 hover:text-red-700 text-xs font-bold">Suspender</button>}
-                </div>
+                <ProducerStatusButtons producerId={p.id} currentStatus={p.status} />
             )
         },
     ];
@@ -69,3 +66,4 @@ export default async function AdminProducers() {
         </div>
     );
 }
+

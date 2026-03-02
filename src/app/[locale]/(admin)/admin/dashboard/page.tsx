@@ -56,7 +56,7 @@ export default async function AdminDashboard() {
 
             <div className="mb-4 flex justify-between items-center">
                 <h2 className="font-bold text-brand-primary">Últimos Pedidos Plataforma</h2>
-                <a href="/admin/pedidos" className="text-sm font-medium text-brand-primary hover:underline">Ver todos</a>
+                <a href="/es/admin/pedidos" className="text-sm font-medium text-brand-primary hover:underline">Ver todos</a>
             </div>
 
             <DataTable

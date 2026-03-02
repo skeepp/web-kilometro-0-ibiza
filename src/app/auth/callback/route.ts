@@ -9,7 +9,7 @@ import { createClient } from '@/utils/supabase/server';
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url);
     const code = searchParams.get('code');
-    const next = searchParams.get('next') ?? '/cuenta';
+    const next = searchParams.get('next') ?? '/es/cuenta';
 
     if (code) {
         const supabase = await createClient();
@@ -21,5 +21,5 @@ export async function GET(request: Request) {
     }
 
     // If there's no code or an error occurred, redirect to login
-    return NextResponse.redirect(`${origin}/login`);
+    return NextResponse.redirect(`${origin}/es/login`);
 }

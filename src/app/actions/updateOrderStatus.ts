@@ -51,7 +51,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
         return { success: false, error: error.message };
     }
 
-    revalidatePath('/productor/pedidos');
-    revalidatePath('/admin/pedidos');
+    revalidatePath('/es/productor/pedidos');
+    revalidatePath('/es/admin/pedidos');
     return { success: true };
 }

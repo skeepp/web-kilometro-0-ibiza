@@ -9,12 +9,14 @@ import { Card, CardContent } from '@/components/ui/Card';
 
 export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
+        setSuccess(null);
         setPasswordError(null);
         setLoading(true);
 
@@ -36,7 +38,10 @@ export default function RegisterPage() {
 
         const result = await register(formData);
 
-        if (result?.error) {
+        if (result && 'success' in result && result.success) {
+            setSuccess(result.error || '¡Cuenta creada correctamente!');
+            setLoading(false);
+        } else if (result?.error) {
             setError(result.error);
             setLoading(false);
         }

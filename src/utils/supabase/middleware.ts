@@ -36,12 +36,17 @@ export async function updateSession(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     // Here we can enforce auth guards based on the request URL
-    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-    const isProducerRoute = request.nextUrl.pathname.startsWith('/productor')
+    const pathname = request.nextUrl.pathname
+
+    // Check if it's an admin or producer route, accounting for locale prefix (e.g., /es/admin)
+    const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/es/admin')
+    const isProducerRoute = pathname.startsWith('/productor') || pathname.startsWith('/es/productor')
 
     if (!user && (isAdminRoute || isProducerRoute)) {
         const url = request.nextUrl.clone()
-        url.pathname = '/login'
+        // Extract locale if present in the path, default to 'es'
+        const locale = pathname.startsWith('/es') ? 'es' : 'es'
+        url.pathname = `/${locale}/login`
         return NextResponse.redirect(url)
     }
 

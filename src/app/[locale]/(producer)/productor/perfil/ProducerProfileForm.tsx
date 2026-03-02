@@ -4,7 +4,7 @@ import React, { useState, useTransition } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { updateProducerProfile } from './actions';
-import { CldUploadWidget, CldImage } from 'next-cloudinary';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 
 interface Producer {
     id: string;
@@ -62,66 +62,28 @@ export function ProducerProfileForm({ producer }: ProducerProfileFormProps) {
                 <h2 className="text-lg font-semibold text-brand-primary mb-6">Imágenes del Perfil</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Profile Image */}
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-32 h-32 rounded-full overflow-hidden bg-brand-primary/10 flex items-center justify-center border-2 border-brand-primary/20">
-                            {profileImageUrl ? (
-                                <CldImage
-                                    src={profileImageUrl}
-                                    width={128}
-                                    height={128}
-                                    alt="Foto de perfil"
-                                    className="object-cover w-full h-full"
-                                />
-                            ) : (
-                                <span className="text-4xl">🌿</span>
-                            )}
-                        </div>
-                        <CldUploadWidget
-                            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                            onSuccess={(result) => {
-                                if (result.info && typeof result.info === 'object' && 'public_id' in result.info) {
-                                    setProfileImageUrl(result.info.public_id as string);
-                                }
-                            }}
-                        >
-                            {({ open }) => (
-                                <Button type="button" variant="outline" size="sm" onClick={() => open()}>
-                                    Cambiar foto de perfil
-                                </Button>
-                            )}
-                        </CldUploadWidget>
-                    </div>
+                    <ImageUpload
+                        currentUrl={profileImageUrl || null}
+                        onUpload={(url) => setProfileImageUrl(url)}
+                        bucket="avatars"
+                        folder="producers"
+                        label="Cambiar foto de perfil"
+                        shape="circle"
+                        width={128}
+                        height={128}
+                    />
 
                     {/* Cover Image */}
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-full h-32 rounded-xl overflow-hidden bg-brand-primary/10 flex items-center justify-center border-2 border-brand-primary/20">
-                            {coverImageUrl ? (
-                                <CldImage
-                                    src={coverImageUrl}
-                                    width={400}
-                                    height={128}
-                                    alt="Foto de portada"
-                                    className="object-cover w-full h-full"
-                                />
-                            ) : (
-                                <span className="text-4xl">🏡</span>
-                            )}
-                        </div>
-                        <CldUploadWidget
-                            uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                            onSuccess={(result) => {
-                                if (result.info && typeof result.info === 'object' && 'public_id' in result.info) {
-                                    setCoverImageUrl(result.info.public_id as string);
-                                }
-                            }}
-                        >
-                            {({ open }) => (
-                                <Button type="button" variant="outline" size="sm" onClick={() => open()}>
-                                    Cambiar foto de portada
-                                </Button>
-                            )}
-                        </CldUploadWidget>
-                    </div>
+                    <ImageUpload
+                        currentUrl={coverImageUrl || null}
+                        onUpload={(url) => setCoverImageUrl(url)}
+                        bucket="avatars"
+                        folder="covers"
+                        label="Cambiar foto de portada"
+                        shape="rectangle"
+                        width={400}
+                        height={128}
+                    />
                 </div>
             </div>
 

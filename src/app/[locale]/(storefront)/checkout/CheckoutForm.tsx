@@ -22,7 +22,7 @@ export function CheckoutForm({ amount }: { amount: number }) {
             elements,
             confirmParams: {
                 // Return URL where the customer should be redirected after the payment completes.
-                return_url: `${window.location.origin}/checkout/gracias`,
+                return_url: `${window.location.origin}/es/checkout/gracias`,
             },
         });
 

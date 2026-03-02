@@ -1,13 +1,14 @@
 import React from 'react';
 import { requireProducer } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
 import { DataTable } from '@/components/ui/DataTable';
+import Link from 'next/link';
+import { ToggleProductButton } from '@/components/products/ToggleProductButton';
 
 export default async function ProducerProducts() {
     const { supabase, producer } = await requireProducer();
 
-    if (!producer) redirect('/productor/dashboard');
+    if (!producer) redirect('/es/productor/onboarding');
 
     const { data: products } = await supabase.from('products').select('*').eq('producer_id', producer.id).order('created_at', { ascending: false });
 
@@ -46,11 +47,11 @@ export default async function ProducerProducts() {
         },
         {
             key: 'actions', header: 'Acciones', headerClassName: 'text-right', cellClassName: 'text-right text-sm font-medium',
-            render: () => (
-                <>
-                    <a href="#" className="text-brand-primary hover:text-brand-accent mr-4">Editar</a>
-                    <a href="#" className="text-red-600 hover:text-red-900">Ocultar</a>
-                </>
+            render: (p: ProductRow) => (
+                <div className="flex justify-end gap-3">
+                    <Link href={`/es/productor/productos/${p.id}/editar`} className="text-brand-primary hover:text-brand-accent">Editar</Link>
+                    <ToggleProductButton productId={p.id} available={p.available} />
+                </div>
             )
         },
     ];
@@ -59,7 +60,9 @@ export default async function ProducerProducts() {
         <div className="p-8 max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-brand-primary">Mis Productos</h1>
-                <Button>+ Nuevo Producto</Button>
+                <Link href="/es/productor/productos/nuevo" className="inline-flex items-center px-4 py-2 bg-brand-primary text-white rounded-xl text-sm font-medium hover:bg-brand-primary/90 transition-colors">
+                    + Nuevo Producto
+                </Link>
             </div>
 
             <DataTable
@@ -71,3 +74,4 @@ export default async function ProducerProducts() {
         </div>
     );
 }
+

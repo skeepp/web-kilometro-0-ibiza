@@ -8,7 +8,7 @@ import { PRODUCER_PAYOUT_RATE } from '@/lib/constants';
 export default async function ProducerOrders() {
     const { supabase, producer } = await requireProducer();
 
-    if (!producer) redirect('/productor/dashboard');
+    if (!producer) redirect('/es/productor/dashboard');
 
     const { data: orders } = await supabase
         .from('orders')

@@ -2,12 +2,14 @@ import React from 'react';
 import { requireProducer } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/Card';
 import { PRODUCER_PAYOUT_RATE } from '@/lib/constants';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export default async function ProducerDashboard() {
     const { supabase, producer } = await requireProducer();
 
     if (!producer) {
-        return <div className="p-12 text-center text-red-500">Perfil de productor no encontrado. Completa el onboarding.</div>;
+        redirect('/es/productor/onboarding');
     }
 
     const { count: pendingOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('producer_id', producer.id).eq('status', 'pending');
@@ -60,12 +62,12 @@ export default async function ProducerDashboard() {
 
             <h2 className="text-xl font-bold text-brand-primary mb-4">Acciones Rápidas</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-xl border border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                <Link href="/es/productor/productos" className="bg-white p-6 rounded-xl border border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                     <span className="font-medium text-brand-primary">+ Añadir nuevo producto</span>
-                </div>
-                <div className="bg-white p-6 rounded-xl border border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+                </Link>
+                <Link href="/es/productor/pedidos" className="bg-white p-6 rounded-xl border border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                     <span className="font-medium text-brand-primary">↻ Revisar últimos pedidos</span>
-                </div>
+                </Link>
             </div>
         </div>
     );

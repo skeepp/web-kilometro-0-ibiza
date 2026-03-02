@@ -56,7 +56,8 @@ export async function POST(request: Request) {
             },
             metadata: {
                 producerId,
-                userId: user.id
+                userId: user.id,
+                cart: JSON.stringify(items.map((i: any) => ({ i: i.id, q: i.quantity }))).slice(0, 500)
             }
         });
 

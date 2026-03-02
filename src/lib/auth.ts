@@ -13,7 +13,7 @@ export async function requireAuth() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect('/login');
+        redirect('/es/login');
     }
 
     return { supabase, user };
@@ -34,7 +34,7 @@ export async function requireAdmin() {
         .single();
 
     if (!profile || profile.role !== 'admin') {
-        redirect('/login');
+        redirect('/es/login');
     }
 
     return { supabase, user, profile };

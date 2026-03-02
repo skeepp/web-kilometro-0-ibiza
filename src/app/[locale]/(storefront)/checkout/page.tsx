@@ -15,7 +15,7 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         if (items.length === 0) {
-            router.push('/carrito');
+            router.push('/es/carrito');
             return;
         }
 
