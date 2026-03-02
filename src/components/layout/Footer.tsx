@@ -7,7 +7,7 @@ export function Footer() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     <div className="md:col-span-2">
-                        <Link href="/" className="text-2xl font-serif font-bold mb-4 block text-brand-background">
+                        <Link href="/es" className="text-2xl font-serif font-bold mb-4 block text-brand-background">
                             De la Finca
                         </Link>
                         <p className="text-brand-background/80 max-w-sm">
@@ -18,8 +18,8 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-lg mb-4 text-brand-background">Plataforma</h4>
                         <ul className="space-y-2">
-                            <li><Link href="/productores" className="text-white/80 hover:text-white transition-colors">Productores</Link></li>
-                            <li><Link href="/nosotros" className="text-white/80 hover:text-white transition-colors">Cómo funciona</Link></li>
+                            <li><Link href="/es/productores" className="text-white/80 hover:text-white transition-colors">Productores</Link></li>
+                            <li><Link href="/es/nosotros" className="text-white/80 hover:text-white transition-colors">Cómo funciona</Link></li>
                             <li><Link href="/es/productor/dashboard" className="text-white/80 hover:text-white transition-colors">Soy productor</Link></li>
                         </ul>
                     </div>
@@ -27,9 +27,9 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-lg mb-4 text-brand-background">Legal</h4>
                         <ul className="space-y-2">
-                            <li><Link href="/legal/privacidad" className="text-white/80 hover:text-white transition-colors">Privacidad</Link></li>
-                            <li><Link href="/legal/terminos" className="text-white/80 hover:text-white transition-colors">Términos y condiciones</Link></li>
-                            <li><Link href="/legal/cookies" className="text-white/80 hover:text-white transition-colors">Política de cookies</Link></li>
+                            <li><Link href="/es/legal/privacidad" className="text-white/80 hover:text-white transition-colors">Privacidad</Link></li>
+                            <li><Link href="/es/legal/terminos" className="text-white/80 hover:text-white transition-colors">Términos y condiciones</Link></li>
+                            <li><Link href="/es/legal/cookies" className="text-white/80 hover:text-white transition-colors">Política de cookies</Link></li>
                         </ul>
                     </div>
                 </div>
