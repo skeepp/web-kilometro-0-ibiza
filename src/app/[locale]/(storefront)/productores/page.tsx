@@ -7,10 +7,7 @@ import Image from 'next/image';
 
 export default async function ProductoresPage() {
     const supabase = await createClient();
-    const query = supabase.from('producers').select('*, products(count)').eq('status', 'active');
-
-    // If we had a complex category filter we could join it, but for MVP let's just fetch all or filter basic.
-    // In a real scenario we could filter directly by products if categories were mapped.
+    const query = supabase.from('producers').select('*, products(count)').in('status', ['active', 'pending']);
 
     const { data: producers } = await query;
 
@@ -24,14 +21,14 @@ export default async function ProductoresPage() {
 
                 {/* Simple filters placeholder */}
                 <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">Todo Mallorca</Button>
+                    <Button variant="outline" size="sm">Todo Ibiza</Button>
                     <Button variant="outline" size="sm">Filtros</Button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {producers && producers.length > 0 ? producers.map((producer: { id: string; slug: string; cover_image_url?: string; brand_name: string; municipality: string; description?: string; products?: { count: number }[] }) => (
-                    <Link key={producer.id} href={`/productores/${producer.slug}`}>
+                    <Link key={producer.id} href={`/es/productores/${producer.slug}`}>
                         <Card className="h-full hover:shadow-lg transition-all group cursor-pointer">
                             <div className="h-48 w-full bg-brand-earth/10 relative overflow-hidden flex items-center justify-center">
                                 {producer.cover_image_url ? (
