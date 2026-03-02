@@ -4,25 +4,37 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
-import { logout } from '@/app/actions/auth';
-import { Button } from '@/components/ui/Button';
 
 import { User } from '@supabase/supabase-js';
 
 export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const supabase = createClient();
 
+        const fetchProfile = async (userId: string) => {
+            const { data } = await supabase.from('profiles').select('avatar_url').eq('id', userId).single();
+            setAvatarUrl(data?.avatar_url || null);
+        };
+
         supabase.auth.getUser().then(({ data: { user } }) => {
             setUser(user);
+            if (user) {
+                fetchProfile(user.id);
+            }
             setLoading(false);
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
+            if (session?.user) {
+                fetchProfile(session.user.id);
+            } else {
+                setAvatarUrl(null);
+            }
         });
 
         return () => subscription.unsubscribe();
@@ -54,31 +66,30 @@ export function Navbar() {
                             </svg>
                         </Link>
 
-                        <div className="hidden sm:flex items-center">
-                            <Image
-                                src="/images/flag-illes-balears.png"
-                                alt="Bandera de las Illes Balears"
-                                width={24}
-                                height={16}
-                                className="rounded-sm shadow-sm"
-                            />
-                        </div>
-
-                        {!loading && (
+                        {!loading ? (
                             user ? (
-                                <div className="flex items-center space-x-3">
-                                    <Link href="/es/cuenta">
-                                        <Button variant="ghost" size="sm">Mi Cuenta</Button>
-                                    </Link>
-                                    <form action={logout}>
-                                        <Button type="submit" variant="outline" size="sm">Salir</Button>
-                                    </form>
-                                </div>
+                                <Link href="/es/cuenta" className="flex items-center justify-center overflow-hidden rounded-full w-9 h-9 border border-brand-primary/20 bg-brand-background shadow-sm hover:ring-2 hover:ring-brand-primary/50 transition-all">
+                                    {avatarUrl ? (
+                                        <Image
+                                            src={avatarUrl}
+                                            alt="Perfil del usuario"
+                                            width={36}
+                                            height={36}
+                                            className="object-cover w-full h-full"
+                                        />
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-brand-text/50">
+                                            <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+                                        </svg>
+                                    )}
+                                </Link>
                             ) : (
-                                <Link href="/es/login">
-                                    <Button variant="outline" size="sm">Entrar</Button>
+                                <Link href="/es/login" className="px-4 py-2 text-sm font-medium border border-brand-primary/20 bg-transparent text-brand-primary hover:bg-brand-primary hover:text-white rounded-md transition-colors">
+                                    Entrar
                                 </Link>
                             )
+                        ) : (
+                            <div className="w-[83px] h-[36px]"></div> /* Placeholder to prevent layout shift */
                         )}
                     </div>
                 </div>
@@ -86,4 +97,3 @@ export function Navbar() {
         </nav>
     );
 }
-
