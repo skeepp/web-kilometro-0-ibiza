@@ -19,7 +19,21 @@ export default async function LandingPage() {
         console.error('Failed to fetch producers. Is local Supabase running?', error);
     }
 
-    let featuredProducts: any[] = [];
+    type FeaturedProductRow = {
+        id: string;
+        name: string;
+        slug: string;
+        price: number;
+        unit: string;
+        description?: string;
+        images?: string[];
+        producers?: {
+            id: string;
+            brand_name: string;
+            slug: string;
+        };
+    };
+    let featuredProducts: FeaturedProductRow[] = [];
     try {
         const { data: products } = await supabase
             .from('products')
@@ -181,8 +195,8 @@ export default async function LandingPage() {
                                             <AddToCartButton
                                                 product={{
                                                     ...product,
-                                                    producerId: producer?.id,
-                                                    producerName: producer?.brand_name
+                                                    producerId: producer?.id || '',
+                                                    producerName: producer?.brand_name || ''
                                                 }}
                                             />
                                         </div>
