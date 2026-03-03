@@ -20,6 +20,9 @@ export function Navbar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                         <Link href="/es/productores" className="text-brand-text hover:text-brand-primary font-medium transition-colors">
                             Productores
                         </Link>
+                        <Link href="/es/mercado" className="text-brand-text hover:text-brand-primary font-medium transition-colors">
+                            Mercado
+                        </Link>
                         <Link href="/es/nosotros" className="text-brand-text hover:text-brand-primary font-medium transition-colors">
                             Cómo funciona
                         </Link>
@@ -50,7 +53,7 @@ export function Navbar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                             </Link>
                         ) : (
                             <Link href="/es/login" className="px-4 py-2 text-sm font-medium border border-brand-primary/20 bg-transparent text-brand-primary hover:bg-brand-primary hover:text-white rounded-md transition-colors">
-                                Entrar
+                                Login
                             </Link>
                         )}
                     </div>
