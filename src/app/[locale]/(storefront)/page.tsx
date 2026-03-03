@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { createClient } from '@/utils/supabase/server';
+import { AddToCartButton } from './productores/[slug]/AddToCartButton';
+import Image from 'next/image';
 
 export default async function LandingPage() {
     const t = await getTranslations('Index');
@@ -15,6 +17,26 @@ export default async function LandingPage() {
         if (data) producers = data;
     } catch (error) {
         console.error('Failed to fetch producers. Is local Supabase running?', error);
+    }
+
+    let featuredProducts: any[] = [];
+    try {
+        const { data: products } = await supabase
+            .from('products')
+            .select(`
+                *,
+                producers (
+                    id,
+                    brand_name,
+                    slug
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(4);
+
+        if (products) featuredProducts = products;
+    } catch (error) {
+        console.error('Error fetching featured products:', error);
     }
 
     const categories = [
@@ -45,29 +67,6 @@ export default async function LandingPage() {
                 </div>
             </section>
 
-            {/* How it Works */}
-            <section className="py-20 bg-brand-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-serif font-bold text-center mb-16">¿Cómo funciona?</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center border-t border-brand-primary/10 pt-16 mt-8 relative">
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">📍</div>
-                            <h3 className="font-bold text-lg mb-2 text-brand-primary">1. Elige tu productor</h3>
-                            <p className="text-brand-text/70">Encuentra fincas locales en tu zona con productos de proximidad reales y trazables.</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🛒</div>
-                            <h3 className="font-bold text-lg mb-2 text-brand-primary">2. Haz tu pedido</h3>
-                            <p className="text-brand-text/70">Compra directamente sin intermediarios. Recibe producto fresco garantizado.</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🚚</div>
-                            <h3 className="font-bold text-lg mb-2 text-brand-primary">3. Recibe en casa</h3>
-                            <p className="text-brand-text/70">El productor prepara y entrega tu pedido para asegurar la mayor frescura.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Categories */}
             <section className="py-20 bg-white">
@@ -121,6 +120,104 @@ export default async function LandingPage() {
                                 <p className="text-brand-text/60">Aún no hay productores disponibles en la plataforma.</p>
                             </div>
                         )}
+                    </div>
+                </div>
+            </section>
+
+            {/* Featured Products */}
+            <section className="py-20 bg-white border-t border-brand-primary/10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-end mb-12">
+                        <div>
+                            <h2 className="text-3xl font-serif font-bold text-brand-primary">Recién cosechado</h2>
+                            <p className="text-brand-text/70 mt-2">Los últimos productos subidos por nuestros agricultores locales.</p>
+                        </div>
+                        <Link href="/es/mercado">
+                            <Button variant="ghost">Ir al Mercado &rarr;</Button>
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {featuredProducts.length > 0 ? featuredProducts.map((product) => {
+                            const producer = product.producers;
+                            return (
+                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10">
+                                    <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden rounded-t-xl">
+                                        {product.images?.[0] ? (
+                                            <Image
+                                                src={product.images[0]}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                            />
+                                        ) : (
+                                            '🥬'
+                                        )}
+                                    </div>
+                                    <CardContent className="p-6 flex flex-col flex-1">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <Link href={`/productos/${product.slug}`}>
+                                                <h3 className="font-bold text-lg text-brand-text hover:text-brand-primary line-clamp-1">
+                                                    {product.name}
+                                                </h3>
+                                            </Link>
+                                            <span className="font-bold text-brand-primary ml-2 whitespace-nowrap">
+                                                {product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span>
+                                            </span>
+                                        </div>
+
+                                        {producer && (
+                                            <Link href={`/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1">
+                                                👨‍🌾 {producer.brand_name}
+                                            </Link>
+                                        )}
+
+                                        <p className="text-sm text-brand-text/70 mb-4 flex-1 line-clamp-2">
+                                            {product.description || 'Producto fresco y local.'}
+                                        </p>
+
+                                        <div className="mt-auto pt-4 border-t border-brand-primary/10">
+                                            <AddToCartButton
+                                                product={{
+                                                    ...product,
+                                                    producerId: producer?.id,
+                                                    producerName: producer?.brand_name
+                                                }}
+                                            />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        }) : (
+                            <div className="col-span-1 sm:col-span-2 lg:col-span-4 py-12 text-center border-2 border-dashed border-brand-primary/20 rounded-2xl">
+                                <p className="text-brand-text/60">Aún no hay productos en el mercado.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* How it Works */}
+            <section className="py-20 bg-brand-background">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl font-serif font-bold text-center mb-16">¿Cómo funciona?</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center border-t border-brand-primary/10 pt-16 mt-8 relative">
+                        <div className="flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">📍</div>
+                            <h3 className="font-bold text-lg mb-2 text-brand-primary">1. Elige tu productor</h3>
+                            <p className="text-brand-text/70">Encuentra fincas locales en tu zona con productos de proximidad reales y trazables.</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🛒</div>
+                            <h3 className="font-bold text-lg mb-2 text-brand-primary">2. Haz tu pedido</h3>
+                            <p className="text-brand-text/70">Compra directamente sin intermediarios. Recibe producto fresco garantizado.</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🚚</div>
+                            <h3 className="font-bold text-lg mb-2 text-brand-primary">3. Recibe en casa</h3>
+                            <p className="text-brand-text/70">El productor prepara y entrega tu pedido para asegurar la mayor frescura.</p>
+                        </div>
                     </div>
                 </div>
             </section>

@@ -12,6 +12,7 @@ export default function RegisterPage() {
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState<'consumer' | 'producer'>('consumer');
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -58,13 +59,35 @@ export default function RegisterPage() {
                         </svg>
                     </div>
                     <h1 className="text-3xl font-serif font-bold text-brand-primary">Crear Cuenta</h1>
-                    <p className="text-brand-muted mt-2">Únete a la comunidad de De la Finca</p>
+                    <p className="text-brand-muted mt-2">
+                        Únete a la comunidad de De la Finca {activeTab === 'producer' ? 'como Productor' : ''}
+                    </p>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('consumer')}
+                        className={`flex-1 py-2 px-4 text-sm font-medium rounded-lg transition-colors ${activeTab === 'consumer' ? 'bg-white text-brand-primary shadow-sm' : 'text-gray-500 hover:text-brand-primary'}`}
+                    >
+                        🧺 Comprador
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('producer')}
+                        className={`flex-1 py-2 px-4 text-sm font-medium rounded-lg transition-colors ${activeTab === 'producer' ? 'bg-white text-brand-primary shadow-sm' : 'text-gray-500 hover:text-brand-primary'}`}
+                    >
+                        👨‍🌾 Productor
+                    </button>
                 </div>
 
                 {/* Form Card */}
                 <Card>
                     <CardContent className="p-8">
                         <form onSubmit={handleSubmit} className="space-y-1">
+                            <input type="hidden" name="role" value={activeTab} />
+
                             <Input
                                 label="Nombre completo"
                                 name="fullName"

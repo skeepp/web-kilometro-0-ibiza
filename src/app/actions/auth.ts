@@ -37,6 +37,8 @@ export async function register(formData: FormData) {
     const fullName = formData.get('fullName') as string;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const roleInput = formData.get('role') as string;
+    const role = roleInput === 'producer' ? 'producer' : 'consumer';
 
     if (!fullName || !email || !password) {
         return { error: 'Todos los campos son obligatorios' };
@@ -87,7 +89,7 @@ export async function register(formData: FormData) {
             const { error: profileError } = await supabase.from('profiles').upsert({
                 id: data.user.id,
                 full_name: fullName,
-                role: 'consumer',
+                role: role,
             });
             if (profileError) {
                 console.error('[Profile Upsert Error]', profileError.message);
