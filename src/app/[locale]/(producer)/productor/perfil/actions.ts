@@ -53,6 +53,19 @@ export async function updateProducerProfile(data: UpdateProducerProfileData): Pr
         return { success: false, error: error.message };
     }
 
+    // Si se subió una nueva foto de perfil, sincronizarla con el avatar_url global del usuario
+    // para que el Navbar muestre la misma foto
+    if (data.profile_image_url) {
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ avatar_url: data.profile_image_url })
+            .eq('id', user.id);
+
+        if (profileError) {
+            console.error('[Profile Avatar Sync Error]', profileError.message);
+        }
+    }
+
     revalidatePath('/productor/perfil');
     return { success: true };
 }

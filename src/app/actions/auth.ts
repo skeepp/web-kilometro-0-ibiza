@@ -27,8 +27,30 @@ export async function login(formData: FormData) {
         return { error: `Error de autenticación: ${error.message}` };
     }
 
+    // Fetch user profile to determine their role
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+    if (profileError) {
+        console.error('[Login.Profile Fetch Error]', profileError.message);
+        // Fallback to consumer dashboard if profile fails to load
+        revalidatePath('/', 'layout');
+        redirect('/es/cuenta');
+    }
+
     revalidatePath('/', 'layout');
-    redirect('/es/cuenta');
+
+    // Redirect based on role
+    if (profile?.role === 'producer') {
+        redirect('/es/productor/dashboard');
+    } else if (profile?.role === 'admin') {
+        redirect('/es/admin');
+    } else {
+        redirect('/es/cuenta');
+    }
 }
 
 export async function register(formData: FormData) {
@@ -101,7 +123,13 @@ export async function register(formData: FormData) {
     }
 
     revalidatePath('/', 'layout');
-    redirect('/es/cuenta');
+
+    // Redirect based on role (using the role variable from form submission)
+    if (role === 'producer') {
+        redirect('/es/productor/dashboard');
+    } else {
+        redirect('/es/cuenta');
+    }
 }
 
 export async function logout() {

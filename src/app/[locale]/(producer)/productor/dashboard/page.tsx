@@ -12,16 +12,39 @@ export default async function ProducerDashboard() {
         redirect('/es/productor/onboarding');
     }
 
-    const { count: pendingOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true }).eq('producer_id', producer.id).eq('status', 'pending');
-    const { count: activeProducts } = await supabase.from('products').select('*', { count: 'exact', head: true }).eq('producer_id', producer.id).eq('available', true);
+    let pendingOrders = 0;
+    let activeProducts = 0;
+    let monthRevenue = 0;
 
-    const { data: recentOrders } = await supabase.from('orders').select('total').eq('producer_id', producer.id).gte('created_at', new Date(new Date().setDate(1)).toISOString());
-    const monthRevenue = recentOrders?.reduce((acc, order) => acc + (Number(order.total) * PRODUCER_PAYOUT_RATE), 0) || 0;
+    try {
+        const { count: pCount } = await supabase
+            .from('orders')
+            .select('*', { count: 'exact', head: true })
+            .eq('producer_id', producer.id)
+            .eq('status', 'pending');
+        pendingOrders = pCount || 0;
+
+        const { count: aCount } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('producer_id', producer.id)
+            .eq('available', true);
+        activeProducts = aCount || 0;
+
+        const { data: recentOrders } = await supabase
+            .from('orders')
+            .select('total')
+            .eq('producer_id', producer.id)
+            .gte('created_at', new Date(new Date().setDate(1)).toISOString());
+        monthRevenue = recentOrders?.reduce((acc, order) => acc + (Number(order.total) * PRODUCER_PAYOUT_RATE), 0) || 0;
+    } catch (e) {
+        console.error('[Dashboard] Error fetching stats:', e);
+    }
 
     const kpis = [
-        { label: 'Pedidos Pendientes', value: pendingOrders || 0 },
+        { label: 'Pedidos Pendientes', value: pendingOrders },
         { label: 'Ingresos del Mes (Neto)', value: `${monthRevenue.toFixed(2)}€` },
-        { label: 'Productos Activos', value: activeProducts || 0 },
+        { label: 'Productos Activos', value: activeProducts },
     ];
 
     return (

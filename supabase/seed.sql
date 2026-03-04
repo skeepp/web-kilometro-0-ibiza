@@ -42,3 +42,13 @@ insert into public.products (producer_id, slug, name, category, price, unit, sto
   ('33333333-3333-3333-3333-333333333333', 'naranja-soller', 'Naranja de Sóller', 'fruta', 2.20, 'kg', 100),
   ('44444444-4444-4444-4444-444444444444', 'queso-tierno-roig', 'Queso Tierno de Oveja', 'lacteos', 18.00, 'kg', 10),
   ('55555555-5555-5555-5555-555555555555', 'sobrasada-artesanal', 'Sobrasada Artesanal', 'carne', 12.50, 'unidad', 20);
+
+-- Create Storage Buckets
+insert into storage.buckets (id, name, public) values 
+  ('avatars', 'avatars', true),
+  ('images', 'images', true)
+on conflict (id) do nothing;
+
+create policy "Public Access" on storage.objects for select using ( bucket_id in ('avatars', 'images') );
+create policy "Auth Insert" on storage.objects for insert with check ( auth.role() = 'authenticated' );
+create policy "Auth Update" on storage.objects for update using ( auth.role() = 'authenticated' );

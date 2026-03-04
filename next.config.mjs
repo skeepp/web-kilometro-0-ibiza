@@ -7,6 +7,12 @@ const nextConfig = {
     experimental: {
         instrumentationHook: true
     },
+    webpack: (config) => {
+        // Disable persistent filesystem cache to prevent corrupted `.next` chunks
+        // (e.g. "Cannot find module './1682.js'"). Use memory-only cache instead.
+        config.cache = { type: 'memory' };
+        return config;
+    },
     images: {
         remotePatterns: [
             {

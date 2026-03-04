@@ -5,8 +5,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
 
-export function Navbar({ user, avatarUrl }: { user: User | null; avatarUrl: string | null }) {
+export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl: string | null; role: string | null }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    let profileUrl = '/es/cuenta';
+    if (role === 'producer') {
+        profileUrl = '/es/productor/dashboard';
+    } else if (role === 'admin') {
+        profileUrl = '/es/admin';
+    }
 
     return (
         <nav className="w-full bg-brand-background border-b border-brand-primary/10 sticky top-0 z-50">
@@ -38,7 +45,7 @@ export function Navbar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                         </Link>
 
                         {user ? (
-                            <Link href="/es/cuenta" className="hidden md:flex items-center justify-center overflow-hidden rounded-full w-9 h-9 border border-brand-primary/20 bg-brand-background shadow-sm hover:ring-2 hover:ring-brand-primary/50 transition-all">
+                            <Link href={profileUrl} className="hidden md:flex items-center justify-center overflow-hidden rounded-full w-9 h-9 border border-brand-primary/20 bg-brand-background shadow-sm hover:ring-2 hover:ring-brand-primary/50 transition-all">
                                 {avatarUrl ? (
                                     <Image
                                         src={avatarUrl}
@@ -105,7 +112,7 @@ export function Navbar({ user, avatarUrl }: { user: User | null; avatarUrl: stri
                         <div className="border-t border-brand-primary/10 pt-4 mt-2">
                             {user ? (
                                 <Link
-                                    href="/es/cuenta"
+                                    href={profileUrl}
                                     className="block px-3 py-2 rounded-md text-base font-medium text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 text-center border border-brand-primary/20"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >

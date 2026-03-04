@@ -1,25 +1,60 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { createProduct } from '@/app/actions/productActions';
+import { updateProduct } from '@/app/actions/productActions';
 import { useRouter } from 'next/navigation';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { createClient } from '@/utils/supabase/client';
 
-export default function NewProductPage() {
+interface Product {
+    id: string;
+    name: string;
+    category: string;
+    unit: string;
+    price: number;
+    stock: number;
+    description: string | null;
+    available: boolean;
+    images: string[] | null;
+}
+
+export default function EditProductPage({ params }: { params: { id: string } }) {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
     const [imageUrl, setImageUrl] = useState<string>('');
     const router = useRouter();
+
+    useEffect(() => {
+        async function fetchProduct() {
+            const supabase = createClient();
+            const { data } = await supabase
+                .from('products')
+                .select('*')
+                .eq('id', params.id)
+                .single();
+
+            if (data) {
+                setProduct(data as Product);
+                setImageUrl(data.images?.[0] || '');
+            }
+            setLoading(false);
+        }
+        fetchProduct();
+    }, [params.id]);
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setError(null);
 
         const formData = new FormData(e.currentTarget);
+        formData.set('image_url', imageUrl);
+        formData.set('product_id', params.id);
 
         startTransition(async () => {
-            const result = await createProduct(formData);
+            const result = await updateProduct(formData);
             if (result?.error) {
                 setError(result.error);
             } else {
@@ -28,46 +63,72 @@ export default function NewProductPage() {
         });
     }
 
+    if (loading) {
+        return (
+            <div className="p-8 max-w-3xl mx-auto flex items-center justify-center h-64">
+                <p className="text-brand-text/60">Cargando producto...</p>
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="p-8 max-w-3xl mx-auto text-center">
+                <h1 className="text-2xl font-bold text-red-500">Producto no encontrado</h1>
+            </div>
+        );
+    }
+
     return (
         <div className="p-8 max-w-3xl mx-auto">
-            <h1 className="text-3xl font-bold text-brand-primary mb-8">Nuevo Producto</h1>
+            <div className="flex items-center gap-4 mb-8">
+                <button
+                    onClick={() => router.push('/es/productor/productos')}
+                    className="text-brand-text/60 hover:text-brand-primary transition-colors"
+                >
+                    ← Volver
+                </button>
+                <h1 className="text-3xl font-bold text-brand-primary">Editar Producto</h1>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                <div className="border border-brand-primary/10 rounded-2xl p-6 bg-gray-50/50 mb-6">
+                {/* Image Upload */}
+                <div className="border border-brand-primary/10 rounded-2xl p-6 bg-gray-50/50">
                     <h2 className="text-sm font-medium text-brand-text mb-4 text-center">Foto Principal del Producto</h2>
                     <ImageUpload
-                        currentUrl={null}
+                        currentUrl={imageUrl || null}
                         onUpload={(url) => setImageUrl(url)}
                         bucket="images"
                         folder="products"
-                        label="Subir foto del producto"
+                        label="Cambiar foto del producto"
                         shape="rectangle"
                         width={400}
                         height={300}
                     />
-                    <input type="hidden" name="image_url" value={imageUrl} />
                 </div>
 
+                {/* Name */}
                 <div>
                     <label className="block text-sm font-medium text-brand-text mb-1.5">Nombre del producto *</label>
                     <input
                         name="name"
                         type="text"
                         required
-                        placeholder="Ej: Tomates cherry ecológicos"
+                        defaultValue={product.name}
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                     />
                 </div>
 
+                {/* Category & Unit */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-brand-text mb-1.5">Categoría *</label>
                         <select
                             name="category"
                             required
+                            defaultValue={product.category}
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 bg-white"
                         >
-                            <option value="">Selecciona</option>
                             <option value="verdura">🥬 Verdura</option>
                             <option value="fruta">🍎 Fruta</option>
                             <option value="carne">🥩 Carne</option>
@@ -81,6 +142,7 @@ export default function NewProductPage() {
                         <select
                             name="unit"
                             required
+                            defaultValue={product.unit}
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 bg-white"
                         >
                             <option value="kg">kg</option>
@@ -92,6 +154,7 @@ export default function NewProductPage() {
                     </div>
                 </div>
 
+                {/* Price & Stock */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-brand-text mb-1.5">Precio (€) *</label>
@@ -101,7 +164,7 @@ export default function NewProductPage() {
                             step="0.01"
                             min="0.01"
                             required
-                            placeholder="3.50"
+                            defaultValue={product.price}
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                         />
                     </div>
@@ -112,17 +175,19 @@ export default function NewProductPage() {
                             type="number"
                             min="0"
                             required
-                            placeholder="50"
+                            defaultValue={product.stock}
                             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                         />
                     </div>
                 </div>
 
+                {/* Description */}
                 <div>
                     <label className="block text-sm font-medium text-brand-text mb-1.5">Descripción</label>
                     <textarea
                         name="description"
                         rows={3}
+                        defaultValue={product.description || ''}
                         placeholder="Describe tu producto..."
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 resize-none"
                     />
@@ -132,7 +197,7 @@ export default function NewProductPage() {
 
                 <div className="flex gap-3">
                     <Button type="submit" disabled={isPending}>
-                        {isPending ? 'Creando...' : 'Crear Producto'}
+                        {isPending ? 'Guardando...' : 'Guardar Cambios'}
                     </Button>
                     <Button type="button" variant="outline" onClick={() => router.push('/es/productor/productos')}>
                         Cancelar
