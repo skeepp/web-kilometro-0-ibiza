@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { login } from '@/app/actions/auth';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -11,6 +12,7 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'consumer' | 'producer'>('consumer');
+    const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -23,10 +25,9 @@ export default function LoginPage() {
         if (result?.error) {
             setError(result.error);
             setLoading(false);
+        } else if (result?.success && result.redirectPath) {
+            router.push(result.redirectPath);
         } else {
-            // A redirect is happening from the server action, or we can handle it here if it returns success
-            // If the server action redirects using Next.js `redirect`, the execution here will just halt as an error is thrown internally by Next.js.
-            // But to be safe in case it returns without error or redirect:
             setLoading(false);
         }
     }

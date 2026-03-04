@@ -10,10 +10,10 @@ export default async function LandingPage() {
     const t = await getTranslations('Index');
     const supabase = await createClient();
 
-    type ProducerSummaryRow = { id: string; brand_name: string; slug: string; municipality: string; description?: string };
+    type ProducerSummaryRow = { id: string; brand_name: string; slug: string; municipality: string; description?: string; cover_image_url?: string };
     let producers: ProducerSummaryRow[] = [];
     try {
-        const { data } = await supabase.from('producers').select('id, brand_name, slug, municipality, description').limit(6);
+        const { data } = await supabase.from('producers').select('id, brand_name, slug, municipality, description, cover_image_url').limit(6);
         if (data) producers = data;
     } catch (error) {
         console.error('Failed to fetch producers. Is local Supabase running?', error);
@@ -117,8 +117,17 @@ export default async function LandingPage() {
                             <Link key={producer.id} href={`/productores/${producer.slug}`}>
                                 <Card className="h-full hover:shadow-lg transition-all group">
                                     <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
-                                        {/* Placeholder image layer */}
-                                        <div className="absolute inset-0 flex items-center justify-center text-4xl">🌾</div>
+                                        {producer.cover_image_url ? (
+                                            <Image
+                                                src={producer.cover_image_url}
+                                                alt={`Portada de ${producer.brand_name}`}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center text-4xl">🌾</div>
+                                        )}
                                     </div>
                                     <CardContent className="p-6">
                                         <h3 className="font-bold text-xl text-brand-primary mb-2 group-hover:underline">{producer.brand_name}</h3>

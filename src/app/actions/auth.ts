@@ -38,18 +38,18 @@ export async function login(formData: FormData) {
         console.error('[Login.Profile Fetch Error]', profileError.message);
         // Fallback to consumer dashboard if profile fails to load
         revalidatePath('/', 'layout');
-        redirect('/es/cuenta');
+        return { success: true, redirectPath: '/es/cuenta' };
     }
 
     revalidatePath('/', 'layout');
 
     // Redirect based on role
     if (profile?.role === 'producer') {
-        redirect('/es/productor/dashboard');
+        return { success: true, redirectPath: '/es/productor/dashboard' };
     } else if (profile?.role === 'admin') {
-        redirect('/es/admin');
+        return { success: true, redirectPath: '/es/admin' };
     } else {
-        redirect('/es/cuenta');
+        return { success: true, redirectPath: '/es/cuenta' };
     }
 }
 
@@ -126,9 +126,9 @@ export async function register(formData: FormData) {
 
     // Redirect based on role (using the role variable from form submission)
     if (role === 'producer') {
-        redirect('/es/productor/dashboard');
+        return { success: true, redirectPath: '/es/productor/dashboard' };
     } else {
-        redirect('/es/cuenta');
+        return { success: true, redirectPath: '/es/cuenta' };
     }
 }
 

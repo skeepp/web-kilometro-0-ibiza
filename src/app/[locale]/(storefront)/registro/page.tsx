@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { register } from '@/app/actions/auth';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -13,6 +14,7 @@ export default function RegisterPage() {
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'consumer' | 'producer'>('consumer');
+    const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -40,8 +42,12 @@ export default function RegisterPage() {
         const result = await register(formData);
 
         if (result && 'success' in result && result.success) {
-            setSuccessMsg(result.error || '¡Cuenta creada correctamente!');
-            setLoading(false);
+            if (result.redirectPath) {
+                router.push(result.redirectPath);
+            } else {
+                setSuccessMsg(result.error || '¡Cuenta creada correctamente!');
+                setLoading(false);
+            }
         } else if (result?.error) {
             setError(result.error);
             setLoading(false);
