@@ -28,6 +28,9 @@ export async function createProducerProfile(formData: FormData) {
     const description = formData.get('description') as string;
     const sanitaryRegistration = formData.get('sanitary_registration') as string;
 
+    const profileImageUrl = formData.get('profile_image_url') as string | null;
+    const coverImageUrl = formData.get('cover_image_url') as string | null;
+
     if (!brandName || !municipality) {
         return { error: 'El nombre de la finca y el municipio son obligatorios.' };
     }
@@ -57,6 +60,8 @@ export async function createProducerProfile(formData: FormData) {
             municipality,
             description: description || null,
             sanitary_registration: sanitaryRegistration || null,
+            profile_image_url: profileImageUrl || null,
+            cover_image_url: coverImageUrl || null,
             status: 'pending',
         });
 
