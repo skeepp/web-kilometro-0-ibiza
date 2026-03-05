@@ -42,11 +42,24 @@ export async function requireAdmin() {
 
 /**
  * Ensures the current user is a producer and has a producer profile.
- * Redirects to /login if not authenticated, or shows error if no producer record.
+ * Redirects to /login if not authenticated.
+ * Redirects to /cuenta if the user is not a producer.
  * Returns { supabase, user, producer }.
  */
 export async function requireProducer() {
     const { supabase, user } = await requireAuth();
+
+    // Check the user's role in the profiles table first
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    // If user is NOT a producer, redirect them to the buyer dashboard
+    if (!profile || profile.role !== 'producer') {
+        redirect('/es/cuenta');
+    }
 
     const { data: producer } = await supabase
         .from('producers')

@@ -11,7 +11,6 @@ import { Card, CardContent } from '@/components/ui/Card';
 export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState<'consumer' | 'producer'>('consumer');
     const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -44,26 +43,8 @@ export default function LoginPage() {
                     </div>
                     <h1 className="text-3xl font-serif font-bold text-brand-primary">Iniciar Sesión</h1>
                     <p className="text-brand-muted mt-2">
-                        Accede a tu cuenta de De la Finca {activeTab === 'producer' ? 'como Productor' : ''}
+                        Accede a tu cuenta de De la Finca
                     </p>
-                </div>
-
-                {/* Tabs */}
-                <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('consumer')}
-                        className={`flex-1 py-2 px-4 text-sm font-medium rounded-lg transition-colors ${activeTab === 'consumer' ? 'bg-white text-brand-primary shadow-sm' : 'text-gray-500 hover:text-brand-primary'}`}
-                    >
-                        🧺 Comprador
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab('producer')}
-                        className={`flex-1 py-2 px-4 text-sm font-medium rounded-lg transition-colors ${activeTab === 'producer' ? 'bg-white text-brand-primary shadow-sm' : 'text-gray-500 hover:text-brand-primary'}`}
-                    >
-                        👨‍🌾 Productor
-                    </button>
                 </div>
 
                 {/* Form Card */}
