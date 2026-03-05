@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
 import { SHIPPING_FLAT_EUR } from '@/lib/constants';
@@ -32,36 +33,46 @@ export default function CartPage() {
             <div className="flex flex-col lg:flex-row gap-12">
                 <div className="lg:w-2/3">
                     <div className="bg-white rounded-2xl shadow-sm border border-brand-primary/10 overflow-hidden">
-                        <ul className="divide-y divide-gray-100">
-                            {items.map((item) => (
-                                <li key={item.id} className="p-6 flex items-center justify-between">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-16 h-16 bg-brand-background rounded-lg flex items-center justify-center text-2xl">
-                                            📦
-                                        </div>
-                                        <div>
-                                            <h3 className="font-bold text-brand-text">{item.name}</h3>
-                                            <p className="text-sm text-brand-text/60">{item.price}€ / {item.unit}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center space-x-6">
-                                        <div className="flex items-center border border-gray-200 rounded-lg">
-                                            <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-500 hover:text-brand-primary transition-colors">-</button>
-                                            <span className="px-2 font-medium w-8 text-center">{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-500 hover:text-brand-primary transition-colors">+</button>
-                                        </div>
-
-                                        <div className="font-bold w-16 text-right">
-                                            {(item.price * item.quantity).toFixed(2)}€
+                        <ul className="divide-y divide-gray-100 overflow-hidden">
+                            <AnimatePresence mode="popLayout">
+                                {items.map((item) => (
+                                    <motion.li
+                                        key={item.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, x: -20, transition: { duration: 0.2 } }}
+                                        transition={{ duration: 0.3, type: 'spring', bounce: 0 }}
+                                        className="p-6 flex items-center justify-between bg-white"
+                                    >
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-16 h-16 bg-brand-background rounded-lg flex items-center justify-center text-2xl">
+                                                📦
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-brand-text">{item.name}</h3>
+                                                <p className="text-sm text-brand-text/60">{item.price}€ / {item.unit}</p>
+                                            </div>
                                         </div>
 
-                                        <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-500 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                        </button>
-                                    </div>
-                                </li>
-                            ))}
+                                        <div className="flex items-center space-x-6">
+                                            <div className="flex items-center border border-gray-200 rounded-lg">
+                                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-500 hover:text-brand-primary transition-colors">-</button>
+                                                <span className="px-2 font-medium w-8 text-center">{item.quantity}</span>
+                                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-500 hover:text-brand-primary transition-colors">+</button>
+                                            </div>
+
+                                            <div className="font-bold w-16 text-right">
+                                                {(item.price * item.quantity).toFixed(2)}€
+                                            </div>
+
+                                            <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                            </button>
+                                        </div>
+                                    </motion.li>
+                                ))}
+                            </AnimatePresence>
                         </ul>
                         <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-between">
                             <button onClick={clearCart} className="text-sm text-red-500 hover:underline">Vaciar carrito</button>

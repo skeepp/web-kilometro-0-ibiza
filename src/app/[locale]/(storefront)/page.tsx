@@ -32,6 +32,7 @@ export default async function LandingPage() {
             brand_name: string;
             slug: string;
         };
+        product_reviews?: { rating: number }[];
     };
     let featuredProducts: FeaturedProductRow[] = [];
     try {
@@ -43,12 +44,15 @@ export default async function LandingPage() {
                     id,
                     brand_name,
                     slug
+                ),
+                product_reviews (
+                    rating
                 )
             `)
             .order('created_at', { ascending: false })
             .limit(4);
 
-        if (products) featuredProducts = products;
+        if (products) featuredProducts = products as FeaturedProductRow[];
     } catch (error) {
         console.error('Error fetching featured products:', error);
     }
@@ -112,7 +116,7 @@ export default async function LandingPage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
                         {producers.length > 0 ? producers.map((producer) => (
                             <Link key={producer.id} href={`/productores/${producer.slug}`}>
                                 <Card className="h-full hover:shadow-lg transition-all group">
@@ -160,11 +164,16 @@ export default async function LandingPage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                         {featuredProducts.length > 0 ? featuredProducts.map((product) => {
                             const producer = product.producers;
+                            const reviews = product.product_reviews as { rating: number }[] | undefined;
+                            const avgRating = reviews && reviews.length > 0
+                                ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+                                : null;
+
                             return (
-                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10">
+                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10 relative group">
                                     <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden rounded-t-xl">
                                         {product.images?.[0] ? (
                                             <Image
@@ -180,18 +189,26 @@ export default async function LandingPage() {
                                     </div>
                                     <CardContent className="p-6 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-2">
-                                            <Link href={`/productos/${product.slug}`}>
-                                                <h3 className="font-bold text-lg text-brand-text hover:text-brand-primary line-clamp-1">
+                                            <Link href={`/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
+                                                <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-primary line-clamp-1">
                                                     {product.name}
                                                 </h3>
                                             </Link>
-                                            <span className="font-bold text-brand-primary ml-2 whitespace-nowrap">
+                                            <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20">
                                                 {product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span>
                                             </span>
                                         </div>
 
+                                        {avgRating && (
+                                            <div className="flex items-center gap-1 mb-2 text-sm">
+                                                <span className="text-yellow-400">★</span>
+                                                <span className="font-medium text-brand-text">{avgRating}</span>
+                                                <span className="text-brand-text/50">({reviews?.length})</span>
+                                            </div>
+                                        )}
+
                                         {producer && (
-                                            <Link href={`/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1">
+                                            <Link href={`/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1 relative z-20">
                                                 👨‍🌾 {producer.brand_name}
                                             </Link>
                                         )}
@@ -200,7 +217,7 @@ export default async function LandingPage() {
                                             {product.description || 'Producto fresco y local.'}
                                         </p>
 
-                                        <div className="mt-auto pt-4 border-t border-brand-primary/10">
+                                        <div className="mt-auto pt-4 border-t border-brand-primary/10 relative z-20">
                                             <AddToCartButton
                                                 product={{
                                                     ...product,

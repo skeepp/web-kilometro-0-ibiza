@@ -26,7 +26,7 @@ export default async function ProductoresPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
                 {producers && producers.length > 0 ? producers.map((producer: { id: string; slug: string; cover_image_url?: string; brand_name: string; municipality: string; description?: string; products?: { count: number }[] }) => (
                     <Link key={producer.id} href={`/es/productores/${producer.slug}`}>
                         <Card className="h-full hover:shadow-lg transition-all group cursor-pointer">

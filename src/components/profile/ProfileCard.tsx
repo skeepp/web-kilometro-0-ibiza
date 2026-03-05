@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition, useRef } from 'react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import { updateProfile } from '@/app/actions/updateProfile';
 import { Button } from '@/components/ui/Button';
 
@@ -18,7 +19,6 @@ export function ProfileCard({ fullName, email, phone, avatarUrl }: ProfileCardPr
     const [name, setName] = useState(fullName);
     const [tel, setTel] = useState(phone || '');
     const [avatar, setAvatar] = useState(avatarUrl);
-    const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,16 +28,15 @@ export function ProfileCard({ fullName, email, phone, avatarUrl }: ProfileCardPr
 
         // Validate file
         if (!file.type.startsWith('image/')) {
-            setFeedback({ type: 'error', message: 'Solo se permiten archivos de imagen.' });
+            toast.error('Solo se permiten archivos de imagen.');
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
-            setFeedback({ type: 'error', message: 'La imagen no puede superar 5MB.' });
+            toast.error('La imagen no puede superar 5MB.');
             return;
         }
 
         setUploadingAvatar(true);
-        setFeedback(null);
 
         try {
             // Upload to Supabase Storage
@@ -67,26 +66,25 @@ export function ProfileCard({ fullName, email, phone, avatarUrl }: ProfileCardPr
             const result = await updateProfile({ avatar_url: imageUrl });
             if (result.success) {
                 setAvatar(imageUrl);
-                setFeedback({ type: 'success', message: '¡Foto actualizada!' });
+                toast.success('¡Foto actualizada!');
             } else {
-                setFeedback({ type: 'error', message: result.error || 'Error al guardar.' });
+                toast.error(result.error || 'Error al guardar.');
             }
         } catch {
-            setFeedback({ type: 'error', message: 'Error al subir la imagen. Inténtalo de nuevo.' });
+            toast.error('Error al subir la imagen. Inténtalo de nuevo.');
         } finally {
             setUploadingAvatar(false);
         }
     }
 
     function handleSave() {
-        setFeedback(null);
         startTransition(async () => {
             const result = await updateProfile({ full_name: name, phone: tel || undefined });
             if (result.success) {
-                setFeedback({ type: 'success', message: '¡Perfil actualizado!' });
+                toast.success('¡Perfil actualizado!');
                 setIsEditing(false);
             } else {
-                setFeedback({ type: 'error', message: result.error || 'Error al guardar.' });
+                toast.error(result.error || 'Error al guardar.');
             }
         });
     }
@@ -180,13 +178,6 @@ export function ProfileCard({ fullName, email, phone, avatarUrl }: ProfileCardPr
                         Editar perfil
                     </button>
                 </div>
-            )}
-
-            {/* Feedback */}
-            {feedback && (
-                <p className={`text-xs ${feedback.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-                    {feedback.message}
-                </p>
             )}
         </div>
     );

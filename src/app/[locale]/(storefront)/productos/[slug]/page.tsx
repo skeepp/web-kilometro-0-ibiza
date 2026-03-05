@@ -2,8 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
-import { AddToCartButton } from '../../productores/[slug]/AddToCartButton'; // Reusing the same button
+import { AddToCartButton } from '../../productores/[slug]/AddToCartButton';
 import Image from 'next/image';
+import { ReviewForm } from '@/components/products/ReviewForm';
 
 export default async function ProductProfilePage({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
@@ -17,6 +18,17 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
     if (!product) return notFound();
 
     const producer = product.producers;
+
+    // Fetch reviews
+    const { data: reviews } = await supabase
+        .from('product_reviews')
+        .select('id, rating, comment, created_at, profiles(full_name)')
+        .eq('product_id', product.id)
+        .order('created_at', { ascending: false });
+
+    const avgRating = reviews && reviews.length > 0
+        ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+        : null;
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -32,17 +44,56 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
             <div className="flex flex-col md:flex-row gap-12">
                 {/* Gallery placeholder */}
                 <div className="md:w-1/2">
-                    <div className="bg-brand-background/30 rounded-3xl aspect-square flex items-center justify-center text-8xl border border-brand-primary/10 overflow-hidden relative">
+                    <div className="bg-brand-background/30 rounded-3xl aspect-square flex items-center justify-center text-8xl border border-brand-primary/10 overflow-hidden relative mb-8">
                         {product.images?.[0] ? (
                             <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" />
                         ) : '🥦'}
                     </div>
+
+                    {/* Section: Reviews List */}
+                    <div className="mt-12">
+                        <h2 className="text-2xl font-serif font-bold text-brand-primary mb-6">Valoraciones</h2>
+                        {reviews && reviews.length > 0 ? (
+                            <div className="space-y-4">
+                                {reviews.map((review) => (
+                                    <div key={review.id} className="bg-white p-4 rounded-xl border border-brand-primary/10">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="font-medium text-brand-text text-sm">
+                                                {/* @ts-expect-error - Supabase join typing returns array instead of single object */}
+                                                {review.profiles?.full_name || 'Usuario Anónimo'}
+                                            </span>
+                                            <span className="text-sm text-brand-text/50">
+                                                {new Date(review.created_at).toLocaleDateString('es-ES')}
+                                            </span>
+                                        </div>
+                                        <div className="flex text-yellow-400 text-sm mb-2">
+                                            {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                                        </div>
+                                        {review.comment && (
+                                            <p className="text-brand-text/80 text-sm">{review.comment}</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-brand-text/60 italic">Aún no hay valoraciones para este producto.</p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Product Details */}
-                <div className="md:w-1/2 flex flex-col justify-center">
+                <div className="md:w-1/2 flex flex-col justify-start">
                     <span className="uppercase tracking-wider text-xs font-bold text-brand-accent mb-2">{product.category}</span>
-                    <h1 className="text-4xl font-serif font-bold text-brand-primary mb-4">{product.name}</h1>
+                    <h1 className="text-4xl font-serif font-bold text-brand-primary mb-2">{product.name}</h1>
+
+                    {avgRating && reviews && (
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="text-yellow-400 text-lg">★</div>
+                            <span className="font-medium text-brand-text">{avgRating}</span>
+                            <span className="text-brand-text/50 text-sm">({reviews.length} valoraciones)</span>
+                        </div>
+                    )}
+
                     <p className="text-2xl font-bold text-brand-text mb-6">
                         {product.price}€<span className="text-lg text-brand-text/50">/{product.unit}</span>
                     </p>
@@ -69,9 +120,12 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
                             product={{ ...product, producerId: producer.id, producerName: producer.brand_name }}
                         />
                     </div>
-                    <p className="text-xs text-brand-text/50 mt-4">
+                    <p className="text-xs text-brand-text/50 mt-4 mb-8">
                         Stock disponible: {product.stock > 0 ? `${product.stock} ${product.unit}` : 'Agotado'}
                     </p>
+
+                    {/* Section: Add Review Form */}
+                    <ReviewForm productId={product.id} />
                 </div>
             </div>
         </div>

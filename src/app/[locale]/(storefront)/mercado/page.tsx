@@ -13,7 +13,7 @@ export const metadata = {
 export default async function MarketPage() {
     const supabase = await createClient();
 
-    // Fetch all products with their producer information
+    // Fetch all products with their producer information and reviews
     const { data: products, error } = await supabase
         .from('products')
         .select(`
@@ -22,6 +22,9 @@ export default async function MarketPage() {
                 id,
                 brand_name,
                 slug
+            ),
+            product_reviews (
+                rating
             )
         `)
         .order('created_at', { ascending: false });
@@ -65,11 +68,16 @@ export default async function MarketPage() {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                         {products.map((product) => {
                             const producer = product.producers;
+                            const reviews = product.product_reviews as { rating: number }[] | undefined;
+                            const avgRating = reviews && reviews.length > 0
+                                ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+                                : null;
+
                             return (
-                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow">
+                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow relative group">
                                     <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative">
                                         {product.images?.[0] ? (
                                             <Image
@@ -85,18 +93,26 @@ export default async function MarketPage() {
                                     </div>
                                     <CardContent className="p-6 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-2">
-                                            <Link href={`/productos/${product.slug}`}>
-                                                <h3 className="font-bold text-lg text-brand-text hover:text-brand-primary line-clamp-1">
+                                            <Link href={`/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
+                                                <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-primary line-clamp-1">
                                                     {product.name}
                                                 </h3>
                                             </Link>
-                                            <span className="font-bold text-brand-primary ml-2 whitespace-nowrap">
+                                            <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20">
                                                 {product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span>
                                             </span>
                                         </div>
 
+                                        {avgRating && (
+                                            <div className="flex items-center gap-1 mb-2 text-sm">
+                                                <span className="text-yellow-400">★</span>
+                                                <span className="font-medium text-brand-text">{avgRating}</span>
+                                                <span className="text-brand-text/50">({reviews?.length})</span>
+                                            </div>
+                                        )}
+
                                         {producer && (
-                                            <Link href={`/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1">
+                                            <Link href={`/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1 relative z-20">
                                                 👨‍🌾 {producer.brand_name}
                                             </Link>
                                         )}
@@ -105,7 +121,7 @@ export default async function MarketPage() {
                                             {product.description || 'Producto fresco y local.'}
                                         </p>
 
-                                        <div className="mt-auto pt-4 border-t border-brand-primary/10">
+                                        <div className="mt-auto pt-4 border-t border-brand-primary/10 relative z-20">
                                             <AddToCartButton
                                                 product={{
                                                     ...product,

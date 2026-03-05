@@ -3,6 +3,7 @@ import { Inter, Lora } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import '../globals.css';
+import { Toaster } from '@/components/ui/Toaster';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const lora = Lora({ subsets: ['latin'], variable: '--font-lora' });
@@ -26,6 +27,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${lora.variable} font-sans antialiased bg-[#FEFAE0] text-[#1A1A1A]`}>
         <NextIntlClientProvider messages={messages}>
           {children}
+          <Toaster position="top-center" />
         </NextIntlClientProvider>
       </body>
     </html>

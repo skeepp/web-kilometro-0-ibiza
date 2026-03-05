@@ -12,7 +12,7 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
 
     const { data: producer } = await supabase
         .from('producers')
-        .select('*, products(*)')
+        .select('*, products(*, product_reviews(rating))')
         .eq('slug', params.slug)
         .single();
 
@@ -66,31 +66,47 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                             Nuestros Productos ({producer.products?.length || 0})
                         </h2>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {producer.products?.map((product: { id: string; slug: string; name: string; price: number; unit: string; description?: string; images?: string[] }) => (
-                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow">
-                                    <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative">
-                                        {product.images?.[0] ? (
-                                            <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
-                                        ) : '🥬'}
-                                    </div>
-                                    <CardContent className="p-6 flex flex-col flex-1">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <Link href={`/productos/${product.slug}`}>
-                                                <h3 className="font-bold text-lg text-brand-text hover:text-brand-primary">{product.name}</h3>
-                                            </Link>
-                                            <span className="font-bold text-brand-primary ml-2">{product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span></span>
-                                        </div>
-                                        <p className="text-sm text-brand-text/70 mb-4 flex-1 line-clamp-2">{product.description}</p>
+                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-6">
+                            {producer.products?.map((product: { id: string; slug: string; name: string; price: number; unit: string; description?: string; images?: string[]; product_reviews?: { rating: number }[] }) => {
+                                const reviews = product.product_reviews;
+                                const avgRating = reviews && reviews.length > 0
+                                    ? (reviews.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0) / reviews.length).toFixed(1)
+                                    : null;
 
-                                        <div className="mt-auto pt-4 border-t border-brand-primary/10">
-                                            <AddToCartButton
-                                                product={{ ...product, producerId: producer.id, producerName: producer.brand_name }}
-                                            />
+                                return (
+                                    <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow relative group">
+                                        <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative">
+                                            {product.images?.[0] ? (
+                                                <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
+                                            ) : '🥬'}
                                         </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
+                                        <CardContent className="p-6 flex flex-col flex-1">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <Link href={`/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
+                                                    <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-primary">{product.name}</h3>
+                                                </Link>
+                                                <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20">{product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span></span>
+                                            </div>
+
+                                            {avgRating && (
+                                                <div className="flex items-center gap-1 mb-2 text-sm">
+                                                    <span className="text-yellow-400">★</span>
+                                                    <span className="font-medium text-brand-text">{avgRating}</span>
+                                                    <span className="text-brand-text/50">({reviews?.length})</span>
+                                                </div>
+                                            )}
+
+                                            <p className="text-sm text-brand-text/70 mb-4 flex-1 line-clamp-2">{product.description}</p>
+
+                                            <div className="mt-auto pt-4 border-t border-brand-primary/10 relative z-20">
+                                                <AddToCartButton
+                                                    product={{ ...product, producerId: producer.id, producerName: producer.brand_name }}
+                                                />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })}
                         </div>
                     </div>
 

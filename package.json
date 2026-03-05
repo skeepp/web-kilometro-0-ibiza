@@ -15,14 +15,17 @@
     "@stripe/stripe-js": "^8.8.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
+    "framer-motion": "^12.35.0",
+    "lucide-react": "^0.577.0",
     "mapbox-gl": "^3.18.1",
     "next": "14.2.35",
     "next-cloudinary": "^6.17.5",
+    "next-intl": "^4.8.3",
     "react": "^18",
     "react-dom": "^18",
     "react-map-gl": "^8.1.0",
-    "next-intl": "^4.8.3",
     "resend": "^6.9.2",
+    "sonner": "^2.0.7",
     "stripe": "^20.3.1"
   },
   "devDependencies": {
