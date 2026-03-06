@@ -61,6 +61,40 @@ export default function NewProductPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
+                        <label className="block text-sm font-medium text-brand-text mb-1.5">Origen *</label>
+                        <select
+                            name="origin"
+                            required
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 bg-white"
+                        >
+                            <option value="">Selecciona origen</option>
+                            <option value="Andalucía">Andalucía</option>
+                            <option value="Aragón">Aragón</option>
+                            <option value="Asturias">Asturias</option>
+                            <option value="Canarias">Canarias</option>
+                            <option value="Cantabria">Cantabria</option>
+                            <option value="Castilla y León">Castilla y León</option>
+                            <option value="Castilla-La Mancha">Castilla-La Mancha</option>
+                            <option value="Cataluña">Cataluña</option>
+                            <option value="Comunidad de Madrid">Comunidad de Madrid</option>
+                            <option value="Comunidad Foral de Navarra">Navarra</option>
+                            <option value="Comunidad Valenciana">Comunidad Valenciana</option>
+                            <option value="Extremadura">Extremadura</option>
+                            <option value="Galicia">Galicia</option>
+                            <option value="Islas Baleares">Islas Baleares (General)</option>
+                            <option value="Ibiza">Ibiza</option>
+                            <option value="Mallorca">Mallorca</option>
+                            <option value="Menorca">Menorca</option>
+                            <option value="Formentera">Formentera</option>
+                            <option value="La Rioja">La Rioja</option>
+                            <option value="País Vasco">País Vasco</option>
+                            <option value="Región de Murcia">Región de Murcia</option>
+                            <option value="Ceuta">Ceuta</option>
+                            <option value="Melilla">Melilla</option>
+                        </select>
+                    </div>
+
+                    <div>
                         <label className="block text-sm font-medium text-brand-text mb-1.5">Categoría *</label>
                         <select
                             name="category"

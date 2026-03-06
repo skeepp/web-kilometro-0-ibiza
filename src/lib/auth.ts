@@ -65,7 +65,8 @@ export async function requireProducer() {
         .from('producers')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
     return { supabase, user, producer };
 }

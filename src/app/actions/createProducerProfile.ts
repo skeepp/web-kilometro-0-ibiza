@@ -17,7 +17,8 @@ export async function createProducerProfile(formData: FormData) {
         .from('producers')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
     if (existing) {
         redirect('/es/productor/dashboard');

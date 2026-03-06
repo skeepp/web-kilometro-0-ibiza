@@ -1,0 +1,26 @@
+alter table public.products
+add column origin text check (origin in (
+  'Andalucía',
+  'Aragón',
+  'Asturias',
+  'Canarias',
+  'Cantabria',
+  'Castilla y León',
+  'Castilla-La Mancha',
+  'Cataluña',
+  'Comunidad de Madrid',
+  'Comunidad Foral de Navarra',
+  'Comunidad Valenciana',
+  'Extremadura',
+  'Galicia',
+  'Islas Baleares',
+  'Ibiza',
+  'Mallorca',
+  'Menorca',
+  'Formentera',
+  'La Rioja',
+  'País Vasco',
+  'Región de Murcia',
+  'Ceuta',
+  'Melilla'
+));

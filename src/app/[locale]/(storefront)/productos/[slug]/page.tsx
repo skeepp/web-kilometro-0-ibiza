@@ -11,7 +11,7 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
 
     const { data: product } = await supabase
         .from('products')
-        .select('*, producers(id, brand_name, slug)')
+        .select('*, producers(id, brand_name, slug, profile_image_url)')
         .eq('slug', params.slug)
         .single();
 
@@ -36,7 +36,7 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
             <nav className="text-sm font-medium text-brand-text/60 mb-8">
                 <Link href="/" className="hover:text-brand-primary">Inicio</Link>
                 <span className="mx-2">/</span>
-                <Link href={`/productores/${producer.slug}`} className="hover:text-brand-primary">{producer.brand_name}</Link>
+                <Link href={`/es/productores/${producer.slug}`} className="hover:text-brand-primary">{producer.brand_name}</Link>
                 <span className="mx-2">/</span>
                 <span className="text-brand-text">{product.name}</span>
             </nav>
@@ -83,7 +83,16 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
 
                 {/* Product Details */}
                 <div className="md:w-1/2 flex flex-col justify-start">
-                    <span className="uppercase tracking-wider text-xs font-bold text-brand-accent mb-2">{product.category}</span>
+                    <div className="flex items-center gap-3 mb-2">
+                        {product.category && (
+                            <span className="uppercase tracking-wider text-xs font-bold text-brand-accent">{product.category}</span>
+                        )}
+                        {product.origin && (
+                            <span className="bg-brand-primary/10 text-brand-primary text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                📍 {product.origin}
+                            </span>
+                        )}
+                    </div>
                     <h1 className="text-4xl font-serif font-bold text-brand-primary mb-2">{product.name}</h1>
 
                     {avgRating && reviews && (
@@ -104,11 +113,18 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
 
                     <div className="bg-brand-background/50 rounded-xl p-6 mb-8 border border-brand-primary/5">
                         <h3 className="font-bold text-brand-primary mb-2">Información del productor</h3>
-                        <p className="font-medium text-brand-text group mb-2">
-                            <Link href={`/productores/${producer.slug}`} className="hover:underline">
-                                👩‍🌾 {producer.brand_name}
+                        <div className="font-medium text-brand-text group mb-2 flex items-center gap-3">
+                            {producer.profile_image_url ? (
+                                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-brand-primary/20 flex-shrink-0">
+                                    <Image src={producer.profile_image_url} alt={producer.brand_name} fill className="object-cover" sizes="32px" />
+                                </div>
+                            ) : (
+                                <span className="text-xl">👩‍🌾</span>
+                            )}
+                            <Link href={`/es/productores/${producer.slug}`} className="hover:underline flex items-center">
+                                {producer.brand_name}
                             </Link>
-                        </p>
+                        </div>
                         <div className="flex text-sm text-brand-text/70 gap-4 mt-4 border-t border-brand-primary/10 pt-4">
                             <div className="flex items-center"><span className="mr-2">🚚</span> Envío local</div>
                             <div className="flex items-center"><span className="mr-2">🌱</span> Temporada</div>

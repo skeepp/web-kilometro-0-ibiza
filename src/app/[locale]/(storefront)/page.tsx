@@ -118,7 +118,7 @@ export default async function LandingPage() {
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
                         {producers.length > 0 ? producers.map((producer) => (
-                            <Link key={producer.id} href={`/productores/${producer.slug}`}>
+                            <Link key={producer.id} href={`/es/productores/${producer.slug}`}>
                                 <Card className="h-full hover:shadow-lg transition-all group">
                                     <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
                                         {producer.cover_image_url ? (
@@ -189,7 +189,7 @@ export default async function LandingPage() {
                                     </div>
                                     <CardContent className="p-6 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-2">
-                                            <Link href={`/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
+                                            <Link href={`/es/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
                                                 <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-primary line-clamp-1">
                                                     {product.name}
                                                 </h3>
@@ -208,7 +208,7 @@ export default async function LandingPage() {
                                         )}
 
                                         {producer && (
-                                            <Link href={`/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1 relative z-20">
+                                            <Link href={`/es/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1 relative z-20">
                                                 👨‍🌾 {producer.brand_name}
                                             </Link>
                                         )}

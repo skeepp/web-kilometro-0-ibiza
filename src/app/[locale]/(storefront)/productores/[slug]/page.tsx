@@ -82,7 +82,7 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                                         </div>
                                         <CardContent className="p-6 flex flex-col flex-1">
                                             <div className="flex justify-between items-start mb-2">
-                                                <Link href={`/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
+                                                <Link href={`/es/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
                                                     <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-primary">{product.name}</h3>
                                                 </Link>
                                                 <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20">{product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span></span>

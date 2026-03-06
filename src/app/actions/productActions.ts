@@ -59,8 +59,9 @@ export async function createProduct(formData: FormData) {
     const stock = parseInt(formData.get('stock') as string);
     const description = formData.get('description') as string;
     const imageUrl = formData.get('image_url') as string;
+    const origin = formData.get('origin') as string;
 
-    if (!name || !category || !unit || isNaN(price) || isNaN(stock)) {
+    if (!name || !category || !unit || isNaN(price) || isNaN(stock) || !origin) {
         return { error: 'Todos los campos obligatorios deben estar completos.' };
     }
 
@@ -83,6 +84,7 @@ export async function createProduct(formData: FormData) {
             unit,
             price,
             stock,
+            origin,
             description: description || null,
             available: true,
             images: imageUrl ? [imageUrl] : [],
@@ -132,8 +134,9 @@ export async function updateProduct(formData: FormData) {
     const stock = parseInt(formData.get('stock') as string);
     const description = formData.get('description') as string;
     const imageUrl = formData.get('image_url') as string;
+    const origin = formData.get('origin') as string;
 
-    if (!name || !category || !unit || isNaN(price) || isNaN(stock)) {
+    if (!name || !category || !unit || isNaN(price) || isNaN(stock) || !origin) {
         return { error: 'Todos los campos obligatorios deben estar completos.' };
     }
 
@@ -143,6 +146,7 @@ export async function updateProduct(formData: FormData) {
         unit,
         price,
         stock,
+        origin,
         description: description || null,
     };
 
