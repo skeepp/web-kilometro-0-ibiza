@@ -34,13 +34,13 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
 
                     {/* Producer Info Sidebar */}
                     <div className="md:w-1/3">
-                        <div className="bg-white p-8 rounded-2xl shadow-soft -mt-24 relative z-10 border border-brand-primary/10">
-                            <div className="w-24 h-24 rounded-full bg-brand-background mb-6 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden text-3xl relative">
+                        <div className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl -mt-24 relative z-10 border border-brand-primary/10 transition-all hover:shadow-2xl">
+                            <div className="w-24 h-24 rounded-full bg-brand-background mb-6 flex items-center justify-center border-4 border-white shadow-md overflow-hidden text-3xl relative">
                                 {producer.profile_image_url ? (
                                     <Image src={producer.profile_image_url} alt="Profile" fill className="object-cover" sizes="96px" />
                                 ) : '👨‍🌾'}
                             </div>
-                            <h1 className="text-3xl font-serif font-bold text-brand-primary mb-2">{producer.brand_name}</h1>
+                            <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary mb-2 text-balance">{producer.brand_name}</h1>
                             <p className="text-brand-text/60 font-medium mb-6 flex items-center">
                                 <span className="mr-2">📍</span> {producer.municipality}, Mallorca
                             </p>
@@ -62,7 +62,7 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
 
                     {/* Products Grid */}
                     <div className="md:w-2/3">
-                        <h2 className="text-2xl font-serif font-bold text-brand-primary mb-8 border-b border-brand-primary/10 pb-4">
+                        <h2 className="text-2xl md:text-3xl font-serif font-bold text-brand-primary mb-8 border-b border-brand-primary/10 pb-4 text-balance">
                             Nuestros Productos ({producer.products?.length || 0})
                         </h2>
 
@@ -74,18 +74,21 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                                     : null;
 
                                 return (
-                                    <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow relative group">
-                                        <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative">
+                                    <Card key={product.id} className="flex flex-col h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 hover:border-brand-primary/30 bg-white">
+                                        <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden">
                                             {product.images?.[0] ? (
-                                                <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
-                                            ) : '🥬'}
+                                                <Image src={product.images[0]} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 50vw" />
+                                            ) : (
+                                                <span className="transition-transform duration-300 group-hover:scale-110">🥬</span>
+                                            )}
+                                            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         </div>
                                         <CardContent className="p-6 flex flex-col flex-1">
-                                            <div className="flex justify-between items-start mb-2">
+                                            <div className="flex justify-between items-start mb-3">
                                                 <Link href={`/es/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
-                                                    <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-primary">{product.name}</h3>
+                                                    <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-accent transition-colors">{product.name}</h3>
                                                 </Link>
-                                                <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20">{product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span></span>
+                                                <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20 bg-brand-background px-2 py-1 rounded-md shadow-sm border border-brand-primary/10">{product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span></span>
                                             </div>
 
                                             {avgRating && (

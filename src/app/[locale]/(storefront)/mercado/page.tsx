@@ -45,10 +45,10 @@ export default async function MarketPage() {
             {/* Header Section */}
             <div className="bg-brand-earth/10 py-16 w-full">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-primary mb-4">
+                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-primary mb-4 text-balance">
                         Mercado Local
                     </h1>
-                    <p className="text-xl text-brand-text/80 max-w-2xl mx-auto">
+                    <p className="text-xl text-brand-text/80 max-w-2xl mx-auto text-pretty">
                         Descubre y compra productos frescos directamente de los productores de nuestra isla.
                     </p>
                 </div>

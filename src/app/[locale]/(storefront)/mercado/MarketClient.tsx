@@ -222,18 +222,18 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                             : null;
 
                         return (
-                            <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow relative group">
+                            <Card key={product.id} className="flex flex-col h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 hover:border-brand-primary/30 bg-white">
                                 <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden">
                                     {product.images?.[0] ? (
                                         <Image
                                             src={product.images[0]}
                                             alt={product.name}
                                             fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                         />
                                     ) : (
-                                        '🥬'
+                                        <span className="transition-transform duration-300 group-hover:scale-110">🥬</span>
                                     )}
                                     {product.category && (
                                         <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full text-brand-primary capitalize z-10 shadow-sm border border-brand-primary/10">
@@ -247,13 +247,13 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                                     )}
                                 </div>
                                 <CardContent className="p-4 sm:p-6 flex flex-col flex-1">
-                                    <div className="flex justify-between items-start mb-2">
+                                    <div className="flex justify-between items-start mb-3">
                                         <Link href={`/${locale}/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
-                                            <h3 className="font-bold text-base sm:text-lg text-brand-text group-hover:text-brand-primary line-clamp-1">
+                                            <h3 className="font-bold text-base sm:text-lg text-brand-text group-hover:text-brand-accent transition-colors line-clamp-1">
                                                 {product.name}
                                             </h3>
                                         </Link>
-                                        <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20 text-sm sm:text-base">
+                                        <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20 text-sm sm:text-base bg-brand-background px-2 py-1 rounded-md shadow-sm border border-brand-primary/10">
                                             {product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span>
                                         </span>
                                     </div>
