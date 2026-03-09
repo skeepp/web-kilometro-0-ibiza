@@ -40,31 +40,38 @@ export default async function AdminDashboard() {
     ];
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-brand-primary mb-8">Dashboard Global</h1>
+        <div className="p-8 md:p-12 max-w-7xl mx-auto space-y-10">
+            <div>
+                <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary mb-2 text-balance">Dashboard Global</h1>
+                <p className="text-brand-text/70 text-lg">Resumen de la actividad en De la Finca.</p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 {kpis.map((kpi) => (
-                    <Card key={kpi.label}>
+                    <Card key={kpi.label} className="border border-brand-primary/10 shadow-soft hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm">
                         <CardContent className="p-6">
                             <h3 className="text-brand-text/60 text-sm font-medium mb-2">{kpi.label}</h3>
-                            <p className={`text-3xl font-bold ${kpi.color}`}>{kpi.value}</p>
+                            <p className={`text-3xl md:text-4xl font-bold ${kpi.color}`}>{kpi.value}</p>
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
-            <div className="mb-4 flex justify-between items-center">
-                <h2 className="font-bold text-brand-primary">Últimos Pedidos Plataforma</h2>
-                <a href="/es/admin/pedidos" className="text-sm font-medium text-brand-primary hover:underline">Ver todos</a>
-            </div>
+            <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-soft border border-brand-primary/10 p-6 md:p-8">
+                <div className="mb-6 flex justify-between items-center border-b border-brand-primary/10 pb-4">
+                    <h2 className="text-xl font-bold text-brand-primary flex items-center gap-2">
+                        <span className="text-2xl">📋</span> Últimos Pedidos
+                    </h2>
+                    <a href="/es/admin/pedidos" className="text-sm font-medium text-brand-accent hover:underline flex items-center gap-1 transition-colors">Ver todos &rarr;</a>
+                </div>
 
-            <DataTable
-                columns={columns}
-                data={recentOrders}
-                keyExtractor={(o) => o.id}
-                emptyMessage="No hay pedidos registrados aún."
-            />
+                <DataTable
+                    columns={columns}
+                    data={recentOrders}
+                    keyExtractor={(o) => o.id}
+                    emptyMessage="No hay pedidos registrados aún."
+                />
+            </div>
         </div>
     );
 }

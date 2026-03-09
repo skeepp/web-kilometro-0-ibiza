@@ -29,10 +29,11 @@ export function Sidebar({ role, activePath }: SidebarProps) {
     const navigation = role === 'admin' ? adminNav : producerNav;
 
     return (
-        <div className="flex flex-col w-64 border-r border-brand-primary/10 bg-white min-h-screen">
-            <div className="flex items-center h-20 px-6 border-b border-brand-primary/10">
-                <Link href="/es" className="text-xl font-serif font-bold text-brand-primary hover:opacity-80 transition-opacity">
-                    {role === 'admin' ? 'De la Finca | Panel Admin' : 'Panel de Productor'}
+        <div className="flex flex-col w-64 md:w-72 border-r border-brand-primary/10 bg-white/80 backdrop-blur-xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] min-h-screen z-20 sticky top-0">
+            <div className="flex items-center h-20 px-6 border-b border-brand-primary/10 bg-white/50 backdrop-blur-md sticky top-0 z-10 transition-colors hover:bg-white/80">
+                <Link href="/es" className="text-xl font-serif font-bold text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-2">
+                    <span className="text-2xl">🌿</span>
+                    <span className="truncate">{role === 'admin' ? 'Panel Admin' : 'Mi Finca'}</span>
                 </Link>
             </div>
             <div className="flex-1 overflow-y-auto py-6">
@@ -43,13 +44,13 @@ export function Sidebar({ role, activePath }: SidebarProps) {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors ${isActive
-                                    ? 'bg-brand-primary/10 text-brand-primary'
-                                    : 'text-brand-text hover:bg-gray-50 hover:text-brand-primary'
+                                className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 border border-transparent ${isActive
+                                    ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/20 scale-[1.02]'
+                                    : 'text-brand-text/70 hover:bg-brand-primary/5 hover:text-brand-primary hover:border-brand-primary/10'
                                     }`}
                             >
                                 <svg
-                                    className={`mr-3 h-5 w-5 flex-shrink-0 ${isActive ? 'text-brand-primary' : 'text-gray-400 group-hover:text-brand-primary'
+                                    className={`mr-3 h-5 w-5 flex-shrink-0 transition-all duration-200 ${isActive ? 'text-white' : 'text-brand-text/40 group-hover:text-brand-primary group-hover:scale-110'
                                         }`}
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"

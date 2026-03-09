@@ -18,10 +18,12 @@ export default function DashboardLayout({
     const pathname = usePathname();
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-brand-background/30 selection:bg-brand-accent selection:text-white">
             <Sidebar role={role} activePath={pathname} />
-            <main className="flex-1 overflow-y-auto">
-                {children}
+            <main className="flex-1 overflow-y-auto w-full transition-all duration-300">
+                <div className="min-h-full pb-12">
+                    {children}
+                </div>
             </main>
         </div>
     );
