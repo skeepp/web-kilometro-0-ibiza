@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { PRODUCER_PAYOUT_RATE } from '@/lib/constants';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default async function ProducerDashboard() {
     const { supabase, producer } = await requireProducer();
@@ -49,14 +50,21 @@ export default async function ProducerDashboard() {
 
     return (
         <div className="p-8 md:p-12 max-w-7xl mx-auto space-y-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/60 p-6 md:p-8 rounded-2xl border border-brand-primary/10 shadow-sm backdrop-blur-sm">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary mb-2 text-balance">Hola, {producer.brand_name} <span className="text-2xl">👋</span></h1>
-                    <p className="text-brand-text/70 text-lg">Aquí tienes un resumen de tu actividad.</p>
+            <div className="relative rounded-3xl overflow-hidden shadow-soft border border-brand-primary/10">
+                <div className="absolute inset-0 z-0">
+                    <Image src="/images/dashboards/producer_bg.png" alt="Producer Background" fill className="object-cover" priority />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent"></div>
                 </div>
-                <div className="bg-white px-5 py-3 rounded-xl shadow-soft border border-brand-primary/10 text-sm font-semibold flex items-center transition-all hover:shadow-md">
-                    <span className={`w-2.5 h-2.5 rounded-full mr-3 ${producer.status === 'active' ? 'bg-brand-accent animate-pulse' : 'bg-yellow-500'}`}></span>
-                    {producer.status === 'active' ? 'Cuenta Activa' : 'Pendiente Verificación'}
+
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-8 md:p-12">
+                    <div>
+                        <h1 className="text-3xl md:text-5xl font-serif font-bold text-brand-primary mb-3 text-balance">Hola, {producer.brand_name} <span className="text-3xl">👋</span></h1>
+                        <p className="text-brand-text/80 text-lg max-w-xl text-pretty">Aquí tienes un resumen de la actividad de tu escaparate.</p>
+                    </div>
+                    <div className="bg-white/90 backdrop-blur-md px-5 py-3 rounded-xl shadow-soft border border-brand-primary/10 text-sm font-semibold flex items-center transition-all hover:shadow-md">
+                        <span className={`w-2.5 h-2.5 rounded-full mr-3 ${producer.status === 'active' ? 'bg-brand-accent animate-pulse' : 'bg-yellow-500'}`}></span>
+                        {producer.status === 'active' ? 'Cuenta Activa' : 'Pendiente Verificación'}
+                    </div>
                 </div>
             </div>
 

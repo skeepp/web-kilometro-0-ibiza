@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/Card';
 import { DataTable } from '@/components/ui/DataTable';
 import { PLATFORM_FEE_RATE } from '@/lib/constants';
+import Image from 'next/image';
 
 export default async function AdminDashboard() {
     const { supabase } = await requireAdmin();
@@ -40,10 +41,16 @@ export default async function AdminDashboard() {
     ];
 
     return (
-        <div className="p-8 md:p-12 max-w-7xl mx-auto space-y-10">
-            <div>
-                <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary mb-2 text-balance">Dashboard Global</h1>
-                <p className="text-brand-text/70 text-lg">Resumen de la actividad en De la Finca.</p>
+        <div className="p-8 md:p-10 max-w-7xl mx-auto space-y-10">
+            <div className="relative rounded-3xl overflow-hidden shadow-soft border border-brand-primary/10">
+                <div className="absolute inset-0 z-0">
+                    <Image src="/images/dashboards/admin_bg.png" alt="Admin Background" fill className="object-cover" priority />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent"></div>
+                </div>
+                <div className="relative z-10 p-8 md:p-12">
+                    <h1 className="text-3xl md:text-5xl font-serif font-bold text-brand-primary mb-3 text-balance">Dashboard Global</h1>
+                    <p className="text-brand-text/80 text-lg max-w-xl text-pretty">Resumen y control de mando de toda la actividad en la plataforma De la Finca.</p>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
