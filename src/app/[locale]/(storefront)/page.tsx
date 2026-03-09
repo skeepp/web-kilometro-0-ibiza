@@ -71,18 +71,17 @@ export default async function LandingPage() {
             {/* Hero Section */}
             <section className="relative w-full py-32 md:py-48 overflow-hidden flex items-center justify-center min-h-[80vh]">
                 {/* Background Image */}
-                <div className="absolute inset-0 z-0 bg-brand-primary">
+                <div className="absolute inset-0 z-0 bg-gray-950">
                     <Image
                         src="/images/home_hero_bg.png"
                         alt="Paisaje de campos rústicos en Baleares"
                         fill
                         quality={100}
-                        className="object-cover object-center opacity-80"
+                        className="object-cover object-center"
                         priority
                     />
                     {/* Gradient Overlays for contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/95 via-brand-primary/60 to-transparent mix-blend-multiply"></div>
-                    <div className="absolute inset-0 bg-brand-primary/30 backdrop-blur-[2px]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-900/40 to-transparent"></div>
                 </div>
 
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
