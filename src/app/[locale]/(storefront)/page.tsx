@@ -69,20 +69,37 @@ export default async function LandingPage() {
     return (
         <div className="flex flex-col w-full">
             {/* Hero Section */}
-            <section className="relative bg-brand-primary w-full py-24 md:py-32 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                    <h1 className="text-4xl md:text-6xl font-serif font-bold text-brand-background leading-tight mb-6 text-balance">
+            <section className="relative w-full py-32 md:py-48 overflow-hidden flex items-center justify-center min-h-[80vh]">
+                {/* Background Image */}
+                <div className="absolute inset-0 z-0 bg-brand-primary">
+                    <Image
+                        src="/images/home_hero_bg.png"
+                        alt="Paisaje de campos rústicos en Baleares"
+                        fill
+                        quality={100}
+                        className="object-cover object-center opacity-80"
+                        priority
+                    />
+                    {/* Gradient Overlays for contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/95 via-brand-primary/60 to-transparent mix-blend-multiply"></div>
+                    <div className="absolute inset-0 bg-brand-primary/30 backdrop-blur-[2px]"></div>
+                </div>
+
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                    <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-6 text-balance drop-shadow-md">
                         {t('title')}
                     </h1>
-                    <p className="text-xl text-brand-background/90 mb-10 max-w-2xl mx-auto text-balance">
+                    <p className="text-2xl text-white/95 mb-12 max-w-3xl mx-auto text-balance font-medium drop-shadow-sm">
                         {t('subtitle')}
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-center mb-8">
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-center mb-12">
                         <Link href="/es/productores">
-                            <Button size="lg" className="bg-brand-background text-brand-primary hover:bg-white">{t('cta')}</Button>
+                            <Button size="lg" className="bg-brand-accent text-white hover:bg-white hover:text-brand-accent shadow-xl hover:-translate-y-1 transition-all text-lg font-bold px-8 py-6 rounded-full border-0">
+                                {t('cta')}
+                            </Button>
                         </Link>
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-brand-background/80 font-medium tracking-wide">
+                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-white/90 font-medium tracking-wide bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 shadow-soft max-w-fit mx-auto">
                         <span>{t('trust_bar')}</span>
                     </div>
                 </div>
