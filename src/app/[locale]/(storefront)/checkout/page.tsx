@@ -50,25 +50,39 @@ export default function CheckoutPage() {
     const totalAmount = cartTotal + SHIPPING_FLAT_EUR;
 
     return (
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-3xl font-serif font-bold text-brand-primary mb-8">Checkout Seguro</h1>
+        <div className="min-h-[calc(100vh-100px)] bg-gradient-to-b from-brand-background/30 to-white py-12 md:py-20 relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-primary/5 blur-[100px] pointer-events-none rounded-full" />
 
-            <div className="bg-white rounded-2xl shadow-soft p-8 border border-brand-primary/10">
-                <h2 className="text-xl font-bold mb-4">Resumen</h2>
-                <div className="flex justify-between font-medium text-brand-text mb-8">
-                    <span>{items.length} artículos + envío</span>
-                    <span>{totalAmount.toFixed(2)}€</span>
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="text-center mb-10">
+                    <h1 className="text-3xl md:text-5xl font-serif font-bold text-brand-primary text-balance mb-3">Finalizar Compra</h1>
+                    <p className="text-brand-text/70 text-lg">Completa tu pago de forma segura a través de Stripe.</p>
                 </div>
 
-                {clientSecret ? (
-                    <Elements options={{ clientSecret, appearance }} stripe={getStripe()}>
-                        <CheckoutForm amount={totalAmount} />
-                    </Elements>
-                ) : (
-                    <div className="flex items-center justify-center p-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+                <div className="bg-white/90 backdrop-blur-2xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 border border-brand-primary/10">
+                    <h2 className="text-xl font-bold mb-6 text-brand-primary flex items-center gap-2">
+                        <span className="text-2xl">🔒</span> Resumen del Pedido
+                    </h2>
+                    <div className="flex justify-between items-center bg-brand-background/30 p-4 rounded-xl mb-8 border border-brand-primary/10">
+                        <span className="font-medium text-brand-text/80">{items.reduce((a, b) => a + b.quantity, 0)} artículos + envío</span>
+                        <span className="text-xl font-bold text-brand-primary">{totalAmount.toFixed(2)}€</span>
                     </div>
-                )}
+
+                    {clientSecret ? (
+                        <Elements options={{ clientSecret, appearance }} stripe={getStripe()}>
+                            <CheckoutForm amount={totalAmount} />
+                        </Elements>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center p-16 gap-4">
+                            <div className="relative w-12 h-12">
+                                <div className="absolute inset-0 rounded-full border-4 border-brand-primary/20"></div>
+                                <div className="absolute inset-0 rounded-full border-4 border-brand-accent border-t-transparent animate-spin"></div>
+                            </div>
+                            <p className="text-brand-text/50 font-medium">Preparando pago seguro...</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

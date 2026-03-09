@@ -12,12 +12,12 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="max-w-3xl mx-auto px-4 py-24 text-center">
-                <div className="text-6xl mb-6">🛒</div>
-                <h1 className="text-3xl font-serif font-bold text-brand-primary mb-4">Tu carrito está vacío</h1>
-                <p className="text-brand-text/70 mb-8">Aún no has añadido ningún producto artesanal a tu carrito.</p>
+            <div className="max-w-3xl mx-auto px-4 py-24 text-center min-h-[60vh] flex flex-col items-center justify-center">
+                <div className="w-32 h-32 bg-brand-background/50 rounded-full flex items-center justify-center text-7xl mb-8 animate-bounce">🛒</div>
+                <h1 className="text-3xl md:text-5xl font-serif font-bold text-brand-primary mb-6 text-balance">Tu carrito está vacío</h1>
+                <p className="text-brand-text/70 text-lg mb-10 text-pretty">Aún no has añadido ningún producto artesanal a tu carrito.</p>
                 <Link href="/es/productores">
-                    <Button>Descubrir productores locales</Button>
+                    <Button size="lg" className="shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">Descubrir productores locales</Button>
                 </Link>
             </div>
         );
@@ -26,14 +26,14 @@ export default function CartPage() {
     const producerName = items[0]?.producerName;
 
     return (
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-3xl font-serif font-bold text-brand-primary mb-2">Tu Carrito</h1>
-            <p className="text-brand-text/70 mb-8">Pedido a: <span className="font-bold text-brand-primary">{producerName}</span></p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-primary mb-3 text-balance">Tu Carrito</h1>
+            <p className="text-brand-text/70 mb-10 text-lg">Pedido a: <span className="font-bold text-brand-primary bg-brand-background px-3 py-1 rounded-full border border-brand-primary/10">{producerName}</span></p>
 
             <div className="flex flex-col lg:flex-row gap-12">
                 <div className="lg:w-2/3">
-                    <div className="bg-white rounded-2xl shadow-sm border border-brand-primary/10 overflow-hidden">
-                        <ul className="divide-y divide-gray-100 overflow-hidden">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-soft border border-brand-primary/10 overflow-hidden">
+                        <ul className="divide-y divide-brand-primary/5 overflow-hidden">
                             <AnimatePresence mode="popLayout">
                                 {items.map((item) => (
                                     <motion.li
@@ -55,14 +55,14 @@ export default function CartPage() {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center space-x-6">
-                                            <div className="flex items-center border border-gray-200 rounded-lg">
-                                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-500 hover:text-brand-primary transition-colors">-</button>
-                                                <span className="px-2 font-medium w-8 text-center">{item.quantity}</span>
-                                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-500 hover:text-brand-primary transition-colors">+</button>
+                                        <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                                            <div className="flex items-center border border-brand-primary/20 rounded-lg bg-white shadow-sm overflow-hidden">
+                                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-4 py-1.5 text-gray-500 hover:text-brand-primary hover:bg-brand-background transition-colors">-</button>
+                                                <span className="px-2 font-medium w-10 text-center border-x border-brand-primary/10">{item.quantity}</span>
+                                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-4 py-1.5 text-gray-500 hover:text-brand-primary hover:bg-brand-background transition-colors">+</button>
                                             </div>
 
-                                            <div className="font-bold w-16 text-right">
+                                            <div className="font-bold w-full sm:w-20 sm:text-right text-lg text-brand-primary">
                                                 {(item.price * item.quantity).toFixed(2)}€
                                             </div>
 
@@ -74,31 +74,33 @@ export default function CartPage() {
                                 ))}
                             </AnimatePresence>
                         </ul>
-                        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-between">
-                            <button onClick={clearCart} className="text-sm text-red-500 hover:underline">Vaciar carrito</button>
-                            <Link href="/es/productores" className="text-sm text-brand-primary hover:underline">Continuar comprando</Link>
+                        <div className="p-4 sm:p-6 bg-brand-background/20 border-t border-brand-primary/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <button onClick={clearCart} className="text-sm font-medium text-red-500 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors">Vaciar carrito</button>
+                            <Link href="/es/productores" className="text-sm font-medium text-brand-primary hover:text-brand-accent px-4 py-2 hover:bg-white rounded-lg transition-colors border border-transparent shadow-sm bg-white/50">Continuar comprando &rarr;</Link>
                         </div>
                     </div>
                 </div>
 
                 <div className="lg:w-1/3">
-                    <div className="bg-white rounded-2xl shadow-sm border border-brand-primary/10 p-6 sticky top-24">
-                        <h2 className="text-xl font-bold text-brand-primary mb-6">Resumen del pedido</h2>
+                    <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-brand-primary/10 p-6 md:p-8 sticky top-24">
+                        <h2 className="text-xl font-bold text-brand-primary mb-6 flex items-center gap-2">
+                            <span className="text-2xl">🧾</span> Resumen
+                        </h2>
 
                         <div className="space-y-4 mb-6">
-                            <div className="flex justify-between text-brand-text/80">
-                                <span>Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} productos)</span>
-                                <span>{cartTotal.toFixed(2)}€</span>
+                            <div className="flex justify-between text-brand-text border-b border-brand-primary/5 pb-4">
+                                <span>Subtotal <span className="text-brand-text/50">({items.reduce((acc, i) => acc + i.quantity, 0)} items)</span></span>
+                                <span className="font-medium">{cartTotal.toFixed(2)}€</span>
                             </div>
-                            <div className="flex justify-between text-brand-text/80">
-                                <span>Gastos de envío estimados</span>
-                                <span>{SHIPPING_FLAT_EUR.toFixed(2)}€</span>
+                            <div className="flex justify-between text-brand-text pb-2">
+                                <span>Envío <span className="text-xs bg-brand-background text-brand-primary px-2 py-0.5 rounded-full ml-1">Fijo</span></span>
+                                <span className="font-medium">{SHIPPING_FLAT_EUR.toFixed(2)}€</span>
                             </div>
                         </div>
 
-                        <div className="flex justify-between text-lg font-bold text-brand-text mb-8 pt-4 border-t border-gray-100">
+                        <div className="flex justify-between items-center text-xl font-bold text-brand-primary mb-8 pt-6 border-t border-brand-primary/10">
                             <span>Total</span>
-                            <span>{(cartTotal + SHIPPING_FLAT_EUR).toFixed(2)}€</span>
+                            <span className="text-2xl">{(cartTotal + SHIPPING_FLAT_EUR).toFixed(2)}€</span>
                         </div>
 
                         <Link href="/es/checkout" className="block w-full">
