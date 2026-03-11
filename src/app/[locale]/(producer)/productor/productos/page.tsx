@@ -57,10 +57,10 @@ export default async function ProducerProducts() {
     ];
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-brand-primary">Mis Productos</h1>
-                <Link href="/es/productor/productos/nuevo" className="inline-flex items-center px-4 py-2 bg-brand-primary text-white rounded-xl text-sm font-medium hover:bg-brand-primary/90 transition-colors">
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-0">
+                <h1 className="text-2xl sm:text-3xl font-bold text-brand-primary">Mis Productos</h1>
+                <Link href="/es/productor/productos/nuevo" className="inline-flex items-center px-4 py-2 bg-brand-primary text-white rounded-xl text-sm font-medium hover:bg-brand-primary/90 transition-colors w-full sm:w-auto justify-center">
                     + Nuevo Producto
                 </Link>
             </div>

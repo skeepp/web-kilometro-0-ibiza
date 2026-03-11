@@ -76,7 +76,9 @@ export default async function LandingPage() {
                         src="/images/home_hero_bg.png"
                         alt="Paisaje de campos rústicos en Baleares"
                         fill
+                        sizes="100vw"
                         quality={100}
+                        unoptimized
                         className="object-cover object-center"
                         priority
                     />
@@ -109,7 +111,7 @@ export default async function LandingPage() {
             <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-serif font-bold mb-12 text-center text-balance">Categorías destacadas</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                         {categories.map((cat) => (
                             <Link key={cat.name} href={`/es/productores?category=${cat.name.toLowerCase()}`}>
                                 <Card className="hover:border-brand-primary hover:bg-brand-background/50 transition-colors cursor-pointer text-center py-8">
@@ -135,9 +137,9 @@ export default async function LandingPage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
+                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-8 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
                         {producers.length > 0 ? producers.map((producer) => (
-                            <Link key={producer.id} href={`/es/productores/${producer.slug}`}>
+                            <Link key={producer.id} href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center">
                                 <Card className="h-full hover:shadow-lg transition-all group">
                                     <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
                                         {producer.cover_image_url ? (
@@ -183,7 +185,7 @@ export default async function LandingPage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
                         {featuredProducts.length > 0 ? featuredProducts.map((product) => {
                             const producer = product.producers;
                             const reviews = product.product_reviews as { rating: number }[] | undefined;
@@ -192,7 +194,7 @@ export default async function LandingPage() {
                                 : null;
 
                             return (
-                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10 relative group">
+                                <Card key={product.id} className="min-w-[80vw] sm:min-w-0 snap-center flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10 relative group">
                                     <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden rounded-t-xl">
                                         {product.images?.[0] ? (
                                             <Image

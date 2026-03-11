@@ -59,8 +59,8 @@ export default async function ProducerOrders() {
     ];
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-brand-primary mb-8">Gestión de Pedidos</h1>
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold text-brand-primary mb-6 sm:mb-8">Gestión de Pedidos</h1>
 
             <DataTable
                 columns={columns}

@@ -29,22 +29,27 @@ export function Sidebar({ role, activePath }: SidebarProps) {
     const navigation = role === 'admin' ? adminNav : producerNav;
 
     return (
-        <div className="flex flex-col w-64 md:w-72 border-r border-brand-primary/10 bg-white/80 backdrop-blur-xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] min-h-screen z-20 sticky top-0">
-            <div className="flex items-center h-20 px-6 border-b border-brand-primary/10 bg-white/50 backdrop-blur-md sticky top-0 z-10 transition-colors hover:bg-white/80">
+        <div className="flex flex-col w-full md:w-72 border-b md:border-r border-brand-primary/10 bg-white/80 backdrop-blur-xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] md:min-h-screen z-20 sticky top-0">
+            <div className="flex items-center justify-between h-16 md:h-20 px-4 md:px-6 border-b border-brand-primary/10 bg-white/50 backdrop-blur-md sticky top-0 z-10 transition-colors hover:bg-white/80">
                 <Link href="/es" className="text-xl font-serif font-bold text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-2">
                     <span className="text-2xl">🌿</span>
                     <span className="truncate">{role === 'admin' ? 'Panel Admin' : 'Mi Finca'}</span>
                 </Link>
+                <div className="md:hidden">
+                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 h-auto" onClick={() => logout()}>
+                        Salir
+                    </Button>
+                </div>
             </div>
-            <div className="flex-1 overflow-y-auto py-6">
-                <nav className="space-y-2 px-4">
+            <div className="md:flex-1 overflow-x-auto md:overflow-y-auto py-2 md:py-6 hide-scrollbar">
+                <nav className="flex md:flex-col gap-2 md:gap-0 md:space-y-2 px-4 whitespace-nowrap min-w-max md:min-w-0 pb-1 md:pb-0">
                     {navigation.map((item) => {
                         const isActive = activePath === item.href || (activePath.startsWith(item.href) && item.href !== '/es/admin');
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 border border-transparent ${isActive
+                                className={`group flex items-center px-3 md:px-4 py-2 md:py-3 text-sm font-medium rounded-xl transition-all duration-200 border border-transparent ${isActive
                                     ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/20 scale-[1.02]'
                                     : 'text-brand-text/70 hover:bg-brand-primary/5 hover:text-brand-primary hover:border-brand-primary/10'
                                     }`}
@@ -66,12 +71,12 @@ export function Sidebar({ role, activePath }: SidebarProps) {
                     })}
                 </nav>
             </div>
-            <div className="p-4 border-t border-brand-primary/10">
+            <div className="hidden md:block p-4 border-t border-brand-primary/10">
                 <Button variant="ghost" fullWidth className="justify-start text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => logout()}>
                     Cerrar Sesión
                 </Button>
             </div>
-            <div className="px-4 pb-4">
+            <div className="hidden md:block px-4 pb-4">
                 <Link href="/es" className="text-xs text-brand-text/50 hover:text-brand-primary transition-colors">
                     ← Volver a la tienda
                 </Link>
