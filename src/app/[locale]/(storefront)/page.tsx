@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { createClient } from '@/utils/supabase/server';
 import { AddToCartButton } from './productores/[slug]/AddToCartButton';
 import Image from 'next/image';
+import { HeroCarousel } from '@/components/ui/HeroCarousel';
 
 export default async function LandingPage() {
     const t = await getTranslations('Index');
@@ -70,21 +71,8 @@ export default async function LandingPage() {
         <div className="flex flex-col w-full">
             {/* Hero Section */}
             <section className="relative w-full py-32 md:py-48 overflow-hidden flex items-center justify-center min-h-[80vh]">
-                {/* Background Image */}
-                <div className="absolute inset-0 z-0 bg-gray-950">
-                    <Image
-                        src="/images/home_hero_bg.png"
-                        alt="Paisaje de campos rústicos en Baleares"
-                        fill
-                        sizes="100vw"
-                        quality={100}
-                        unoptimized
-                        className="object-cover object-center"
-                        priority
-                    />
-                    {/* Gradient Overlays for contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-900/40 to-transparent"></div>
-                </div>
+                {/* Background Carousel */}
+                <HeroCarousel />
 
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
                     <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-6 text-balance drop-shadow-md">
