@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/server';
 import { AddToCartButton } from './productores/[slug]/AddToCartButton';
 import Image from 'next/image';
 import { HeroCarousel } from '@/components/ui/HeroCarousel';
+import { getDummyCover, getDummyProductImage } from '@/utils/dummyImages';
 
 export default async function LandingPage() {
     const t = await getTranslations('Index');
@@ -131,9 +132,9 @@ export default async function LandingPage() {
                             <Link key={producer.id} href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center">
                                 <Card className="h-full hover:shadow-lg transition-all group">
                                     <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
-                                        {producer.cover_image_url ? (
+                                        {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
                                             <Image
-                                                src={producer.cover_image_url}
+                                                src={producer.cover_image_url || getDummyCover(producer.slug)}
                                                 alt={`Portada de ${producer.brand_name}`}
                                                 fill
                                                 className="object-cover"
@@ -185,9 +186,9 @@ export default async function LandingPage() {
                             return (
                                 <Card key={product.id} className="min-w-[80vw] sm:min-w-0 snap-center flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10 relative group">
                                     <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden rounded-t-xl">
-                                        {product.images?.[0] ? (
+                                        {(product.images?.[0] || getDummyProductImage(product.name, product.slug)) ? (
                                             <Image
-                                                src={product.images[0]}
+                                                src={product.images?.[0] || getDummyProductImage(product.name, product.slug)}
                                                 alt={product.name}
                                                 fill
                                                 className="object-cover"

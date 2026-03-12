@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from '../productores/[slug]/AddToCartButton';
 import { useLocale } from 'next-intl';
+import { getDummyProductImage } from '@/utils/dummyImages';
 
 const CATEGORIES = [
     { value: '', label: '🌿 Todos' },
@@ -224,9 +225,9 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                         return (
                             <Card key={product.id} className="flex flex-col h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 hover:border-brand-primary/30 bg-white">
                                 <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden">
-                                    {product.images?.[0] ? (
+                                    {(product.images?.[0] || getDummyProductImage(product.name, product.slug)) ? (
                                         <Image
-                                            src={product.images[0]}
+                                            src={product.images?.[0] || getDummyProductImage(product.name, product.slug)}
                                             alt={product.name}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-500"

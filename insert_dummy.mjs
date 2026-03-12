@@ -19,8 +19,8 @@ const dummyProducers = [
         municipality: 'Santa Eulària des Riu',
         description: 'Cultivamos verduras de temporada siguiendo métodos tradicionales y ecológicos en el corazón de Ibiza.',
         slug: 'finca-la-huerta-del-sol',
-        cover_image_url: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80',
-        profile_image_url: 'https://images.unsplash.com/photo-1628157588553-5eeea00af15c?w=400&q=80',
+        cover_image_url: '/dummy/huerta.png',
+        profile_image_url: '/dummy/huerta.png',
         status: 'active',
     },
     {
@@ -28,8 +28,8 @@ const dummyProducers = [
         municipality: 'Sant Antoni de Portmany',
         description: 'Elaboración artesanal de quesos de cabra y oveja con la leche de nuestros propios rebaños.',
         slug: 'quesos-can-bufi',
-        cover_image_url: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=800&q=80',
-        profile_image_url: 'https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?w=400&q=80',
+        cover_image_url: '/dummy/quesos.png',
+        profile_image_url: '/dummy/quesos.png',
         status: 'active',
     },
     {
@@ -37,8 +37,8 @@ const dummyProducers = [
         municipality: 'Sant Joan de Labritja',
         description: 'Carnes de pasto de máxima calidad. Animales criados en libertad respetando sus ciclos naturales.',
         slug: 'carnes-es-verger',
-        cover_image_url: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80',
-        profile_image_url: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&q=80',
+        cover_image_url: '/dummy/can_salchichon.png',
+        profile_image_url: '/dummy/can_salchichon.png',
         status: 'active',
     }
 ];
@@ -51,7 +51,7 @@ const dummyProducts = [
         unit: 'kg',
         stock: 50,
         description: 'Nuestros mejores tomates, recogidos en su punto óptimo de maduración. Sabor intenso y textura carnosa.',
-        images: ['https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=800&q=80']
+        images: ['/dummy/tomates.png']
     },
     {
         name: 'Lechuga Romana Fresca',
@@ -60,7 +60,7 @@ const dummyProducts = [
         unit: 'unidad',
         stock: 30,
         description: 'Lechugas recién cortadas, crujientes y llenas de sabor.',
-        images: ['https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800&q=80']
+        images: ['/dummy/lechuga.png']
     },
     {
         name: 'Queso Curado Artesano',
@@ -69,7 +69,7 @@ const dummyProducts = [
         unit: 'kg',
         stock: 15,
         description: 'Queso curado durante 6 meses en nuestras cavas. Sabor profundo y ligeramente picante.',
-        images: ['https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=800&q=80']
+        images: ['/dummy/queso_producto.png']
     },
     {
         name: 'Chuletas de Cordero',
@@ -78,7 +78,7 @@ const dummyProducts = [
         unit: 'kg',
         stock: 10,
         description: 'Jugosas chuletas de cordero lechal criado en libertad.',
-        images: ['https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80']
+        images: ['/dummy/chuletas.png']
     }
 ];
 

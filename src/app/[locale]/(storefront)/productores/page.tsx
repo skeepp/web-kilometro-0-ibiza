@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import { Button } from '@/components/ui/Button';
 
 import Image from 'next/image';
+import { getDummyCover } from '@/utils/dummyImages';
 
 export default async function ProductoresPage() {
     const supabase = await createClient();
@@ -35,8 +36,8 @@ export default async function ProductoresPage() {
                     <Link key={producer.id} href={`/es/productores/${producer.slug}`}>
                         <Card className="h-full overflow-hidden border border-brand-primary/10 hover:border-brand-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group cursor-pointer bg-white">
                             <div className="h-48 w-full bg-brand-earth/10 relative overflow-hidden flex items-center justify-center">
-                                {producer.cover_image_url ? (
-                                    <Image src={producer.cover_image_url} alt={producer.brand_name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
+                                    <Image src={producer.cover_image_url || getDummyCover(producer.slug)} alt={producer.brand_name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                 ) : (
                                     <span className="text-4xl group-hover:scale-110 transition-transform duration-300">🚜</span>
                                 )}
