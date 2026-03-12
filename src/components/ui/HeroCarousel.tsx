@@ -35,8 +35,7 @@ export function HeroCarousel() {
                         alt="Fondo de Baleares"
                         fill
                         sizes="100vw"
-                        quality={90}
-                        unoptimized
+                        quality={100}
                         className="object-cover object-center"
                         priority={index === 0}
                     />
