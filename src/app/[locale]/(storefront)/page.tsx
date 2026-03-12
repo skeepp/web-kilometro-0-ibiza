@@ -65,6 +65,7 @@ export default async function LandingPage() {
         { name: 'Lácteos', icon: '🧀' },
         { name: 'Huevos', icon: '🥚' },
         { name: 'Conservas', icon: '🍯' },
+        { name: 'Pescado', icon: '🐟' },
     ];
 
     return (
@@ -99,10 +100,10 @@ export default async function LandingPage() {
             <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-serif font-bold mb-12 text-center text-balance">Categorías destacadas</h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 lg:grid-cols-7 sm:gap-6 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
                         {categories.map((cat) => (
-                            <Link key={cat.name} href={`/es/productores?category=${cat.name.toLowerCase()}`}>
-                                <Card className="hover:border-brand-primary hover:bg-brand-background/50 transition-colors cursor-pointer text-center py-8">
+                            <Link key={cat.name} href={`/es/productores?category=${cat.name.toLowerCase()}`} className="min-w-[45vw] sm:min-w-0 snap-center shrink-0">
+                                <Card className="hover:border-brand-primary hover:bg-brand-background/50 transition-colors cursor-pointer text-center py-8 h-full">
                                     <div className="text-4xl mb-4">{cat.icon}</div>
                                     <h3 className="font-medium text-brand-text">{cat.name}</h3>
                                 </Card>
