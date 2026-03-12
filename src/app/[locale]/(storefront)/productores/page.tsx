@@ -53,7 +53,7 @@ export default async function ProductoresPage() {
                                 <div className="flex justify-between items-center text-sm font-medium pt-4 border-t border-brand-primary/10 mt-auto">
                                     <span className="text-brand-accent group-hover:underline">Ver tienda &rarr;</span>
                                     <span className="bg-brand-background text-brand-primary px-3 py-1 rounded-full text-xs font-semibold border border-brand-primary/10">
-                                        {producer.products?.[0]?.count || 0} productos
+                                        {(() => { const count = producer.products?.[0]?.count || 0; return `${count} ${count === 1 ? 'producto' : 'productos'}`; })()}
                                     </span>
                                 </div>
                             </CardContent>
