@@ -5,6 +5,7 @@ import { PRODUCER_PAYOUT_RATE } from '@/lib/constants';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ConnectStripeButton } from '@/components/profile/ConnectStripeButton';
 
 export default async function ProducerDashboard() {
     const { supabase, producer } = await requireProducer();
@@ -86,6 +87,7 @@ export default async function ProducerDashboard() {
                         <div className="ml-4">
                             <p className="text-sm text-yellow-800 font-bold">Configuración de pagos incompleta.</p>
                             <p className="text-sm text-yellow-700 mt-1">Debes conectar tu cuenta de Stripe para poder recibir pagos y activar tus ventas.</p>
+                            <ConnectStripeButton />
                         </div>
                     </div>
                 </div>
