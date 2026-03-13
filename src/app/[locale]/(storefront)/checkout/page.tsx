@@ -7,10 +7,12 @@ import { useCart } from '@/context/CartContext';
 import { CheckoutForm } from './CheckoutForm';
 import { useRouter } from 'next/navigation';
 import { SHIPPING_FLAT_EUR } from '@/lib/constants';
+import Link from 'next/link';
 
 export default function CheckoutPage() {
     const { items, cartTotal } = useCart();
     const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [paymentError, setPaymentError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -33,9 +35,13 @@ export default function CheckoutPage() {
                     setClientSecret(data.clientSecret);
                 } else if (data.error) {
                     console.error('Error:', data.error);
+                    setPaymentError(data.error);
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                setPaymentError('Error de conexión. Inténtalo de nuevo más tarde.');
+            });
     }, [items, router]);
 
     const appearance = {
@@ -69,7 +75,18 @@ export default function CheckoutPage() {
                         <span className="text-xl font-bold text-brand-primary">{totalAmount.toFixed(2)}€</span>
                     </div>
 
-                    {clientSecret ? (
+                    {paymentError ? (
+                        <div className="flex flex-col items-center justify-center p-10 gap-4">
+                            <div className="text-5xl">⚠️</div>
+                            <p className="text-red-700 font-semibold text-center text-lg">{paymentError}</p>
+                            <p className="text-brand-text/60 text-sm text-center max-w-md">
+                                Es posible que este productor aún no haya configurado su cuenta de pagos. Puedes volver e intentar con otro producto.
+                            </p>
+                            <Link href="/es/mercado" className="mt-4 px-6 py-3 bg-brand-accent text-white rounded-full font-semibold hover:bg-brand-accent/90 transition-colors">
+                                Volver al mercado
+                            </Link>
+                        </div>
+                    ) : clientSecret ? (
                         <Elements options={{ clientSecret, appearance }} stripe={getStripe()}>
                             <CheckoutForm amount={totalAmount} />
                         </Elements>
@@ -87,3 +104,4 @@ export default function CheckoutPage() {
         </div>
     );
 }
+

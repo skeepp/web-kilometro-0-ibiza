@@ -43,23 +43,33 @@ export async function POST(request: Request) {
         // Fetch producer's Stripe configuration
         const { data: producer } = await supabase.from('producers').select('stripe_account_id').eq('id', producerId).single();
 
-        if (!producer || !producer.stripe_account_id) {
-            return NextResponse.json({ error: 'El productor no puede recibir pagos actualmente.' }, { status: 400 });
-        }
-
-        const paymentIntent = await stripe.paymentIntents.create({
+        // Build PaymentIntent params — use Connect split if producer has Stripe account,
+        // otherwise do a direct charge (platform collects everything for now)
+        const paymentIntentParams: {
+            amount: number;
+            currency: string;
+            metadata: Record<string, string>;
+            application_fee_amount?: number;
+            transfer_data?: { destination: string };
+        } = {
             amount: Math.round(totalAmount * 100), // in cents
             currency: 'eur',
-            application_fee_amount: applicationFeeAmount,
-            transfer_data: {
-                destination: producer.stripe_account_id,
-            },
             metadata: {
                 producerId,
                 userId: user.id,
                 cart: JSON.stringify(items.map((i: { id: string; quantity: number }) => ({ i: i.id, q: i.quantity }))).slice(0, 500)
             }
-        });
+        };
+
+        // If producer has Stripe Connect, use split payments
+        if (producer?.stripe_account_id) {
+            paymentIntentParams.application_fee_amount = applicationFeeAmount;
+            paymentIntentParams.transfer_data = {
+                destination: producer.stripe_account_id,
+            };
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
 
         return NextResponse.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: unknown) {
