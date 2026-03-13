@@ -7,6 +7,7 @@ import { AddToCartButton } from './productores/[slug]/AddToCartButton';
 import Image from 'next/image';
 import { HeroCarousel } from '@/components/ui/HeroCarousel';
 import { getDummyCover, getDummyProductImage } from '@/utils/dummyImages';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export default async function LandingPage() {
     const t = await getTranslations('Index');
@@ -98,38 +99,48 @@ export default async function LandingPage() {
 
 
             {/* Categories */}
-            <section className="py-20 bg-white">
+            <section className="py-24 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-serif font-bold mb-12 text-center text-balance">Categorías destacadas</h2>
-                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 lg:grid-cols-7 sm:gap-6 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
-                        {categories.map((cat) => (
-                            <Link key={cat.name} href={`/es/productores?category=${cat.name.toLowerCase()}`} className="min-w-[45vw] sm:min-w-0 snap-center shrink-0">
-                                <Card className="hover:border-brand-primary hover:bg-brand-background/50 transition-colors cursor-pointer text-center py-8 h-full">
-                                    <div className="text-4xl mb-4">{cat.icon}</div>
-                                    <h3 className="font-medium text-brand-text">{cat.name}</h3>
-                                </Card>
-                            </Link>
+                    <ScrollReveal>
+                        <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-center text-brand-primary">Explora por categoría</h2>
+                        <p className="text-brand-text/60 text-center mb-14 max-w-lg mx-auto">Encuentra exactamente lo que buscas, directo del campo a tu mesa.</p>
+                    </ScrollReveal>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-6">
+                        {categories.map((cat, index) => (
+                            <ScrollReveal key={cat.name} delay={index * 80}>
+                                <Link href={`/es/mercado?category=${cat.name.toLowerCase()}`}>
+                                    <div className="group flex flex-col items-center gap-3 p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-brand-background/60 to-white border border-brand-primary/8 hover:border-brand-accent/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl sm:text-4xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+                                            {cat.icon}
+                                        </div>
+                                        <span className="text-sm font-semibold text-brand-text/80 group-hover:text-brand-primary transition-colors">{cat.name}</span>
+                                    </div>
+                                </Link>
+                            </ScrollReveal>
                         ))}
                     </div>
                 </div>
             </section>
 
             {/* Featured Producers */}
-            <section className="py-20 bg-brand-background border-t border-brand-primary/10">
+            <section className="py-24 bg-brand-background border-t border-brand-primary/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-end mb-12">
-                        <div>
-                            <h2 className="text-3xl font-serif font-bold text-brand-primary text-balance">Productores Destacados</h2>
-                            <p className="text-brand-text/70 mt-2">Apoya el comercio local en Mallorca.</p>
+                    <ScrollReveal>
+                        <div className="flex justify-between items-end mb-12">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Productores Destacados</h2>
+                                <p className="text-brand-text/70 mt-2">Apoya el comercio local en Mallorca e Ibiza.</p>
+                            </div>
+                            <Link href="/es/productores">
+                                <Button variant="ghost">Ver todos &rarr;</Button>
+                            </Link>
                         </div>
-                        <Link href="/es/productores">
-                            <Button variant="ghost">Ver todos &rarr;</Button>
-                        </Link>
-                    </div>
+                    </ScrollReveal>
 
                     <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-8 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
-                        {producers.length > 0 ? producers.map((producer) => (
-                            <Link key={producer.id} href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center">
+                        {producers.length > 0 ? producers.map((producer, index) => (
+                            <ScrollReveal key={producer.id} delay={index * 120}>
+                            <Link href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center block h-full">
                                 <Card className="h-full hover:shadow-lg transition-all group">
                                     <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
                                         {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
@@ -153,6 +164,7 @@ export default async function LandingPage() {
                                     </CardContent>
                                 </Card>
                             </Link>
+                            </ScrollReveal>
                         )) : (
                             <div className="col-span-3 py-12 text-center border-2 border-dashed border-brand-primary/20 rounded-2xl">
                                 <p className="text-brand-text/60">Aún no hay productores disponibles en la plataforma.</p>
@@ -163,17 +175,19 @@ export default async function LandingPage() {
             </section>
 
             {/* Featured Products */}
-            <section className="py-20 bg-white border-t border-brand-primary/10">
+            <section className="py-24 bg-white border-t border-brand-primary/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-end mb-12">
-                        <div>
-                            <h2 className="text-3xl font-serif font-bold text-brand-primary text-balance">Recién cosechado</h2>
-                            <p className="text-brand-text/70 mt-2">Los últimos productos subidos por nuestros agricultores locales.</p>
+                    <ScrollReveal>
+                        <div className="flex justify-between items-end mb-12">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Recién cosechado</h2>
+                                <p className="text-brand-text/70 mt-2">Los últimos productos subidos por nuestros agricultores locales.</p>
+                            </div>
+                            <Link href="/es/mercado">
+                                <Button variant="ghost">Ir al Mercado &rarr;</Button>
+                            </Link>
                         </div>
-                        <Link href="/es/mercado">
-                            <Button variant="ghost">Ir al Mercado &rarr;</Button>
-                        </Link>
-                    </div>
+                    </ScrollReveal>
 
                     <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
                         {featuredProducts.length > 0 ? featuredProducts.map((product) => {
@@ -250,25 +264,33 @@ export default async function LandingPage() {
             </section>
 
             {/* How it Works */}
-            <section className="py-20 bg-brand-background">
+            <section className="py-24 bg-brand-background">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-serif font-bold text-center mb-16 text-balance">¿Cómo funciona?</h2>
+                    <ScrollReveal>
+                        <h2 className="text-3xl md:text-4xl font-serif font-bold text-center mb-16 text-balance">¿Cómo funciona?</h2>
+                    </ScrollReveal>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center border-t border-brand-primary/10 pt-16 mt-8 relative">
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">📍</div>
-                            <h3 className="font-bold text-lg mb-2 text-brand-primary">1. Elige tu productor</h3>
-                            <p className="text-brand-text/70">Encuentra fincas locales en tu zona con productos de proximidad reales y trazables.</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🛒</div>
-                            <h3 className="font-bold text-lg mb-2 text-brand-primary">2. Haz tu pedido</h3>
-                            <p className="text-brand-text/70">Compra directamente sin intermediarios. Recibe producto fresco garantizado.</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🚚</div>
-                            <h3 className="font-bold text-lg mb-2 text-brand-primary">3. Recibe en casa</h3>
-                            <p className="text-brand-text/70">El productor prepara y entrega tu pedido para asegurar la mayor frescura.</p>
-                        </div>
+                        <ScrollReveal delay={0}>
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">📍</div>
+                                <h3 className="font-bold text-lg mb-2 text-brand-primary">1. Elige tu productor</h3>
+                                <p className="text-brand-text/70">Encuentra fincas locales en tu zona con productos de proximidad reales y trazables.</p>
+                            </div>
+                        </ScrollReveal>
+                        <ScrollReveal delay={150}>
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🛒</div>
+                                <h3 className="font-bold text-lg mb-2 text-brand-primary">2. Haz tu pedido</h3>
+                                <p className="text-brand-text/70">Compra directamente sin intermediarios. Recibe producto fresco garantizado.</p>
+                            </div>
+                        </ScrollReveal>
+                        <ScrollReveal delay={300}>
+                            <div className="flex flex-col items-center">
+                                <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🚚</div>
+                                <h3 className="font-bold text-lg mb-2 text-brand-primary">3. Recibe en casa</h3>
+                                <p className="text-brand-text/70">El productor prepara y entrega tu pedido para asegurar la mayor frescura.</p>
+                            </div>
+                        </ScrollReveal>
                     </div>
                 </div>
             </section>
