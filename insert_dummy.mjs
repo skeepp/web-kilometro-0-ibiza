@@ -21,6 +21,8 @@ const dummyProducers = [
         slug: 'finca-la-huerta-del-sol',
         cover_image_url: '/dummy/huerta.png',
         profile_image_url: '/dummy/huerta.png',
+        lat: 38.9848,
+        lng: 1.5395,
         status: 'active',
     },
     {
@@ -30,6 +32,8 @@ const dummyProducers = [
         slug: 'quesos-can-bufi',
         cover_image_url: '/dummy/quesos.png',
         profile_image_url: '/dummy/quesos.png',
+        lat: 38.9806,
+        lng: 1.3007,
         status: 'active',
     },
     {
@@ -39,6 +43,8 @@ const dummyProducers = [
         slug: 'carnes-es-verger',
         cover_image_url: '/dummy/can_salchichon.png',
         profile_image_url: '/dummy/can_salchichon.png',
+        lat: 39.0800,
+        lng: 1.5126,
         status: 'active',
     }
 ];
@@ -119,7 +125,7 @@ async function createDummyData() {
         if (existing) {
             console.log(`Producer ${producerData.slug} already exists, updating images...`);
             const { data: updated, error: updateErr } = await supabase.from('producers')
-                .update({ cover_image_url: producerData.cover_image_url, profile_image_url: producerData.profile_image_url, status: 'active' })
+                .update({ cover_image_url: producerData.cover_image_url, profile_image_url: producerData.profile_image_url, lat: producerData.lat, lng: producerData.lng, status: 'active' })
                 .eq('id', existing.id)
                 .select('id').single();
 

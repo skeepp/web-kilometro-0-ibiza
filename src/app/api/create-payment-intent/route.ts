@@ -5,13 +5,17 @@ import { SHIPPING_FLAT_EUR, PLATFORM_FEE_RATE } from '@/lib/constants';
 
 export async function POST(request: Request) {
     try {
-        const { items, producerId } = await request.json();
+        const body = await request.json();
+        const { items } = body;
 
-        if (!items || items.length === 0 || !producerId) {
+        // Support both single producerId (legacy) and array producerIds
+        const producerIds: string[] = body.producerIds || (body.producerId ? [body.producerId] : []);
+
+        if (!items || items.length === 0 || producerIds.length === 0) {
             return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
         }
 
-        // Ensure user is authenticated, though we could allow guest checkout. Brief implies consumer registration.
+        // Ensure user is authenticated
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
@@ -19,8 +23,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Debes iniciar sesión para comprar' }, { status: 401 });
         }
 
-        // In a real app we'd verify item prices against DB. For MVP we'll trust the client total or re-calculate.
-        // Let's re-calculate from DB to be safe
+        // Re-calculate totals from DB to be safe
         const productIds = items.map((i: { id: string }) => i.id);
         const { data: dbProducts } = await supabase.from('products').select('*').in('id', productIds);
 
@@ -37,14 +40,7 @@ export async function POST(request: Request) {
         const shipping = SHIPPING_FLAT_EUR;
         const totalAmount = subtotal + shipping;
 
-        // Split logic: Platform takes commission
-        const applicationFeeAmount = Math.round(totalAmount * PLATFORM_FEE_RATE * 100);
-
-        // Fetch producer's Stripe configuration
-        const { data: producer } = await supabase.from('producers').select('stripe_account_id').eq('id', producerId).single();
-
-        // Build PaymentIntent params — use Connect split if producer has Stripe account,
-        // otherwise do a direct charge (platform collects everything for now)
+        // Build PaymentIntent params
         const paymentIntentParams: {
             amount: number;
             currency: string;
@@ -55,18 +51,24 @@ export async function POST(request: Request) {
             amount: Math.round(totalAmount * 100), // in cents
             currency: 'eur',
             metadata: {
-                producerId,
+                producerIds: producerIds.join(','),
                 userId: user.id,
                 cart: JSON.stringify(items.map((i: { id: string; quantity: number }) => ({ i: i.id, q: i.quantity }))).slice(0, 500)
             }
         };
 
-        // If producer has Stripe Connect, use split payments
-        if (producer?.stripe_account_id) {
-            paymentIntentParams.application_fee_amount = applicationFeeAmount;
-            paymentIntentParams.transfer_data = {
-                destination: producer.stripe_account_id,
-            };
+        // If there is only one producer and they have Stripe Connect, use split payments
+        // For multi-producer orders, platform collects and distributes manually (or via separate transfers)
+        if (producerIds.length === 1) {
+            const { data: producer } = await supabase.from('producers').select('stripe_account_id').eq('id', producerIds[0]).single();
+
+            if (producer?.stripe_account_id) {
+                const applicationFeeAmount = Math.round(totalAmount * PLATFORM_FEE_RATE * 100);
+                paymentIntentParams.application_fee_amount = applicationFeeAmount;
+                paymentIntentParams.transfer_data = {
+                    destination: producer.stripe_account_id,
+                };
+            }
         }
 
         const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);

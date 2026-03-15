@@ -18,7 +18,10 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-lg mb-4 text-brand-background">Plataforma</h4>
                         <ul className="space-y-2">
+                            <li><Link href="/es/mercado" className="text-white/80 hover:text-white transition-colors">Mercado</Link></li>
                             <li><Link href="/es/productores" className="text-white/80 hover:text-white transition-colors">Productores</Link></li>
+                            <li><Link href="/es/radar" className="text-white/80 hover:text-white transition-colors">Radar de Agricultores</Link></li>
+                            <li><Link href="/es/noticias" className="text-white/80 hover:text-white transition-colors">Noticias</Link></li>
                             <li><Link href="/es/nosotros" className="text-white/80 hover:text-white transition-colors">Cómo funciona</Link></li>
                             <li><Link href="/es/productor/dashboard" className="text-white/80 hover:text-white transition-colors">Soy productor</Link></li>
                         </ul>

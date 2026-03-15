@@ -1,12 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
+import { useCart } from '@/context/CartContext';
 
 export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl: string | null; role: string | null }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const pathname = usePathname();
+    const { items } = useCart();
+    const cartCount = items.reduce((acc, i) => acc + i.quantity, 0);
 
     let profileUrl = '/es/cuenta';
     if (role === 'producer') {
@@ -15,71 +21,135 @@ export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl
         profileUrl = '/es/admin';
     }
 
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const navLinks = [
+        { href: '/es/mercado', label: 'Mercado', icon: '🛒' },
+        { href: '/es/productores', label: 'Productores', icon: '👨‍🌾' },
+        { href: '/es/radar', label: 'Radar', icon: '📡' },
+        { href: '/es/noticias', label: 'Noticias', icon: '📰' },
+        { href: '/es/nosotros', label: 'Cómo funciona', icon: '💡' },
+    ];
+
+    const isActive = (href: string) => pathname?.startsWith(href);
+
     return (
-        <nav className="w-full bg-brand-background border-b border-brand-primary/10 sticky top-0 z-50">
+        <nav className={`w-full sticky top-0 z-50 transition-all duration-500 ${
+            scrolled
+                ? 'bg-white/80 backdrop-blur-xl shadow-[0_1px_20px_rgba(45,106,79,0.08)] border-b border-brand-primary/5'
+                : 'bg-brand-background/95 backdrop-blur-sm border-b border-brand-primary/10'
+        }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
+                <div className="flex justify-between items-center h-[72px]">
+                    {/* Logo */}
                     <div className="flex-shrink-0 flex items-center">
-                        <Link href="/es" className="text-2xl font-serif font-bold text-brand-primary">
-                            De la Finca
+                        <Link href="/es" className="group flex items-center gap-2.5">
+                            <div className="w-9 h-9 bg-gradient-to-br from-brand-primary to-brand-accent rounded-xl flex items-center justify-center text-white font-serif font-bold text-lg shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
+                                F
+                            </div>
+                            <span className="text-xl font-serif font-bold text-brand-primary group-hover:text-brand-accent transition-colors duration-300">
+                                De la Finca
+                            </span>
                         </Link>
                     </div>
 
-                    <div className="hidden md:flex items-center space-x-8">
-                        <Link href="/es/productores" className="text-brand-text hover:text-brand-primary font-medium transition-colors">
-                            Productores
-                        </Link>
-                        <Link href="/es/mercado" className="text-brand-text hover:text-brand-primary font-medium transition-colors">
-                            Mercado
-                        </Link>
-                        <Link href="/es/nosotros" className="text-brand-text hover:text-brand-primary font-medium transition-colors">
-                            Cómo funciona
-                        </Link>
+                    {/* Desktop Nav Links */}
+                    <div className="hidden md:flex items-center gap-1">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 group flex items-center gap-1.5 ${
+                                    isActive(link.href)
+                                        ? 'text-brand-primary bg-brand-primary/8'
+                                        : 'text-brand-text/70 hover:text-brand-primary hover:bg-brand-primary/5'
+                                }`}
+                            >
+                                <span className="text-base group-hover:scale-110 transition-transform duration-300">{link.icon}</span>
+                                <span>{link.label}</span>
+                                {isActive(link.href) && (
+                                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[3px] bg-gradient-to-r from-brand-primary to-brand-accent rounded-full" />
+                                )}
+                            </Link>
+                        ))}
                     </div>
 
-                    <div className="flex items-center space-x-4">
-                        <Link href="/es/carrito" className="text-brand-text hover:text-brand-primary transition-colors p-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    {/* Right side actions */}
+                    <div className="flex items-center gap-2">
+                        {/* Cart Button */}
+                        <Link
+                            href="/es/carrito"
+                            className={`relative p-2.5 rounded-xl transition-all duration-300 group ${
+                                isActive('/es/carrito')
+                                    ? 'bg-brand-primary/10 text-brand-primary'
+                                    : 'text-brand-text/60 hover:text-brand-primary hover:bg-brand-primary/5'
+                            }`}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-[22px] h-[22px] group-hover:scale-110 transition-transform duration-300">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                             </svg>
+                            {cartCount > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 flex items-center justify-center text-[10px] font-bold bg-gradient-to-r from-brand-accent to-brand-primary text-white rounded-full px-1.5 shadow-sm animate-in zoom-in-50 duration-200">
+                                    {cartCount}
+                                </span>
+                            )}
                         </Link>
 
+                        {/* User Avatar / Login */}
                         {user ? (
-                            <Link href={profileUrl} className="hidden md:flex items-center justify-center overflow-hidden rounded-full w-9 h-9 border border-brand-primary/20 bg-brand-background shadow-sm hover:ring-2 hover:ring-brand-primary/50 transition-all">
+                            <Link
+                                href={profileUrl}
+                                className="hidden md:flex items-center justify-center overflow-hidden rounded-xl w-10 h-10 border-2 border-brand-primary/15 bg-white shadow-sm hover:border-brand-accent hover:shadow-md hover:scale-105 transition-all duration-300"
+                            >
                                 {avatarUrl ? (
                                     <Image
                                         src={avatarUrl}
                                         alt="Perfil del usuario"
-                                        width={36}
-                                        height={36}
+                                        width={40}
+                                        height={40}
                                         className="object-cover w-full h-full"
                                     />
                                 ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-brand-text/50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-brand-primary/50">
                                         <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
                                     </svg>
                                 )}
                             </Link>
                         ) : (
-                            <Link href="/es/login" className="hidden md:flex px-4 py-2 text-sm font-medium border border-brand-primary/20 bg-transparent text-brand-primary hover:bg-brand-primary hover:text-white rounded-md transition-colors">
-                                Login
+                            <Link
+                                href="/es/login"
+                                className="hidden md:flex items-center gap-2 px-5 py-2.5 text-sm font-bold border-2 border-brand-primary/20 bg-white text-brand-primary hover:bg-brand-primary hover:text-white hover:border-brand-primary rounded-xl transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                    <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
+                                    <path fillRule="evenodd" d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z" clipRule="evenodd" />
+                                </svg>
+                                Entrar
                             </Link>
                         )}
 
-                        {/* Botón de Menú Móvil */}
-                        <div className="flex items-center md:hidden ml-2">
+                        {/* Mobile Menu Button */}
+                        <div className="flex items-center md:hidden ml-1">
                             <button
                                 type="button"
-                                className="inline-flex items-center justify-center p-2 rounded-md text-brand-text hover:text-brand-primary focus:outline-none"
+                                className={`p-2.5 rounded-xl transition-all duration-300 ${
+                                    isMobileMenuOpen
+                                        ? 'bg-brand-primary/10 text-brand-primary'
+                                        : 'text-brand-text/60 hover:text-brand-primary hover:bg-brand-primary/5'
+                                }`}
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             >
                                 <span className="sr-only">Abrir menú</span>
                                 {!isMobileMenuOpen ? (
-                                    <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                                    <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                     </svg>
                                 ) : (
-                                    <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                                    <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 )}
@@ -89,39 +159,45 @@ export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl
                 </div>
             </div>
 
-            {/* Menú Móvil Desplegable */}
-            {isMobileMenuOpen && (
-                <div className="md:hidden border-t border-brand-primary/10 bg-brand-background shadow-lg absolute w-full left-0">
-                    <div className="px-4 pt-2 pb-4 space-y-2">
-                        <Link
-                            href="/es/productores"
-                            className="block px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-primary/5"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            Productores
-                        </Link>
+            {/* Mobile Menu */}
+            <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+                isMobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+                <div className="bg-white/95 backdrop-blur-xl border-t border-brand-primary/5 shadow-lg">
+                    <div className="px-4 pt-3 pb-4 space-y-1">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-semibold transition-all duration-200 ${
+                                    isActive(link.href)
+                                        ? 'text-brand-primary bg-brand-primary/8'
+                                        : 'text-brand-text/70 hover:text-brand-primary hover:bg-brand-primary/5'
+                                }`}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                <span className="text-xl">{link.icon}</span>
+                                <span>{link.label}</span>
+                                {isActive(link.href) && (
+                                    <span className="ml-auto w-2 h-2 rounded-full bg-brand-accent" />
+                                )}
+                            </Link>
+                        ))}
 
-                        <Link
-                            href="/es/nosotros"
-                            className="block px-3 py-2 rounded-md text-base font-medium text-brand-text hover:text-brand-primary hover:bg-brand-primary/5"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            Cómo funciona
-                        </Link>
-
-                        <div className="border-t border-brand-primary/10 pt-4 mt-2">
+                        <div className="border-t border-brand-primary/10 pt-3 mt-2">
                             {user ? (
                                 <Link
                                     href={profileUrl}
-                                    className="block px-3 py-2 rounded-md text-base font-medium text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 text-center border border-brand-primary/20"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-brand-primary bg-gradient-to-r from-brand-primary/5 to-brand-accent/5 border border-brand-primary/10 hover:border-brand-accent/30 transition-all"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
+                                    <span className="text-xl">👤</span>
                                     Mi Cuenta
                                 </Link>
                             ) : (
                                 <Link
                                     href="/es/login"
-                                    className="block px-3 py-2 rounded-md text-base font-medium text-white bg-brand-primary hover:bg-brand-primary/90 text-center"
+                                    className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold text-white bg-gradient-to-r from-brand-primary to-brand-accent hover:shadow-lg transition-all"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     Iniciar Sesión
@@ -130,8 +206,7 @@ export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </nav>
     );
 }
-

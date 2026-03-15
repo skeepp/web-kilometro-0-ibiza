@@ -1,17 +1,23 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useCart } from '@/context/CartContext';
 
 export default function GraciasPage() {
     const { clearCart } = useCart();
+    const params = useParams();
+    const locale = params?.locale as string || 'es';
+    const hasCleared = useRef(false);
 
-    // Clear the cart after successful payment
+    // Clear the cart after successful payment (only once)
     useEffect(() => {
-        clearCart();
+        if (!hasCleared.current) {
+            hasCleared.current = true;
+            clearCart();
+        }
     }, [clearCart]);
 
     return (
@@ -39,11 +45,17 @@ export default function GraciasPage() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                            <Link href="/es/cuenta">
-                                <Button variant="primary">Ver mis pedidos</Button>
+                            <Link
+                                href={`/${locale}/cuenta`}
+                                className="inline-flex items-center justify-center rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-background bg-brand-primary text-brand-background hover:bg-brand-accent shadow-soft focus:ring-brand-accent h-11 px-6 text-base"
+                            >
+                                Ver mis pedidos
                             </Link>
-                            <Link href="/es/productores">
-                                <Button variant="outline">Seguir comprando</Button>
+                            <Link
+                                href={`/${locale}/productores`}
+                                className="inline-flex items-center justify-center rounded-xl font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-background border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-brand-background focus:ring-brand-primary h-11 px-6 text-base"
+                            >
+                                Seguir comprando
                             </Link>
                         </div>
                     </CardContent>

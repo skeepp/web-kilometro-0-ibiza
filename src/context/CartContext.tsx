@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 export interface CartItem {
     id: string; // product id
@@ -47,33 +47,29 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
     }, [items, isInitialized]);
 
-    const addItem = (item: CartItem) => {
+    const addItem = useCallback((item: CartItem) => {
         setItems(current => {
-            // Rule: In MVP, a cart can only have products from one producer at a time.
-            if (current.length > 0 && current[0].producerId !== item.producerId) {
-                // We could alert the user here. For now, we clear the cart to switch producer.
-                alert(`Tu carrito contiene productos de ${current[0].producerName}. En esta versión, solo puedes comprar a un productor a la vez. El carrito se vaciará.`);
-                return [item];
-            }
-
             const existing = current.find(i => i.id === item.id);
             if (existing) {
                 return current.map(i => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i);
             }
             return [...current, item];
         });
-    };
+    }, []);
 
-    const removeItem = (id: string) => {
+    const removeItem = useCallback((id: string) => {
         setItems(current => current.filter(i => i.id !== id));
-    };
+    }, []);
 
-    const updateQuantity = (id: string, quantity: number) => {
-        if (quantity <= 0) return removeItem(id);
+    const updateQuantity = useCallback((id: string, quantity: number) => {
+        if (quantity <= 0) {
+            setItems(current => current.filter(i => i.id !== id));
+            return;
+        }
         setItems(current => current.map(i => i.id === id ? { ...i, quantity } : i));
-    };
+    }, []);
 
-    const clearCart = () => setItems([]);
+    const clearCart = useCallback(() => setItems([]), []);
 
     const cartTotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
 

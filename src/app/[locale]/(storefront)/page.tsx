@@ -85,7 +85,7 @@ export default async function LandingPage() {
                         {t('subtitle')}
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-center mb-12">
-                        <Link href="/es/productores">
+                        <Link href="/es/radar">
                             <Button size="lg" className="bg-brand-accent text-white hover:bg-white hover:text-brand-accent shadow-xl hover:-translate-y-1 transition-all text-lg font-bold px-8 py-6 rounded-full border-0">
                                 {t('cta')}
                             </Button>

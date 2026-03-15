@@ -21,13 +21,14 @@ export default function CheckoutPage() {
             return;
         }
 
-        const producerId = items[0].producerId;
+        // Collect all unique producer IDs
+        const producerIds = Array.from(new Set(items.map(i => i.producerId)));
 
         // Fetch intent
         fetch('/api/create-payment-intent', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items, producerId })
+            body: JSON.stringify({ items, producerIds })
         })
             .then(res => res.json())
             .then(data => {

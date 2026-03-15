@@ -1,0 +1,2 @@
+﻿src/components/radar/RadarModal.tsx(103,25): error TS2322: Type '{ isModalMode: boolean; BALEARES_CENTER: [number, number]; DEFAULT_ZOOM: number; radiusKm: number; }' is not assignable to type 'IntrinsicAttributes & MapInnerProps'.
+  Property 'isModalMode' does not exist on type 'IntrinsicAttributes & MapInnerProps'.
