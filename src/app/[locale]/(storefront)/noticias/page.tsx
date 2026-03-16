@@ -1,10 +1,7 @@
-import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export default async function NoticiasPage() {
-    const t = await getTranslations('Index');
-
     // Placeholder news articles — in the future these would come from a CMS or database
     const newsArticles = [
         {

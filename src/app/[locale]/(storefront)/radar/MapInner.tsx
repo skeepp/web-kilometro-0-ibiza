@@ -18,7 +18,6 @@ function MapUpdater({ center, zoom }: { center: [number, number]; zoom?: number 
 
 /* ── Props ── */
 interface MapInnerProps {
-    producers?: RadarProducer[];
     mappableProducers?: RadarProducer[];
     selectedProducer?: RadarProducer | null;
     setSelectedProducer?: (p: RadarProducer) => void;
@@ -36,7 +35,6 @@ interface MapInnerProps {
 }
 
 export default function MapInner({
-    producers,
     mappableProducers,
     selectedProducer,
     setSelectedProducer,

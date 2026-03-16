@@ -280,7 +280,6 @@ export default function RadarMapClient({ producers }: Props) {
                 <div className={`relative ${isMobile ? 'h-[45vh]' : 'flex-1'}`}>
                     {mapReady && customIcon && selectedIcon && userIcon ? (
                         <DynamicMapInner
-                            producers={producers}
                             mappableProducers={filteredProducers}
                             selectedProducer={selectedProducer}
                             setSelectedProducer={setSelectedProducer}

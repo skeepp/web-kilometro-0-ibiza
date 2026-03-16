@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useLocale } from 'next-intl';
 
 // Dynamically load the map so it doesn't break SSR
 const DynamicMapInner = dynamic(
@@ -26,7 +25,6 @@ export function RadarModal({ isOpen, onClose, onApply, initialDistance = 50, ini
     const [isSearching, setIsSearching] = useState(false);
     const [center, setCenter] = useState(defaultCenter);
     const [radiusKm, setRadiusKm] = useState(initialDistance);
-    const [searchResults, setSearchResults] = useState<{display_name: string, lat: number, lon: number}[]>([]);
 
     // If modal is closed, don't render anything
     if (!isOpen) return null;
@@ -45,7 +43,6 @@ export function RadarModal({ isOpen, onClose, onApply, initialDistance = 50, ini
                 // Auto-select the first result and move map
                 const first = data[0];
                 setCenter({ lat: parseFloat(first.lat), lng: parseFloat(first.lon) });
-                setSearchResults([]); // close dropdown if we had one
             } else {
                 alert('No se encontró la ubicación. Prueba con un municipio de Baleares.');
             }
