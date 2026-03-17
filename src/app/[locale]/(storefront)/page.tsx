@@ -60,15 +60,6 @@ export default async function LandingPage() {
         console.error('Error fetching featured products:', error);
     }
 
-    const categories = [
-        { name: 'Fruta', icon: '🍎' },
-        { name: 'Verdura', icon: '🥬' },
-        { name: 'Carne', icon: '🥩' },
-        { name: 'Lácteos', icon: '🧀' },
-        { name: 'Huevos', icon: '🥚' },
-        { name: 'Conservas', icon: '🍯' },
-        { name: 'Pescado', icon: '🐟' },
-    ];
 
     return (
         <div className="flex flex-col w-full">
@@ -98,90 +89,14 @@ export default async function LandingPage() {
             </section>
 
 
-            {/* Categories */}
-            <section className="py-24 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <ScrollReveal>
-                        <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-center text-brand-primary">Explora por categoría</h2>
-                        <p className="text-brand-text/60 text-center mb-14 max-w-lg mx-auto">Encuentra exactamente lo que buscas, directo del campo a tu mesa.</p>
-                    </ScrollReveal>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-6">
-                        {categories.map((cat, index) => (
-                            <ScrollReveal key={cat.name} delay={index * 80}>
-                                <Link href={`/es/mercado?category=${cat.name.toLowerCase()}`}>
-                                    <div className="group flex flex-col items-center gap-3 p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-brand-background/60 to-white border border-brand-primary/8 hover:border-brand-accent/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl sm:text-4xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
-                                            {cat.icon}
-                                        </div>
-                                        <span className="text-sm font-semibold text-brand-text/80 group-hover:text-brand-primary transition-colors">{cat.name}</span>
-                                    </div>
-                                </Link>
-                            </ScrollReveal>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Featured Producers */}
-            <section className="py-24 bg-brand-background border-t border-brand-primary/10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <ScrollReveal>
-                        <div className="flex justify-between items-end mb-12">
-                            <div>
-                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Productores Destacados</h2>
-                                <p className="text-brand-text/70 mt-2">Apoya el comercio local en Mallorca e Ibiza.</p>
-                            </div>
-                            <Link href="/es/productores">
-                                <Button variant="ghost">Ver todos &rarr;</Button>
-                            </Link>
-                        </div>
-                    </ScrollReveal>
-
-                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-8 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
-                        {producers.length > 0 ? producers.map((producer, index) => (
-                            <ScrollReveal key={producer.id} delay={index * 120}>
-                            <Link href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center block h-full">
-                                <Card className="h-full hover:shadow-lg transition-all group">
-                                    <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
-                                        {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
-                                            <Image
-                                                src={producer.cover_image_url || getDummyCover(producer.slug)}
-                                                alt={`Portada de ${producer.brand_name}`}
-                                                fill
-                                                className="object-cover"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
-                                            />
-                                        ) : (
-                                            <div className="absolute inset-0 flex items-center justify-center text-4xl">🌾</div>
-                                        )}
-                                    </div>
-                                    <CardContent className="p-6">
-                                        <h3 className="font-bold text-xl text-brand-primary mb-2 group-hover:underline">{producer.brand_name}</h3>
-                                        <p className="text-sm text-brand-text/60 mb-4 font-medium flex items-center">
-                                            <span className="mr-1">📍</span> {producer.municipality}
-                                        </p>
-                                        <p className="text-brand-text/80 line-clamp-2 text-sm">{producer.description || 'Productor de alimentación local.'}</p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                            </ScrollReveal>
-                        )) : (
-                            <div className="col-span-3 py-12 text-center border-2 border-dashed border-brand-primary/20 rounded-2xl">
-                                <p className="text-brand-text/60">Aún no hay productores disponibles en la plataforma.</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* Featured Products */}
+            {/* Featured Products (Mercado) */}
             <section className="py-24 bg-white border-t border-brand-primary/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <ScrollReveal>
                         <div className="flex justify-between items-end mb-12">
                             <div>
-                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Recién cosechado</h2>
-                                <p className="text-brand-text/70 mt-2">Los últimos productos subidos por nuestros agricultores locales.</p>
+                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Mercado de Proximidad</h2>
+                                <p className="text-brand-text/70 mt-2">Los productos más frescos de nuestros agricultores locales, directo a tu mesa.</p>
                             </div>
                             <Link href="/es/mercado">
                                 <Button variant="ghost">Ir al Mercado &rarr;</Button>
@@ -257,6 +172,58 @@ export default async function LandingPage() {
                         }) : (
                             <div className="col-span-1 sm:col-span-2 lg:col-span-4 py-12 text-center border-2 border-dashed border-brand-primary/20 rounded-2xl">
                                 <p className="text-brand-text/60">Aún no hay productos en el mercado.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* Featured Producers */}
+            <section className="py-24 bg-brand-background border-t border-brand-primary/10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <ScrollReveal>
+                        <div className="flex justify-between items-end mb-12">
+                            <div>
+                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Productores Locales</h2>
+                                <p className="text-brand-text/70 mt-2">Apoya el comercio local en Mallorca e Ibiza.</p>
+                            </div>
+                            <Link href="/es/productores">
+                                <Button variant="ghost">Ver todos &rarr;</Button>
+                            </Link>
+                        </div>
+                    </ScrollReveal>
+
+                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-8 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
+                        {producers.length > 0 ? producers.map((producer, index) => (
+                            <ScrollReveal key={producer.id} delay={index * 120}>
+                            <Link href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center block h-full">
+                                <Card className="h-full hover:shadow-lg transition-all group">
+                                    <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
+                                        {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
+                                            <Image
+                                                src={producer.cover_image_url || getDummyCover(producer.slug)}
+                                                alt={`Portada de ${producer.brand_name}`}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center text-4xl">🌾</div>
+                                        )}
+                                    </div>
+                                    <CardContent className="p-6">
+                                        <h3 className="font-bold text-xl text-brand-primary mb-2 group-hover:underline">{producer.brand_name}</h3>
+                                        <p className="text-sm text-brand-text/60 mb-4 font-medium flex items-center">
+                                            <span className="mr-1">📍</span> {producer.municipality}
+                                        </p>
+                                        <p className="text-brand-text/80 line-clamp-2 text-sm">{producer.description || 'Productor de alimentación local.'}</p>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                            </ScrollReveal>
+                        )) : (
+                            <div className="col-span-3 py-12 text-center border-2 border-dashed border-brand-primary/20 rounded-2xl">
+                                <p className="text-brand-text/60">Aún no hay productores disponibles en la plataforma.</p>
                             </div>
                         )}
                     </div>
