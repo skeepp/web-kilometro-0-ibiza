@@ -15,8 +15,8 @@ const DynamicMapInner = dynamic(
 );
 
 /* ── Constants ── */
-const BALEARES_CENTER: [number, number] = [39.15, 2.5];
-const DEFAULT_ZOOM = 10;
+const IBIZA_CENTER: [number, number] = [38.98, 1.43];
+const DEFAULT_ZOOM = 11;
 
 /* ── Haversine distance (km) ── */
 function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -51,7 +51,7 @@ export default function RadarMapClient({ producers }: Props) {
     const [userIcon, setUserIcon] = useState<L.Icon | null>(null);
 
     /* ── The active center for distance calculations ── */
-    const activeCenter = searchCenter ?? userPos ?? BALEARES_CENTER;
+    const activeCenter = searchCenter ?? userPos ?? IBIZA_CENTER;
 
     /* ── Geolocation ── */
     useEffect(() => {
@@ -195,7 +195,7 @@ export default function RadarMapClient({ producers }: Props) {
     return (
         <div className="flex flex-col w-full min-h-[calc(100vh-4rem)]">
             {/* ── TOP BAR: Search + Distance ── */}
-            <div className="bg-white border-b border-brand-primary/10 shadow-sm z-20 relative">
+            <div className="bg-white shadow-md border-b border-gray-100 z-20 relative">
                 <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col gap-4">
                     {/* Title row */}
                     <div className="flex items-center justify-between">
@@ -217,7 +217,7 @@ export default function RadarMapClient({ producers }: Props) {
                         <input
                             type="text"
                             placeholder="¿Dónde? Ej. Santa Eulària, Ibiza..."
-                            className="w-full pl-10 pr-24 py-3 bg-gray-50 border border-brand-primary/15 focus:bg-white focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 rounded-xl text-sm transition-all outline-none"
+                            className="w-full pl-10 pr-24 py-3 bg-white border border-gray-200 shadow-sm focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 rounded-xl text-sm transition-all outline-none text-gray-800 placeholder-gray-400"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -275,15 +275,15 @@ export default function RadarMapClient({ producers }: Props) {
             </div>
 
             {/* ── MAIN AREA: Map + Producer List ── */}
-            <div className={`flex-1 flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
+            <div className={`max-w-7xl mx-auto px-4 py-8 w-full flex-1 flex gap-6 ${isMobile ? 'flex-col' : 'flex-row'}`}>
                 {/* Map */}
-                <div className={`relative ${isMobile ? 'h-[45vh]' : 'flex-1'}`}>
+                <div className={`relative rounded-xl overflow-hidden border border-slate-200 shadow-sm ${isMobile ? 'h-[45vh]' : 'w-[65%] max-h-[75vh] min-h-[500px]'}`}>
                     {mapReady && customIcon && selectedIcon && userIcon ? (
                         <DynamicMapInner
                             mappableProducers={filteredProducers}
                             selectedProducer={selectedProducer}
                             setSelectedProducer={setSelectedProducer}
-                            BALEARES_CENTER={activeCenter as [number, number]}
+                            IBIZA_CENTER={activeCenter as [number, number]}
                             DEFAULT_ZOOM={DEFAULT_ZOOM}
                             isMobile={isMobile}
                             customIcon={customIcon}
@@ -305,11 +305,11 @@ export default function RadarMapClient({ producers }: Props) {
 
                 {/* Producer list sidebar */}
                 <aside className={`
-                    bg-white border-l border-brand-primary/10 overflow-y-auto
-                    ${isMobile ? 'flex-1' : 'w-[380px] min-w-[340px]'}
+                    bg-white border text-sm border-slate-200 rounded-xl overflow-y-auto shadow-sm max-h-[75vh]
+                    ${isMobile ? 'flex-1 w-full' : 'w-[35%]'}
                 `}>
                     {/* Count header */}
-                    <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-10 px-5 py-3 border-b border-brand-primary/10">
+                    <div className="sticky top-0 bg-white/95 backdrop-blur-md z-10 px-6 py-4 border-b border-gray-100 shadow-sm">
                         <p className="text-sm font-semibold text-brand-primary">
                             {filteredProducers.length} productor{filteredProducers.length !== 1 ? 'es' : ''}
                             <span className="font-normal text-brand-text/50"> en {radiusKm} km</span>
@@ -317,60 +317,71 @@ export default function RadarMapClient({ producers }: Props) {
                     </div>
 
                     {/* List */}
-                    <div className="divide-y divide-brand-primary/8">
+                    <div className="flex flex-col">
                         {filteredProducers.map((producer) => {
                             const isSelected = selectedProducer?.id === producer.id;
                             const coverImg = producer.cover_image_url || getDummyCover(producer.slug);
                             const dist = distances.get(producer.id);
 
                             return (
-                                <button
+                                <div
                                     key={producer.id}
                                     onClick={() => handleSelectProducer(producer)}
                                     className={`
-                                        w-full text-left p-4 transition-all duration-200 flex gap-3 items-start
+                                        w-full text-left p-6 transition-all duration-300 flex gap-4 items-start border-b border-gray-50 cursor-pointer
                                         ${isSelected
-                                            ? 'bg-brand-primary/5 border-l-4 border-brand-accent'
-                                            : 'hover:bg-brand-background/50 border-l-4 border-transparent'
+                                            ? 'bg-brand-background/30 ring-inset ring-2 ring-brand-accent shadow-sm'
+                                            : 'hover:bg-brand-background/10 hover:-translate-y-0.5 hover:shadow-md'
                                         }
                                     `}
                                 >
                                     {/* Thumbnail */}
-                                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-brand-background border border-brand-primary/10">
+                                    <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 shadow-sm">
                                         {coverImg ? (
                                             <Image
                                                 src={coverImg}
                                                 alt={producer.brand_name}
-                                                width={56}
-                                                height={56}
-                                                className="object-cover w-full h-full"
+                                                width={80}
+                                                height={80}
+                                                className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-xl">🌾</div>
+                                            <div className="w-full h-full flex items-center justify-center text-2xl">🌾</div>
                                         )}
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-2">
-                                            <h3 className={`font-semibold text-sm truncate ${isSelected ? 'text-brand-accent' : 'text-brand-primary'}`}>
+                                        <div className="flex items-start justify-between gap-2 mb-1">
+                                            <h3 className={`font-bold text-base truncate ${isSelected ? 'text-brand-accent' : 'text-gray-900'}`}>
                                                 {producer.brand_name}
                                             </h3>
                                             {/* Distance badge */}
                                             {dist != null && (
-                                                <span className="flex-shrink-0 text-[11px] font-bold text-brand-accent bg-brand-accent/10 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                <span className="flex-shrink-0 text-xs font-semibold text-brand-accent bg-brand-accent/10 px-2 py-1 rounded-full whitespace-nowrap">
                                                     {fmtDist(dist)}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-xs text-brand-text/60 flex items-center gap-1 mt-0.5">
-                                            <span>📍</span> {producer.municipality}
+                                        <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
+                                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                            {producer.municipality}
                                         </p>
-                                        {producer.description && (
-                                            <p className="text-xs text-brand-text/50 mt-1 line-clamp-2">{producer.description}</p>
-                                        )}
+                                        {/* Expandable Content container */}
+                                        <div className={`overflow-hidden transition-all duration-300 ${isSelected ? 'max-h-[300px] opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0 pointer-events-none'}`}>
+                                            {producer.description && (
+                                                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">{producer.description}</p>
+                                            )}
+                                            <Link
+                                                href={`/es/productores/${producer.slug}`}
+                                                className="inline-flex items-center justify-center w-full py-2.5 px-4 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                Ver Finca →
+                                            </Link>
+                                        </div>
                                     </div>
-                                </button>
+                                </div>
                             );
                         })}
 

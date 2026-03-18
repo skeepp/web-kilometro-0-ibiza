@@ -17,10 +17,10 @@ interface RadarModalProps {
     initialCenter?: { lat: number; lng: number } | null;
 }
 
-const BALEARES_CENTER = { lat: 39.15, lng: 2.5 };
+const IBIZA_CENTER = { lat: 38.98, lng: 1.43 };
 
 export function RadarModal({ isOpen, onClose, onApply, initialDistance = 50, initialCenter = null }: RadarModalProps) {
-    const defaultCenter = initialCenter || BALEARES_CENTER;
+    const defaultCenter = initialCenter || IBIZA_CENTER;
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     const [center, setCenter] = useState(defaultCenter);
@@ -64,7 +64,7 @@ export function RadarModal({ isOpen, onClose, onApply, initialDistance = 50, ini
 
     const handleClear = () => {
         setSearchQuery('');
-        setCenter(BALEARES_CENTER);
+        setCenter(IBIZA_CENTER);
         onApply(null);
         onClose();
     };
@@ -97,7 +97,7 @@ export function RadarModal({ isOpen, onClose, onApply, initialDistance = 50, ini
                 {/* Map Area */}
                 <div className="flex-1 relative min-h-[300px] sm:min-h-[400px] bg-gray-100">
                     <DynamicMapInner 
-                        BALEARES_CENTER={[center.lat, center.lng] as [number, number]}
+                        IBIZA_CENTER={[center.lat, center.lng] as [number, number]}
                         userPosition={[center.lat, center.lng] as [number, number]}
                         DEFAULT_ZOOM={10}
                         radiusKm={radiusKm}

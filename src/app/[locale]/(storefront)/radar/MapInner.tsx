@@ -5,14 +5,40 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getDummyCover } from '@/utils/dummyImages';
 import type { RadarProducer } from './page';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-/* ── Helper: recenter map when props change ── */
-function MapUpdater({ center, zoom }: { center: [number, number]; zoom?: number }) {
+import L from 'leaflet';
+
+/* ── Helper: Map logic for bounds and flyTo ── */
+function MapController({ 
+    center, 
+    zoom,
+    producers,
+    selectedProducer,
+    userPosition
+}: { 
+    center: [number, number]; 
+    zoom?: number;
+    producers?: RadarProducer[];
+    selectedProducer?: RadarProducer | null;
+    userPosition?: [number, number] | null;
+}) {
     const map = useMap();
+    
     useEffect(() => {
-        if (center) map.flyTo(center, zoom ?? map.getZoom(), { duration: 0.8 });
-    }, [center, zoom, map]);
+        if (selectedProducer && selectedProducer.lat && selectedProducer.lng) {
+            // Smooth fly-to towards selected producer with closer zoom
+            map.flyTo([selectedProducer.lat, selectedProducer.lng], 16, { duration: 1.2 });
+        } else if (producers && producers.length > 0) {
+            // Auto-zoom exclusively to active markers with 20px padding
+            const bounds = L.latLngBounds(producers.map(p => [p.lat!, p.lng!]));
+            if (userPosition) bounds.extend(userPosition);
+            map.fitBounds(bounds, { padding: [20, 20], maxZoom: 16, duration: 1.0 });
+        } else {
+            // Fallback to center
+            map.flyTo(center, zoom ?? map.getZoom(), { duration: 0.8 });
+        }
+    }, [center, zoom, producers, selectedProducer, userPosition, map]);
     return null;
 }
 
@@ -21,7 +47,7 @@ interface MapInnerProps {
     mappableProducers?: RadarProducer[];
     selectedProducer?: RadarProducer | null;
     setSelectedProducer?: (p: RadarProducer) => void;
-    BALEARES_CENTER: [number, number];
+    IBIZA_CENTER: [number, number];
     DEFAULT_ZOOM: number;
     isMobile?: boolean;
     customIcon?: L.Icon;
@@ -38,7 +64,7 @@ export default function MapInner({
     mappableProducers,
     selectedProducer,
     setSelectedProducer,
-    BALEARES_CENTER,
+    IBIZA_CENTER,
     DEFAULT_ZOOM,
     isMobile,
     customIcon,
@@ -48,7 +74,14 @@ export default function MapInner({
     userIcon,
     distances,
 }: MapInnerProps) {
-    const center = userPosition ?? BALEARES_CENTER;
+    const center = userPosition ?? IBIZA_CENTER;
+    const markerRefs = useRef<Record<string, L.Marker | null>>({});
+
+    useEffect(() => {
+        if (selectedProducer && markerRefs.current[selectedProducer.id]) {
+            markerRefs.current[selectedProducer.id]?.openPopup();
+        }
+    }, [selectedProducer]);
 
     return (
         <MapContainer
@@ -62,8 +95,13 @@ export default function MapInner({
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {/* Re-center map when center changes */}
-            <MapUpdater center={center} />
+            {/* Re-center and bounds logic */}
+            <MapController 
+                center={center} 
+                producers={mappableProducers}
+                selectedProducer={selectedProducer}
+                userPosition={userPosition}
+            />
 
             {/* User position marker */}
             {userPosition && userIcon && (
@@ -102,6 +140,9 @@ export default function MapInner({
                         icon={isSelected ? (selectedIcon ?? customIcon!) : customIcon!}
                         eventHandlers={{
                             click: () => setSelectedProducer?.(producer),
+                        }}
+                        ref={(ref) => {
+                            markerRefs.current[producer.id] = ref;
                         }}
                     >
                         <Popup>

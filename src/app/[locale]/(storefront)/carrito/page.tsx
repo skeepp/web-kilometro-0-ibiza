@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
 import { SHIPPING_FLAT_EUR } from '@/lib/constants';
@@ -13,7 +14,9 @@ export default function CartPage() {
     if (items.length === 0) {
         return (
             <div className="max-w-3xl mx-auto px-4 py-24 text-center min-h-[60vh] flex flex-col items-center justify-center">
-                <div className="w-32 h-32 bg-brand-background/50 rounded-full flex items-center justify-center text-7xl mb-8 animate-bounce">🛒</div>
+                <div className="w-40 h-40 mb-8 relative mix-blend-multiply">
+                    <Image src="/basket-empty.png" alt="Cesta vacía" fill className="object-contain" sizes="160px" />
+                </div>
                 <h1 className="text-3xl md:text-5xl font-serif font-bold text-brand-primary mb-6 text-balance">Tu carrito está vacío</h1>
                 <p className="text-brand-text/70 text-lg mb-10 text-pretty">Aún no has añadido ningún producto artesanal a tu carrito.</p>
                 <Link href="/es/productores">

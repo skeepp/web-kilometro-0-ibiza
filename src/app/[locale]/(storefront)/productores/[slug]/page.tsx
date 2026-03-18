@@ -6,7 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from './AddToCartButton'; // We will create this client component
 import Image from 'next/image';
-import { getDummyCover, getDummyProductImage } from '@/utils/dummyImages';
+import { getDummyCover } from '@/utils/dummyImages';
+import ProducerMap from './ProducerMap';
+import { ProducerTabs } from './ProducerTabs';
+import { FollowButton } from './FollowButton';
 
 export default async function ProducerProfilePage({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
@@ -20,9 +23,9 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
     if (!producer) return notFound();
 
     return (
-        <div className="w-full">
+        <div className="w-full bg-slate-50 min-h-screen pb-12">
             {/* Cover Image */}
-            <div className="h-64 sm:h-96 w-full bg-brand-earth/20 relative">
+            <div className="h-64 sm:h-80 w-full bg-brand-earth/20 relative">
                 {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
                     <Image src={producer.cover_image_url || getDummyCover(producer.slug)} alt="Cover" fill className="object-cover" sizes="100vw" />
                 ) : (
@@ -30,90 +33,73 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                 )}
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="flex flex-col md:flex-row gap-12">
-
-                    {/* Producer Info Sidebar */}
-                    <div className="md:w-1/3">
-                        <div className="bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl -mt-24 relative z-10 border border-brand-primary/10 transition-all hover:shadow-2xl">
-                            <div className="w-24 h-24 rounded-full bg-brand-background mb-6 flex items-center justify-center border-4 border-white shadow-md overflow-hidden text-3xl relative">
-                                {(producer.profile_image_url || getDummyCover(producer.slug)) ? (
-                                    <Image src={producer.profile_image_url || getDummyCover(producer.slug)} alt="Profile" fill className="object-cover" sizes="96px" />
-                                ) : '👨‍🌾'}
-                            </div>
-                            <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary mb-2 text-balance">{producer.brand_name}</h1>
-                            <p className="text-brand-text/60 font-medium mb-6 flex items-center">
-                                <span className="mr-2">📍</span> {producer.municipality}, Mallorca
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Profile Header */}
+                <div className="bg-white rounded-b-2xl shadow-sm border border-brand-primary/10 -mt-0 relative z-10 px-6 sm:px-10 pb-8 rounded-t-none sm:rounded-2xl sm:-mt-16 pt-0 sm:pt-6 mb-8">
+                    <div className="flex flex-col sm:flex-row gap-6 sm:items-end -mt-16 sm:-mt-20 mb-6 relative">
+                        {/* Avatar */}
+                        <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center border-4 border-white shadow-md overflow-hidden text-5xl relative flex-shrink-0">
+                            {(producer.profile_image_url || getDummyCover(producer.slug)) ? (
+                                <Image src={producer.profile_image_url || getDummyCover(producer.slug)} alt="Profile" fill className="object-cover" sizes="128px" />
+                            ) : '👨‍🌾'}
+                        </div>
+                        
+                        {/* Title & Info */}
+                        <div className="flex-1 pb-2 mt-4 sm:mt-0">
+                            <h1 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary mb-1">{producer.brand_name}</h1>
+                            <p className="text-brand-text/60 font-medium flex items-center text-sm">
+                                <span className="mr-1">📍</span> {producer.municipality}, Ibiza
                             </p>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex gap-3 pb-2 w-full sm:w-auto mt-4 sm:mt-0">
+                            <FollowButton producerId={producer.id} />
+                            <a 
+                                href={producer.phone ? `tel:${producer.phone}` : `mailto:${producer.email || 'info@delafinca.com'}?subject=Contacto: ${producer.brand_name}`}
+                            >
+                                <Button variant="outline" className="w-full sm:w-auto shadow-sm">
+                                    Contactar
+                                </Button>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {/* Description */}
+                    <div className="prose text-brand-text/80 text-sm max-w-3xl">
+                        <p>{producer.description || 'Productor tradicional enfocado en métodos sostenibles y productos de proximidad (Km 0).'}</p>
+                    </div>
+                </div>
 
-                            <div className="prose text-brand-text/80 text-sm mb-8">
-                                <p>{producer.description || 'Productor tradicional de Mallorca.'}</p>
+                {/* Main Content Two-Column */}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Left Sidebar: About & Map */}
+                    <div className="lg:w-[35%] xl:w-[30%] flex flex-col gap-6">
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-brand-primary/10">
+                            <h3 className="font-bold text-lg text-brand-primary mb-5">Sobre la finca</h3>
+                            
+                            <div className="space-y-4 text-sm text-brand-text/80 mb-6">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-lg">🌾</span>
+                                    <p>Cultivo 100% natural, respetando los ciclos de la tierra.</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <span className="text-lg">🤝</span>
+                                    <p>Venta directa del agricultor al consumidor en Ibiza.</p>
+                                </div>
                             </div>
 
-                            {/* Fake Map Placeholder */}
-                            <div className="w-full h-40 bg-gray-100 rounded-xl flex items-center justify-center text-sm text-gray-500 mb-6 border border-gray-200">
-                                [Mapa interactivo de Mapbox]
-                            </div>
-
-                            <div className="text-center">
-                                <Button variant="outline" fullWidth>Contactar productor</Button>
+                            {/* Interactive Map */}
+                            <div className="w-full h-48 rounded-xl overflow-hidden mb-2 border border-slate-200 shadow-sm relative z-0 bg-gray-50">
+                                <ProducerMap lat={producer.lat} lng={producer.lng} name={producer.brand_name} />
                             </div>
                         </div>
                     </div>
 
-                    {/* Products Grid */}
-                    <div className="md:w-2/3">
-                        <h2 className="text-2xl md:text-3xl font-serif font-bold text-brand-primary mb-8 border-b border-brand-primary/10 pb-4 text-balance">
-                            Nuestros Productos ({producer.products?.length || 0})
-                        </h2>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-6">
-                            {producer.products?.map((product: { id: string; slug: string; name: string; price: number; unit: string; description?: string; images?: string[]; product_reviews?: { rating: number }[] }) => {
-                                const reviews = product.product_reviews;
-                                const avgRating = reviews && reviews.length > 0
-                                    ? (reviews.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0) / reviews.length).toFixed(1)
-                                    : null;
-
-                                return (
-                                    <Card key={product.id} className="flex flex-col h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 hover:border-brand-primary/30 bg-white">
-                                        <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden">
-                                            {(product.images?.[0] || getDummyProductImage(product.name, product.slug)) ? (
-                                                <Image src={product.images?.[0] || getDummyProductImage(product.name, product.slug)} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 640px) 100vw, 50vw" />
-                                            ) : (
-                                                <span className="transition-transform duration-300 group-hover:scale-110">🥬</span>
-                                            )}
-                                            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        </div>
-                                        <CardContent className="p-6 flex flex-col flex-1">
-                                            <div className="flex justify-between items-start mb-3">
-                                                <Link href={`/es/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
-                                                    <h3 className="font-bold text-lg text-brand-text group-hover:text-brand-accent transition-colors">{product.name}</h3>
-                                                </Link>
-                                                <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20 bg-brand-background px-2 py-1 rounded-md shadow-sm border border-brand-primary/10">{product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span></span>
-                                            </div>
-
-                                            {avgRating && (
-                                                <div className="flex items-center gap-1 mb-2 text-sm">
-                                                    <span className="text-yellow-400">★</span>
-                                                    <span className="font-medium text-brand-text">{avgRating}</span>
-                                                    <span className="text-brand-text/50">({reviews?.length})</span>
-                                                </div>
-                                            )}
-
-                                            <p className="text-sm text-brand-text/70 mb-4 flex-1 line-clamp-2">{product.description}</p>
-
-                                            <div className="mt-auto pt-4 border-t border-brand-primary/10 relative z-20">
-                                                <AddToCartButton
-                                                    product={{ ...product, producerId: producer.id, producerName: producer.brand_name }}
-                                                />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )
-                            })}
-                        </div>
+                    {/* Right Area: Tabs (Products / Feed) */}
+                    <div className="lg:w-[65%] xl:w-[70%]">
+                        <ProducerTabs products={producer.products} producerId={producer.id} producerName={producer.brand_name} />
                     </div>
-
                 </div>
             </div>
         </div>
