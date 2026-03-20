@@ -1,10 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
-import { AddToCartButton } from './AddToCartButton'; // We will create this client component
 import Image from 'next/image';
 import { getDummyCover } from '@/utils/dummyImages';
 import ProducerMap from './ProducerMap';

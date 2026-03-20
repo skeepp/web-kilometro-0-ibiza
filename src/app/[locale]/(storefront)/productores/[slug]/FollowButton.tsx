@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function FollowButton({ producerId }: { producerId: string }) {
     const [isFollowing, setIsFollowing] = useState(false);
 

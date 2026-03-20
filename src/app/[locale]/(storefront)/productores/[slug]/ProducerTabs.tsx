@@ -7,6 +7,21 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from './AddToCartButton';
 import { getDummyProductImage } from '@/utils/dummyImages';
 
+interface ProductReview {
+    rating: number;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    unit: string;
+    images?: string[];
+    product_reviews?: ProductReview[];
+}
+
 // Mock Feed Data
 const MOCK_POSTS = [
     {
@@ -26,7 +41,7 @@ const MOCK_POSTS = [
     }
 ];
 
-export function ProducerTabs({ products, producerId, producerName }: { products: any[]; producerId: string; producerName: string }) {
+export function ProducerTabs({ products, producerId, producerName }: { products: Product[]; producerId: string; producerName: string }) {
     const [activeTab, setActiveTab] = useState<'products' | 'feed'>('products');
 
     return (
@@ -78,7 +93,7 @@ export function ProducerTabs({ products, producerId, producerName }: { products:
                                         <div className="flex items-center gap-1 mb-2 text-xs sm:text-sm">
                                             <span className="text-yellow-400">★</span>
                                             <span className="font-medium text-brand-text">{avgRating}</span>
-                                            <span className="text-brand-text/50">({reviews.length})</span>
+                                            <span className="text-brand-text/50">({reviews?.length})</span>
                                         </div>
                                     )}
 
