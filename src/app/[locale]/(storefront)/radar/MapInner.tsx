@@ -27,13 +27,14 @@ function MapController({
     
     useEffect(() => {
         if (selectedProducer && selectedProducer.lat && selectedProducer.lng) {
-            // Smooth fly-to towards selected producer with closer zoom
-            map.flyTo([selectedProducer.lat, selectedProducer.lng], 16, { duration: 1.2 });
+            // Smooth fly-to towards selected producer with a more relaxed zoom (14 instead of 16)
+            // Added a small offset to the latitude (+0.01) so the popup is more centered in the view
+            map.flyTo([selectedProducer.lat + 0.01, selectedProducer.lng], 14, { duration: 1.5 });
         } else if (producers && producers.length > 0) {
             // Auto-zoom exclusively to active markers with 20px padding
             const bounds = L.latLngBounds(producers.map(p => [p.lat!, p.lng!]));
             if (userPosition) bounds.extend(userPosition);
-            map.fitBounds(bounds, { padding: [20, 20], maxZoom: 16, duration: 1.0 });
+            map.fitBounds(bounds, { padding: [20, 20], maxZoom: 14, duration: 1.0 });
         } else {
             // Fallback to center
             map.flyTo(center, zoom ?? map.getZoom(), { duration: 0.8 });
