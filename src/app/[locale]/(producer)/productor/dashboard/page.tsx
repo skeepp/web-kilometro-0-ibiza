@@ -97,11 +97,16 @@ export default async function ProducerDashboard() {
                 <h2 className="text-2xl font-serif font-bold text-brand-primary mb-6 flex items-center gap-2">
                     ⚡ Acciones Rápidas
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <Link href="/es/productor/productos" className="bg-white p-8 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-brand-accent hover:bg-brand-accent/5 transition-all duration-300 group hover:shadow-soft">
                         <div className="w-12 h-12 rounded-full bg-brand-background text-brand-primary flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">📦</div>
                         <span className="font-semibold text-brand-primary group-hover:text-brand-accent">Añadir nuevo producto</span>
                         <p className="text-xs text-brand-text/50 mt-2 text-center">Publica un nuevo artículo en tu escaparate</p>
+                    </Link>
+                    <Link href="/es/productor/cosechas" className="bg-white p-8 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-brand-accent hover:bg-brand-accent/5 transition-all duration-300 group hover:shadow-soft">
+                        <div className="w-12 h-12 rounded-full bg-brand-background text-brand-primary flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">🌱</div>
+                        <span className="font-semibold text-brand-primary group-hover:text-brand-accent">Calendario de Cosechas</span>
+                        <p className="text-xs text-brand-text/50 mt-2 text-center">Planifica y comparte tus cultivos</p>
                     </Link>
                     <Link href="/es/productor/pedidos" className="bg-white p-8 rounded-2xl border border-brand-primary/10 shadow-soft flex flex-col items-center justify-center cursor-pointer hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group">
                         <div className="w-12 h-12 rounded-full bg-brand-background text-brand-primary flex items-center justify-center text-2xl mb-4 group-hover:rotate-180 transition-transform duration-500">↻</div>

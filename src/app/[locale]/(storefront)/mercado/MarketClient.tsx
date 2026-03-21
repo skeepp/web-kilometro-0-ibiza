@@ -1,12 +1,29 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from '../productores/[slug]/AddToCartButton';
 import { useLocale } from 'next-intl';
 import { getDummyProductImage } from '@/utils/dummyImages';
+import { useSearchParams } from 'next/navigation';
+
+// Seasonal reference — products in peak season by month
+const PEAK_SEASON_BY_MONTH: Record<number, string[]> = {
+    0: ['Naranjas', 'Limones'],
+    1: ['Lechugas', 'Naranjas', 'Limones', 'Fresas'],
+    2: ['Lechugas', 'Limones', 'Fresas'],
+    3: ['Lechugas', 'Fresas'],
+    4: ['Patatas', 'Cebollas', 'Fresas', 'Huevos'],
+    5: ['Calabacines', 'Cebollas', 'Ajos', 'Huevos'],
+    6: ['Tomates', 'Sandías', 'Melones', 'Calabacines', 'Berenjenas', 'Pimientos', 'Cebollas', 'Ajos'],
+    7: ['Tomates', 'Sandías', 'Melones', 'Berenjenas', 'Pimientos', 'Higos'],
+    8: ['Tomates', 'Berenjenas', 'Pimientos', 'Higos', 'Almendras'],
+    9: ['Almendras'],
+    10: ['Patatas'],
+    11: ['Naranjas'],
+};
 
 const CATEGORIES = [
     { value: '', label: '🌿 Todos' },
@@ -46,11 +63,26 @@ interface MarketClientProps {
 
 export function MarketClient({ products, municipalities }: MarketClientProps) {
     const locale = useLocale();
-    const [search, setSearch] = useState('');
+    const searchParams = useSearchParams();
+    const productoParam = searchParams.get('producto') || '';
+
+    const [search, setSearch] = useState(productoParam);
     const [category, setCategory] = useState('');
     const [municipality, setMunicipality] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [sortBy, setSortBy] = useState('newest');
+    const [showOnlySeason, setShowOnlySeason] = useState(false);
+
+    // Update search when coming from calendar link
+    useEffect(() => {
+        if (productoParam) {
+            setSearch(productoParam);
+        }
+    }, [productoParam]);
+
+    // Current month's peak products
+    const currentMonth = new Date().getMonth();
+    const peakProducts = PEAK_SEASON_BY_MONTH[currentMonth] || [];
 
     const filtered = useMemo(() => {
         let result = [...products];
@@ -93,10 +125,18 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
             });
         }
 
-        return result;
-    }, [products, search, category, municipality, maxPrice, sortBy]);
+        // Seasonal filter
+        if (showOnlySeason && peakProducts.length > 0) {
+            result = result.filter(p => {
+                const name = p.name.toLowerCase();
+                return peakProducts.some(sp => name.includes(sp.toLowerCase()));
+            });
+        }
 
-    const hasFilters = search || category || municipality || maxPrice;
+        return result;
+    }, [products, search, category, municipality, maxPrice, sortBy, showOnlySeason, peakProducts]);
+
+    const hasFilters = search || category || municipality || maxPrice || showOnlySeason;
 
     function clearFilters() {
         setSearch('');
@@ -104,6 +144,11 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
         setMunicipality('');
         setMaxPrice('');
         setSortBy('newest');
+        setShowOnlySeason(false);
+        // Clear URL params
+        if (productoParam) {
+            window.history.replaceState({}, '', '/es/mercado');
+        }
     }
 
     return (
@@ -133,11 +178,25 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
             {/* Filter Row: Horizontal scroll on mobile */}
             <div className="mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
                 <div className="flex overflow-x-auto pb-2 scrollbar-hide sm:flex-wrap gap-2">
+                    {/* Productos de Temporada - special button */}
+                    <button
+                        onClick={() => { setShowOnlySeason(!showOnlySeason); setCategory(''); }}
+                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border flex-shrink-0 ${showOnlySeason
+                            ? 'bg-gradient-to-r from-brand-accent to-brand-primary text-white border-brand-accent shadow-md'
+                            : 'bg-gradient-to-r from-brand-accent/10 to-brand-primary/10 text-brand-primary border-brand-accent/30 hover:border-brand-accent/60'
+                            }`}
+                    >
+                        🌿 De Temporada
+                    </button>
+                    
+                    {/* Separator */}
+                    <div className="w-px bg-gray-200 flex-shrink-0 hidden sm:block"></div>
+
                     {CATEGORIES.map(cat => (
                         <button
                             key={cat.value}
-                            onClick={() => setCategory(cat.value)}
-                            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all border flex-shrink-0 ${category === cat.value
+                            onClick={() => { setCategory(cat.value); setShowOnlySeason(false); }}
+                            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all border flex-shrink-0 ${category === cat.value && !showOnlySeason
                                 ? 'bg-brand-primary text-white border-brand-primary shadow-sm'
                                 : 'bg-white text-brand-text border-gray-200 hover:border-brand-primary/50'
                                 }`}
@@ -187,6 +246,38 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                     <option value="rating">★ Valoración</option>
                 </select>
             </div>
+
+            {/* Seasonal Banner */}
+            {showOnlySeason && (
+                <div className="mb-6 bg-gradient-to-r from-brand-accent/10 via-brand-primary/5 to-brand-accent/10 rounded-xl border border-brand-accent/20 p-4 flex items-center gap-3">
+                    <span className="text-2xl">🌿</span>
+                    <div className="flex-1">
+                        <p className="text-sm font-bold text-brand-primary">Productos de Temporada</p>
+                        <p className="text-xs text-brand-text/60">
+                            Mostrando productos en su mejor momento de recolección este mes: {peakProducts.join(', ')}
+                        </p>
+                    </div>
+                    <Link href="/es/calendario" className="text-xs font-semibold text-brand-accent hover:underline flex-shrink-0">
+                        Ver calendario →
+                    </Link>
+                </div>
+            )}
+
+            {/* Product from Calendar Banner */}
+            {productoParam && !showOnlySeason && (
+                <div className="mb-6 bg-gradient-to-r from-blue-50 to-brand-background rounded-xl border border-blue-100 p-4 flex items-center gap-3">
+                    <span className="text-2xl">📅</span>
+                    <div className="flex-1">
+                        <p className="text-sm font-bold text-brand-primary">Buscando: {productoParam}</p>
+                        <p className="text-xs text-brand-text/60">
+                            Has llegado desde el Calendario de Temporada
+                        </p>
+                    </div>
+                    <button onClick={clearFilters} className="text-xs font-semibold text-brand-accent hover:underline flex-shrink-0">
+                        Ver todos ✕
+                    </button>
+                </div>
+            )}
 
             {/* Results header */}
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-brand-primary/10">

@@ -32,6 +32,7 @@ export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl
         { href: '/es/mercado', label: 'Mercado', icon: '🛒' },
         { href: '/es/productores', label: 'Productores', icon: '👨‍🌾' },
         { href: '/es/radar', label: 'Radar', icon: '📡' },
+        { href: '/es/calendario', label: 'Calendario', icon: '📅' },
         { href: '/es/noticias', label: 'Noticias', icon: '📰' },
         { href: '/es/nosotros', label: 'Cómo funciona', icon: '💡' },
     ];

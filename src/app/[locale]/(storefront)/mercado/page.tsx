@@ -42,15 +42,38 @@ export default async function MarketPage() {
 
     return (
         <div className="w-full">
-            {/* Header Section */}
-            <div className="bg-brand-earth/10 py-16 w-full">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-primary mb-4 text-balance">
-                        Mercado Local
-                    </h1>
-                    <p className="text-xl text-brand-text/80 max-w-2xl mx-auto text-pretty">
-                        Descubre y compra productos frescos directamente de los productores de nuestra isla.
-                    </p>
+            {/* Thin Hero Banner */}
+            <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] md:aspect-[4/1] lg:aspect-[5/1] xl:aspect-[6/1] overflow-hidden group min-h-[220px]">
+                {/* Background Image w/ micro-interaction */}
+                <div className="absolute inset-0">
+                    <img
+                        src="/banners/mercado_hero_thin.png"
+                        alt="Productos frescos del mercado local"
+                        className="w-full h-full object-cover transform transition-transform duration-[4000ms] ease-out group-hover:scale-110"
+                    />
+                    {/* Gradient Overlay for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-black/20 sm:hidden"></div>
+                </div>
+
+                {/* Content vertically centered */}
+                <div className="absolute inset-0 flex items-center">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                        <div className="max-w-lg">
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 leading-tight drop-shadow-md">
+                                ¡Las mejores cosechas, directas a tu mesa!
+                            </h1>
+                            <p className="text-sm md:text-base text-white/90 mb-4 max-w-sm drop-shadow hidden sm:block">
+                                Seleccionados hoy por agricultores de Ibiza.
+                            </p>
+                            <a
+                                href="#productos"
+                                className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-accent to-brand-primary text-white font-bold text-sm px-6 py-2.5 rounded-full hover:scale-105 transition-all duration-300 shadow-md shadow-brand-accent/30"
+                            >
+                                🛒 Explorar Productos
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 

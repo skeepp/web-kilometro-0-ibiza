@@ -19,6 +19,13 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
 
     if (!producer) return notFound();
 
+    // Fetch harvest calendar entries for this producer
+    const { data: harvests } = await supabase
+        .from('harvest_calendar')
+        .select('*')
+        .eq('producer_id', producer.id)
+        .order('estimated_harvest', { ascending: true });
+
     return (
         <div className="w-full bg-slate-50 min-h-screen pb-12">
             {/* Cover Image */}
@@ -95,7 +102,7 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
 
                     {/* Right Area: Tabs (Products / Feed) */}
                     <div className="lg:w-[65%] xl:w-[70%]">
-                        <ProducerTabs products={producer.products} producerId={producer.id} producerName={producer.brand_name} />
+                        <ProducerTabs products={producer.products} producerId={producer.id} producerName={producer.brand_name} harvests={harvests || []} />
                     </div>
                 </div>
             </div>

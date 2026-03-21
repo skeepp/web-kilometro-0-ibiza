@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from './AddToCartButton';
 import { getDummyProductImage } from '@/utils/dummyImages';
+import { HarvestTimeline } from '@/components/ui/HarvestTimeline';
 
 interface ProductReview {
     rating: number;
@@ -20,6 +21,17 @@ interface Product {
     unit: string;
     images?: string[];
     product_reviews?: ProductReview[];
+}
+
+interface HarvestEntry {
+    id: string;
+    product_name: string;
+    category: string;
+    planted_at: string;
+    estimated_harvest: string;
+    duration_days: number;
+    status: string;
+    notes: string | null;
 }
 
 // Mock Feed Data
@@ -41,8 +53,8 @@ const MOCK_POSTS = [
     }
 ];
 
-export function ProducerTabs({ products, producerId, producerName }: { products: Product[]; producerId: string; producerName: string }) {
-    const [activeTab, setActiveTab] = useState<'products' | 'feed'>('products');
+export function ProducerTabs({ products, producerId, producerName, harvests }: { products: Product[]; producerId: string; producerName: string; harvests?: HarvestEntry[] }) {
+    const [activeTab, setActiveTab] = useState<'products' | 'feed' | 'harvests'>('products');
 
     return (
         <div className="w-full">
@@ -55,6 +67,12 @@ export function ProducerTabs({ products, producerId, producerName }: { products:
                     Productos ({products?.length || 0})
                 </button>
                 <button 
+                    onClick={() => setActiveTab('harvests')}
+                    className={`pb-4 text-lg font-bold transition-all border-b-2 ${activeTab === 'harvests' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
+                >
+                    🌱 Cosechas
+                </button>
+                <button 
                     onClick={() => setActiveTab('feed')}
                     className={`pb-4 text-lg font-bold transition-all border-b-2 ${activeTab === 'feed' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
                 >
@@ -63,7 +81,9 @@ export function ProducerTabs({ products, producerId, producerName }: { products:
             </div>
 
             {/* Tab Content */}
-            {activeTab === 'products' ? (
+            {activeTab === 'harvests' ? (
+                <HarvestTimeline harvests={harvests || []} />
+            ) : activeTab === 'products' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-6 px-4 sm:px-0">
                     {products?.length ? products.map((product) => {
                         const reviews = product.product_reviews;
