@@ -111,32 +111,33 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
 
             {/* Search Bar */}
             <div className="relative mb-6">
-                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-text/40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <svg className="w-5 h-5 text-brand-text/40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                </div>
                 <input
                     type="text"
                     placeholder="Buscar productos, productores..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary shadow-sm"
+                    className="w-full pl-12 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary shadow-sm"
                 />
                 {search && (
-                    <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-text/40 hover:text-brand-text">
+                    <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-text/40 hover:text-brand-text p-1">
                         ✕
                     </button>
                 )}
             </div>
 
-            {/* Filter Row */}
-            <div className="flex flex-wrap gap-3 mb-8">
-                {/* Category Pills */}
-                <div className="flex gap-2 flex-wrap">
+            {/* Filter Row: Horizontal scroll on mobile */}
+            <div className="mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex overflow-x-auto pb-2 scrollbar-hide sm:flex-wrap gap-2">
                     {CATEGORIES.map(cat => (
                         <button
                             key={cat.value}
                             onClick={() => setCategory(cat.value)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${category === cat.value
+                            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all border flex-shrink-0 ${category === cat.value
                                 ? 'bg-brand-primary text-white border-brand-primary shadow-sm'
                                 : 'bg-white text-brand-text border-gray-200 hover:border-brand-primary/50'
                                 }`}
@@ -147,13 +148,13 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                 </div>
             </div>
 
-            {/* Secondary Filters */}
-            <div className="flex flex-wrap gap-3 mb-8 items-center">
+            {/* Secondary Filters: Grid for mobile, flex for desktop */}
+            <div className="grid grid-cols-2 lg:flex lg:flex-wrap gap-2 sm:gap-3 mb-8 items-center">
                 {/* Municipality */}
                 <select
                     value={municipality}
                     onChange={e => setMunicipality(e.target.value)}
-                    className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
+                    className="col-span-2 lg:col-span-1 px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary w-full"
                 >
                     <option value="">📍 Todos los municipios</option>
                     {municipalities.map(m => (
@@ -162,15 +163,15 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                 </select>
 
                 {/* Max Price */}
-                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white">
-                    <span className="text-sm text-brand-text/60">Max. precio</span>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white">
+                    <span className="text-xs sm:text-sm text-brand-text/60">Máx €</span>
                     <input
                         type="number"
-                        placeholder="€"
+                        placeholder="0"
                         value={maxPrice}
                         min={0}
                         onChange={e => setMaxPrice(e.target.value)}
-                        className="w-16 text-sm font-medium text-brand-primary focus:outline-none"
+                        className="w-full sm:w-16 text-sm font-medium text-brand-primary focus:outline-none bg-transparent"
                     />
                 </div>
 
@@ -178,18 +179,18 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                 <select
                     value={sortBy}
                     onChange={e => setSortBy(e.target.value)}
-                    className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary ml-auto"
+                    className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary lg:ml-auto"
                 >
-                    <option value="newest">↕ Más recientes</option>
-                    <option value="price_asc">↑ Precio: menor a mayor</option>
-                    <option value="price_desc">↓ Precio: mayor a menor</option>
-                    <option value="rating">★ Mejor valorados</option>
+                    <option value="newest">↕ Recientes</option>
+                    <option value="price_asc">↑ Precio min</option>
+                    <option value="price_desc">↓ Precio max</option>
+                    <option value="rating">★ Valoración</option>
                 </select>
             </div>
 
             {/* Results header */}
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-brand-primary/10">
-                <h2 className="text-lg font-bold text-brand-text">
+                <h2 className="text-sm sm:text-lg font-bold text-brand-text">
                     {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
                     {hasFilters && <span className="text-brand-text/50 font-normal"> encontrados</span>}
                 </h2>
@@ -223,8 +224,8 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                             : null;
 
                         return (
-                            <Card key={product.id} className="flex flex-col h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 hover:border-brand-primary/30 bg-white">
-                                <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden">
+                            <Card key={product.id} className="flex flex-col h-full hover:shadow-lg transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 bg-white rounded-2xl">
+                                <Link href={`/${locale}/productos/${product.slug}`} className="block relative h-36 sm:h-48 overflow-hidden bg-brand-background/50">
                                     {(product.images?.[0] || getDummyProductImage(product.name, product.slug)) ? (
                                         <Image
                                             src={product.images?.[0] || getDummyProductImage(product.name, product.slug)}
@@ -234,50 +235,46 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                         />
                                     ) : (
-                                        <span className="transition-transform duration-300 group-hover:scale-110">🥬</span>
+                                        <div className="w-full h-full flex items-center justify-center text-3xl transition-transform duration-300 group-hover:scale-110">🥬</div>
                                     )}
                                     {product.category && (
-                                        <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full text-brand-primary capitalize z-10 shadow-sm border border-brand-primary/10">
+                                        <span className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full text-brand-primary capitalize z-10 shadow-sm border border-brand-primary/5">
                                             {product.category}
                                         </span>
                                     )}
-                                    {product.origin && (
-                                        <span className="absolute top-2 right-2 bg-brand-primary/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full text-white capitalize z-10 shadow-sm flex items-center gap-1">
-                                            📍 {product.origin}
-                                        </span>
-                                    )}
-                                </div>
-                                <CardContent className="p-4 sm:p-6 flex flex-col flex-1">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <Link href={`/${locale}/productos/${product.slug}`} className="after:absolute after:inset-0 after:z-10 cursor-pointer">
-                                            <h3 className="font-bold text-base sm:text-lg text-brand-text group-hover:text-brand-accent transition-colors line-clamp-1">
+                                </Link>
+
+                                <CardContent className="p-3 sm:p-5 flex flex-col flex-1">
+                                    <div className="flex flex-col mb-2">
+                                        <div className="flex justify-between items-start gap-1 mb-1">
+                                            <h3 className="font-bold text-sm sm:text-base text-brand-text line-clamp-1">
                                                 {product.name}
                                             </h3>
-                                        </Link>
-                                        <span className="font-bold text-brand-primary ml-2 whitespace-nowrap relative z-20 text-sm sm:text-base bg-brand-background px-2 py-1 rounded-md shadow-sm border border-brand-primary/10">
-                                            {product.price}€<span className="text-xs text-brand-text/50">/{product.unit}</span>
-                                        </span>
+                                            <div className="font-bold text-brand-primary whitespace-nowrap text-xs sm:text-sm bg-brand-background px-1.5 py-0.5 rounded border border-brand-primary/5">
+                                                {product.price}€<span className="text-[10px] text-brand-text/40 opacity-70">/{product.unit}</span>
+                                            </div>
+                                        </div>
+
+                                        {avgRating && (
+                                            <div className="flex items-center gap-1 text-[10px] sm:text-xs">
+                                                <span className="text-yellow-400">★</span>
+                                                <span className="font-medium text-brand-text">{avgRating}</span>
+                                                <span className="text-brand-text/40">({reviews?.length})</span>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {avgRating && (
-                                        <div className="flex items-center gap-1 mb-2 text-sm">
-                                            <span className="text-yellow-400">★</span>
-                                            <span className="font-medium text-brand-text">{avgRating}</span>
-                                            <span className="text-brand-text/50">({reviews?.length})</span>
-                                        </div>
-                                    )}
-
                                     {producer && (
-                                        <Link href={`/${locale}/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1 relative z-20">
+                                        <Link href={`/${locale}/productores/${producer.slug}`} className="text-[10px] sm:text-xs text-brand-accent hover:underline mb-2 line-clamp-1 inline-block">
                                             👨‍🌾 {producer.brand_name}
                                         </Link>
                                     )}
 
-                                    <p className="text-sm text-brand-text/70 mb-4 flex-1 line-clamp-2">
+                                    <p className="hidden sm:block text-xs text-brand-text/60 mb-4 flex-1 line-clamp-2">
                                         {product.description || 'Producto fresco y local.'}
                                     </p>
 
-                                    <div className="mt-auto pt-4 border-t border-brand-primary/10 relative z-20">
+                                    <div className="mt-auto pt-3 border-t border-brand-primary/5">
                                         <AddToCartButton
                                             product={{
                                                 ...product,

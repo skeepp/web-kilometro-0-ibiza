@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { HeroCarousel } from '@/components/ui/HeroCarousel';
 import { getDummyCover, getDummyProductImage } from '@/utils/dummyImages';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { GravityRadarCTA } from '@/components/ui/GravityRadarCTA';
 
 export default async function LandingPage() {
     const t = await getTranslations('Index');
@@ -75,12 +76,8 @@ export default async function LandingPage() {
                     <p className="text-2xl text-white/95 mb-12 max-w-3xl mx-auto text-balance font-medium drop-shadow-sm">
                         {t('subtitle')}
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center items-center gap-6 text-center mb-12">
-                        <Link href="/es/radar">
-                            <Button size="lg" className="bg-brand-accent text-white hover:bg-white hover:text-brand-accent shadow-xl hover:-translate-y-1 transition-all text-lg font-bold px-8 py-6 rounded-full border-0">
-                                {t('cta')}
-                            </Button>
-                        </Link>
+                    <div className="flex flex-col justify-center items-center gap-6 text-center mb-12 sm:mb-20">
+                        <GravityRadarCTA />
                     </div>
                     <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-white/90 font-medium tracking-wide bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 shadow-soft max-w-fit mx-auto">
                         <span>{t('trust_bar')}</span>

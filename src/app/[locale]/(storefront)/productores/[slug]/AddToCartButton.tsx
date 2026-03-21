@@ -40,25 +40,25 @@ export function AddToCartButton({ product }: { product: ProductToCart }) {
 
     if (inCart > 0) {
         return (
-            <div className="flex flex-col gap-2 w-full">
-                <div className="flex items-center justify-between border border-brand-primary/20 rounded-xl px-2 h-11 bg-brand-background/30">
+            <div className="flex flex-col gap-1.5 sm:gap-2 w-full">
+                <div className="flex items-center justify-between border border-brand-primary/20 rounded-xl px-2 h-9 sm:h-11 bg-brand-background/30">
                     <button
                         onClick={handleRemove}
-                        className="w-10 h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors"
+                        className="w-8 sm:w-10 h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors text-lg"
                     >
                         -
                     </button>
-                    <span className="font-medium text-brand-text select-none">{inCart}</span>
+                    <span className="text-sm sm:text-base font-medium text-brand-text select-none">{inCart}</span>
                     <button
                         onClick={handleAdd}
-                        className="w-10 h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors"
+                        className="w-8 sm:w-10 h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors text-lg"
                     >
                         +
                     </button>
                 </div>
-                {/* Adding local navigation to cart since they want a way to "go to checkout" */}
+                {/* Link to cart */}
                 <a href="/es/carrito" className="w-full">
-                    <Button variant="outline" fullWidth className="text-sm h-10 border-brand-primary/30 text-brand-primary hover:bg-brand-primary hover:text-white">
+                    <Button variant="outline" fullWidth className="text-[10px] sm:text-sm h-8 sm:h-10 border-brand-primary/20 text-brand-primary hover:bg-brand-primary hover:text-white">
                         Ir al carrito
                     </Button>
                 </a>
@@ -71,8 +71,9 @@ export function AddToCartButton({ product }: { product: ProductToCart }) {
             variant="primary"
             fullWidth
             onClick={handleAdd}
+            className="h-9 sm:h-11 text-xs sm:text-base"
         >
-            Añadir al carrito
+            Añadir
         </Button>
     );
 }

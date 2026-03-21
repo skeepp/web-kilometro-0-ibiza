@@ -14,6 +14,13 @@ const DynamicMapInner = dynamic(
     { ssr: false }
 );
 
+const DynamicGoogleMapInner = dynamic(
+    () => import('./GoogleMapInner').then((mod) => mod.default),
+    { ssr: false }
+);
+
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
 /* ── Constants ── */
 const IBIZA_CENTER: [number, number] = [38.98, 1.43];
 const DEFAULT_ZOOM = 11;
@@ -161,6 +168,20 @@ export default function RadarMapClient({ producers }: Props) {
             if (!searchQuery.trim()) return;
             setIsSearching(true);
             try {
+                if (GOOGLE_MAPS_API_KEY) {
+                    // Use Google Geocoding for premium results
+                    const res = await fetch(
+                        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery + ', Baleares, España')}&key=${GOOGLE_MAPS_API_KEY}`
+                    );
+                    const data = await res.json();
+                    if (data?.results?.[0]?.geometry?.location) {
+                        const { lat, lng } = data.results[0].geometry.location;
+                        setSearchCenter([lat, lng]);
+                        return;
+                    }
+                }
+
+                // Fallback to Nominatim (OpenStreetMap)
                 const res = await fetch(
                     `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery + ', Baleares, España')}&limit=5`
                 );
@@ -278,21 +299,35 @@ export default function RadarMapClient({ producers }: Props) {
             <div className={`max-w-7xl mx-auto px-4 py-8 w-full flex-1 flex gap-6 ${isMobile ? 'flex-col' : 'flex-row'}`}>
                 {/* Map */}
                 <div className={`relative rounded-xl overflow-hidden border border-slate-200 shadow-sm ${isMobile ? 'h-[45vh]' : 'w-[65%] max-h-[75vh] min-h-[500px]'}`}>
-                    {mapReady && customIcon && selectedIcon && userIcon ? (
-                        <DynamicMapInner
-                            mappableProducers={filteredProducers}
-                            selectedProducer={selectedProducer}
-                            setSelectedProducer={setSelectedProducer}
-                            IBIZA_CENTER={activeCenter as [number, number]}
-                            DEFAULT_ZOOM={DEFAULT_ZOOM}
-                            isMobile={isMobile}
-                            customIcon={customIcon}
-                            selectedIcon={selectedIcon}
-                            userPosition={activeCenter as [number, number]}
-                            radiusKm={radiusKm}
-                            userIcon={userIcon}
-                            distances={distances}
-                        />
+                    {mapReady ? (
+                        GOOGLE_MAPS_API_KEY ? (
+                            <DynamicGoogleMapInner
+                                apiKey={GOOGLE_MAPS_API_KEY}
+                                mappableProducers={filteredProducers}
+                                selectedProducer={selectedProducer}
+                                setSelectedProducer={setSelectedProducer}
+                                IBIZA_CENTER={activeCenter as [number, number]}
+                                DEFAULT_ZOOM={DEFAULT_ZOOM}
+                                userPosition={activeCenter as [number, number]}
+                                radiusKm={radiusKm}
+                                distances={distances}
+                            />
+                        ) : customIcon && selectedIcon && userIcon ? (
+                            <DynamicMapInner
+                                mappableProducers={filteredProducers}
+                                selectedProducer={selectedProducer}
+                                setSelectedProducer={setSelectedProducer}
+                                IBIZA_CENTER={activeCenter as [number, number]}
+                                DEFAULT_ZOOM={DEFAULT_ZOOM}
+                                isMobile={isMobile}
+                                customIcon={customIcon}
+                                selectedIcon={selectedIcon}
+                                userPosition={activeCenter as [number, number]}
+                                radiusKm={radiusKm}
+                                userIcon={userIcon}
+                                distances={distances}
+                            />
+                        ) : null
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-brand-background min-h-[300px]">
                             <div className="flex flex-col items-center gap-3">
