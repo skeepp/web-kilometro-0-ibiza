@@ -202,7 +202,7 @@ export default function HarvestManager({ harvests: initial }: { harvests: Harves
                                 </div>
 
                                 {h.notes && (
-                                    <p className="text-xs text-brand-text/60 mb-4 italic">"{h.notes}"</p>
+                                    <p className="text-xs text-brand-text/60 mb-4 italic">&quot;{h.notes}&quot;</p>
                                 )}
 
                                 {/* Actions */}

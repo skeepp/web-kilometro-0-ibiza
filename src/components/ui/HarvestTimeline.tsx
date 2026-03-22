@@ -72,7 +72,7 @@ export function HarvestTimeline({ harvests }: { harvests: HarvestEntry[] }) {
             <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-primary/20 via-brand-accent/20 to-transparent"></div>
 
             <div className="space-y-6">
-                {sorted.map((h, i) => {
+                {sorted.map((h) => {
                     const cfg = STATUS_CONFIG[h.status] || STATUS_CONFIG.planted;
                     const progress = getProgress(h.planted_at, h.estimated_harvest);
                     const daysLeft = getDaysRemaining(h.estimated_harvest);
@@ -146,7 +146,7 @@ export function HarvestTimeline({ harvests }: { harvests: HarvestEntry[] }) {
                                 </p>
 
                                 {h.notes && (
-                                    <p className="text-xs text-brand-text/50 mt-2 italic">"{h.notes}"</p>
+                                    <p className="text-xs text-brand-text/50 mt-2 italic">&quot;{h.notes}&quot;</p>
                                 )}
                             </div>
                         </div>

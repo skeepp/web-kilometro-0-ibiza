@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     APIProvider,
     Map,
     AdvancedMarker,
-    Pin,
     InfoWindow,
     useMap,
 } from '@vis.gl/react-google-maps';
@@ -61,7 +60,7 @@ function MapHandler({
             if (userPosition) bounds.extend({ lat: userPosition[0], lng: userPosition[1] });
             map.fitBounds(bounds, { top: 60, bottom: 60, left: 60, right: 60 });
         }
-    }, [map, mappableProducers, selectedProducer, userPosition]);
+    }, [map, mappableProducers, selectedProducer, userPosition, setInfoWindowProducer]);
 
     return null;
 }
@@ -74,8 +73,6 @@ export default function GoogleMapInner({
     IBIZA_CENTER,
     DEFAULT_ZOOM,
     userPosition,
-    radiusKm,
-    distances,
 }: GoogleMapInnerProps) {
     const [infoWindowProducer, setInfoWindowProducer] = useState<RadarProducer | null>(null);
 
