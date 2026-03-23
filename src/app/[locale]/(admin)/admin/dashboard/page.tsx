@@ -2,7 +2,7 @@ import React from 'react';
 import { requireAdmin } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/Card';
 import { DataTable } from '@/components/ui/DataTable';
-import { PLATFORM_FEE_RATE } from '@/lib/constants';
+import { PLATFORM_MARKUP_RATE } from '@/lib/constants';
 import Image from 'next/image';
 
 export default async function AdminDashboard() {
@@ -13,9 +13,9 @@ export default async function AdminDashboard() {
     const { count: totalOrders } = await supabase.from('orders').select('*', { count: 'exact', head: true });
 
     // GMV this month
-    const { data: orders } = await supabase.from('orders').select('total').gte('created_at', new Date(new Date().setDate(1)).toISOString());
+    const { data: orders } = await supabase.from('orders').select('total, platform_fee').gte('created_at', new Date(new Date().setDate(1)).toISOString());
     const gmv = orders?.reduce((acc, order) => acc + Number(order.total), 0) || 0;
-    const commissions = gmv * PLATFORM_FEE_RATE;
+    const commissions = orders?.reduce((acc, order) => acc + Number(order.platform_fee), 0) || 0;
 
     // Recent Orders
     const { data: recentOrders } = await supabase.from('orders')
@@ -25,7 +25,7 @@ export default async function AdminDashboard() {
 
     const kpis = [
         { label: 'GMV Mes Actual', value: `${gmv.toFixed(2)}€`, color: 'text-brand-primary' },
-        { label: `Comisiones (${PLATFORM_FEE_RATE * 100}%)`, value: `${commissions.toFixed(2)}€`, color: 'text-green-600' },
+        { label: `Comisiones (${PLATFORM_MARKUP_RATE * 100}%)`, value: `${commissions.toFixed(2)}€`, color: 'text-green-600' },
         { label: 'Productores Activos', value: totalProducers || 0, color: 'text-brand-primary' },
         { label: 'Total Pedidos', value: totalOrders || 0, color: 'text-brand-primary' },
     ];

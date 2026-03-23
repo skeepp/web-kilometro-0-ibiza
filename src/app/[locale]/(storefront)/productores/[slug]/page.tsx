@@ -7,6 +7,7 @@ import { getDummyCover } from '@/utils/dummyImages';
 import ProducerMap from './ProducerMap';
 import { ProducerTabs } from './ProducerTabs';
 import { FollowButton } from './FollowButton';
+import { getRetailPrice } from '@/lib/constants';
 
 export default async function ProducerProfilePage({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
@@ -102,7 +103,12 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
 
                     {/* Right Area: Tabs (Products / Feed) */}
                     <div className="lg:w-[65%] xl:w-[70%]">
-                        <ProducerTabs products={producer.products} producerId={producer.id} producerName={producer.brand_name} harvests={harvests || []} />
+                        <ProducerTabs 
+                            products={producer.products?.map((p: Record<string, unknown> & { price: number }) => ({ ...p, price: getRetailPrice(p.price) })) || []} 
+                            producerId={producer.id} 
+                            producerName={producer.brand_name} 
+                            harvests={harvests || []} 
+                        />
                     </div>
                 </div>
             </div>

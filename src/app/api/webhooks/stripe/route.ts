@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/utils/stripe/server';
 import { createClient } from '@supabase/supabase-js';
-import { PLATFORM_FEE_RATE, SHIPPING_FLAT_EUR } from '@/lib/constants';
+import { SHIPPING_FLAT_EUR, getRetailPrice } from '@/lib/constants';
 import { sendOrderConfirmationConsumer, sendOrderNotificationProducer } from '@/utils/resend/emails';
 import Stripe from 'stripe';
 
@@ -53,9 +53,9 @@ export async function POST(request: Request) {
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
     const supabase = getSupabaseAdmin();
 
-    const { producerId, userId, cart } = paymentIntent.metadata;
+    const { userId, cart } = paymentIntent.metadata;
 
-    if (!producerId || !userId || !cart) {
+    if (!userId || !cart) {
         console.error('❌ Missing metadata on PaymentIntent:', paymentIntent.id);
         return;
     }
@@ -69,15 +69,15 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
         return;
     }
 
-    // Check if order already exists for this payment intent (idempotency)
+    // Check if an order already exists for this payment intent (idempotency)
     const { data: existingOrder } = await supabase
         .from('orders')
         .select('id')
         .eq('stripe_payment_intent_id', paymentIntent.id)
-        .maybeSingle();
+        .limit(1);
 
-    if (existingOrder) {
-        console.log(`ℹ️ Order already exists for PaymentIntent ${paymentIntent.id}, skipping.`);
+    if (existingOrder && existingOrder.length > 0) {
+        console.log(`ℹ️ Orders already exist for PaymentIntent ${paymentIntent.id}, skipping.`);
         return;
     }
 
@@ -85,35 +85,13 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
     const productIds = cartItems.map(item => item.i);
     const { data: products } = await supabase
         .from('products')
-        .select('id, name, price, unit')
+        .select('id, name, price, unit, producer_id')
         .in('id', productIds);
 
     if (!products || products.length === 0) {
         console.error('❌ Products not found for cart items:', productIds);
         return;
     }
-
-    // Calculate totals
-    let subtotal = 0;
-    const orderItemsData = cartItems.map(cartItem => {
-        const product = products.find(p => p.id === cartItem.i);
-        if (!product) return null;
-
-        const itemSubtotal = product.price * cartItem.q;
-        subtotal += itemSubtotal;
-
-        return {
-            product_id: product.id,
-            product_name: product.name,
-            quantity: cartItem.q,
-            unit_price: product.price,
-            subtotal: itemSubtotal,
-        };
-    }).filter(Boolean);
-
-    const shippingCost = SHIPPING_FLAT_EUR;
-    const total = subtotal + shippingCost;
-    const platformFee = total * PLATFORM_FEE_RATE;
 
     // Fetch user profile for delivery info
     const { data: profile } = await supabase
@@ -130,73 +108,121 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
         .eq('is_default', true)
         .maybeSingle();
 
-    // Insert the order
-    const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-            consumer_id: userId,
-            producer_id: producerId,
-            status: 'pending',
-            delivery_name: profile?.full_name || 'Cliente',
-            delivery_address: address?.full_address || 'Dirección pendiente',
-            delivery_phone: profile?.phone || null,
-            subtotal: subtotal,
-            shipping_cost: shippingCost,
-            platform_fee: platformFee,
-            total: total,
-            stripe_payment_intent_id: paymentIntent.id,
-        })
-        .select('id')
-        .single();
-
-    if (orderError || !order) {
-        console.error('❌ Failed to create order:', orderError?.message);
-        return;
-    }
-
-    // Insert order items
-    const itemsWithOrderId = orderItemsData.map(item => ({
-        ...item,
-        order_id: order.id,
-    }));
-
-    const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(itemsWithOrderId);
-
-    if (itemsError) {
-        console.error('❌ Failed to insert order items:', itemsError.message);
-    }
-
-    console.log(`✅ Order ${order.id} created for PaymentIntent ${paymentIntent.id}`);
-
-    // Send email notifications (fire-and-forget, don't block the response)
-    try {
-        // Get consumer email from Supabase Auth
-        const { data: authUser } = await supabase.auth.admin.getUserById(userId);
-        const consumerEmail = authUser?.user?.email;
-
-        if (consumerEmail) {
-            await sendOrderConfirmationConsumer(consumerEmail, order.id, total.toFixed(2));
+    // Group items by producer
+    const itemsByProducer: Record<string, typeof cartItems> = {};
+    cartItems.forEach(cartItem => {
+        const product = products.find(p => p.id === cartItem.i);
+        if (product && product.producer_id) {
+            if (!itemsByProducer[product.producer_id]) itemsByProducer[product.producer_id] = [];
+            itemsByProducer[product.producer_id].push(cartItem);
         }
+    });
 
-        // Get producer email
-        const { data: producer } = await supabase
-            .from('producers')
-            .select('user_id')
-            .eq('id', producerId)
+    const producerIds = Object.keys(itemsByProducer);
+    
+    // Distribute flat shipping cost evenly among producers for accounting
+    const splitShipping = SHIPPING_FLAT_EUR / producerIds.length;
+
+    // Process each producer's order
+    for (const producerId of producerIds) {
+        const producerCartItems = itemsByProducer[producerId];
+        let producerNetSubtotal = 0;
+        let producerRetailSubtotal = 0;
+
+        const orderItemsData = producerCartItems.map(cartItem => {
+            const product = products.find(p => p.id === cartItem.i)!;
+
+            const netItemSubtotal = product.price * cartItem.q;
+            const retailItemPrice = getRetailPrice(product.price);
+            const retailItemSubtotal = retailItemPrice * cartItem.q;
+
+            producerNetSubtotal += netItemSubtotal;
+            producerRetailSubtotal += retailItemSubtotal;
+
+            return {
+                product_id: product.id,
+                product_name: product.name,
+                quantity: cartItem.q,
+                unit_price: retailItemPrice, // Store retail price for customer view
+                subtotal: retailItemSubtotal,
+            };
+        });
+
+        const platformFee = Number((producerRetailSubtotal - producerNetSubtotal).toFixed(2));
+        const total = Number((producerRetailSubtotal + splitShipping).toFixed(2));
+
+        // Insert the order for this specific producer
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
+            .insert({
+                consumer_id: userId,
+                producer_id: producerId,
+                status: 'pending',
+                delivery_name: profile?.full_name || 'Cliente',
+                delivery_address: address?.full_address || 'Dirección pendiente',
+                delivery_phone: profile?.phone || null,
+                subtotal: Number(producerNetSubtotal.toFixed(2)),
+                shipping_cost: Number(splitShipping.toFixed(2)),
+                platform_fee: platformFee, // This is the markup added
+                total: total,
+                stripe_payment_intent_id: paymentIntent.id,
+            })
+            .select('id')
             .single();
 
-        if (producer) {
-            const { data: producerAuth } = await supabase.auth.admin.getUserById(producer.user_id);
-            const producerEmail = producerAuth?.user?.email;
+        if (orderError || !order) {
+            console.error(`❌ Failed to create order for producer ${producerId}:`, orderError?.message);
+            continue;
+        }
 
-            if (producerEmail) {
-                await sendOrderNotificationProducer(producerEmail, order.id);
+        // Insert order items
+        const itemsWithOrderId = orderItemsData.map(item => ({ ...item, order_id: order.id }));
+        await supabase.from('order_items').insert(itemsWithOrderId);
+
+        console.log(`✅ Order ${order.id} created for Producer ${producerId} (PaymentIntent ${paymentIntent.id})`);
+
+        // Handle SEPARATE TRANSFERS via Stripe Connect using the transfer_group
+        if (paymentIntent.transfer_group) {
+            const { data: producer } = await supabase
+                .from('producers')
+                .select('stripe_account_id, user_id')
+                .eq('id', producerId)
+                .single();
+
+            if (producer?.stripe_account_id) {
+                try {
+                    await stripe.transfers.create({
+                        amount: Math.round(producerNetSubtotal * 100), // Transfer ONLY the pure net value to the producer
+                        currency: 'eur',
+                        destination: producer.stripe_account_id,
+                        transfer_group: paymentIntent.transfer_group,
+                        metadata: {
+                            orderId: order.id,
+                        }
+                    });
+                    console.log(`💸 Successfully transferred ${producerNetSubtotal}€ to account ${producer.stripe_account_id}`);
+                } catch (transferErr) {
+                    console.error(`❌ Failed to transfer funds to producer ${producerId}:`, transferErr);
+                }
+            }
+
+            // Fire and forget email notifications
+            try {
+                // Get consumer email
+                const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+                if (authUser?.user?.email) {
+                    await sendOrderConfirmationConsumer(authUser.user.email, order.id, total.toFixed(2));
+                }
+
+                if (producer?.user_id) {
+                    const { data: producerAuth } = await supabase.auth.admin.getUserById(producer.user_id);
+                    if (producerAuth?.user?.email) {
+                        await sendOrderNotificationProducer(producerAuth.user.email, order.id);
+                    }
+                }
+            } catch (emailError) {
+                console.error('⚠️ Email notification failed (non-critical):', emailError);
             }
         }
-    } catch (emailError) {
-        // Don't fail the webhook because of email errors
-        console.error('⚠️ Email notification failed (non-critical):', emailError);
     }
 }

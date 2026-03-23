@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/server';
 import { AddToCartButton } from '../../productores/[slug]/AddToCartButton';
 import Image from 'next/image';
 import { ReviewForm } from '@/components/products/ReviewForm';
+import { getRetailPrice } from '@/lib/constants';
 
 export default async function ProductProfilePage({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
@@ -18,6 +19,9 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
     if (!product) return notFound();
 
     const producer = product.producers;
+
+    // Apply exact retail price 
+    product.price = getRetailPrice(product.price);
 
     // Fetch reviews
     const { data: reviews } = await supabase

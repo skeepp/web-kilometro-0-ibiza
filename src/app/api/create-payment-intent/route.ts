@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/utils/stripe/server';
 import { createClient } from '@/utils/supabase/server';
-import { SHIPPING_FLAT_EUR, PLATFORM_FEE_RATE } from '@/lib/constants';
+import { SHIPPING_FLAT_EUR, getRetailPrice } from '@/lib/constants';
+
+import Stripe from 'stripe';
 
 export async function POST(request: Request) {
     try {
@@ -29,47 +31,34 @@ export async function POST(request: Request) {
 
         if (!dbProducts) throw new Error('Products not found');
 
-        let subtotal = 0;
+        let subtotalRetail = 0;
+        
         items.forEach((item: { id: string, quantity: number }) => {
             const dbProd = dbProducts.find(p => p.id === item.id);
             if (dbProd) {
-                subtotal += dbProd.price * item.quantity;
+                // Retail amount (+ markup)
+                subtotalRetail += getRetailPrice(dbProd.price) * item.quantity;
             }
         });
 
         const shipping = SHIPPING_FLAT_EUR;
-        const totalAmount = subtotal + shipping;
+        // The customer pays the retail price + shipping
+        const totalAmount = subtotalRetail + shipping;
+        
+        // Generate a unique transfer group for this multi-vendor cart
+        const transferGroup = `CART_${Date.now()}_${user.id.slice(0, 8)}`;
 
         // Build PaymentIntent params
-        const paymentIntentParams: {
-            amount: number;
-            currency: string;
-            metadata: Record<string, string>;
-            application_fee_amount?: number;
-            transfer_data?: { destination: string };
-        } = {
+        const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
             amount: Math.round(totalAmount * 100), // in cents
             currency: 'eur',
+            transfer_group: transferGroup,
             metadata: {
                 producerIds: producerIds.join(','),
                 userId: user.id,
                 cart: JSON.stringify(items.map((i: { id: string; quantity: number }) => ({ i: i.id, q: i.quantity }))).slice(0, 500)
             }
         };
-
-        // If there is only one producer and they have Stripe Connect, use split payments
-        // For multi-producer orders, platform collects and distributes manually (or via separate transfers)
-        if (producerIds.length === 1) {
-            const { data: producer } = await supabase.from('producers').select('stripe_account_id').eq('id', producerIds[0]).single();
-
-            if (producer?.stripe_account_id) {
-                const applicationFeeAmount = Math.round(totalAmount * PLATFORM_FEE_RATE * 100);
-                paymentIntentParams.application_fee_amount = applicationFeeAmount;
-                paymentIntentParams.transfer_data = {
-                    destination: producer.stripe_account_id,
-                };
-            }
-        }
 
         const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
 

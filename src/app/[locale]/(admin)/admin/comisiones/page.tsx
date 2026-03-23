@@ -2,7 +2,7 @@ import React from 'react';
 import { requireAdmin } from '@/lib/auth';
 import { Card, CardContent } from '@/components/ui/Card';
 import { DataTable } from '@/components/ui/DataTable';
-import { PLATFORM_FEE_RATE } from '@/lib/constants';
+import { PLATFORM_MARKUP_RATE } from '@/lib/constants';
 
 export default async function AdminCommissions() {
     const { supabase } = await requireAdmin();
@@ -12,7 +12,7 @@ export default async function AdminCommissions() {
         .order('created_at', { ascending: false });
 
     const totalGmv = orders?.reduce((acc, o) => acc + Number(o.total), 0) || 0;
-    const totalCommissions = orders?.reduce((acc, o) => acc + Number(o.platform_fee || o.total * PLATFORM_FEE_RATE), 0) || 0;
+    const totalCommissions = orders?.reduce((acc, o) => acc + Number(o.platform_fee || 0), 0) || 0;
 
     type OrderRow = { id: string; created_at: string; total: string | number; platform_fee?: string | number; producers?: { brand_name: string } };
 
@@ -28,9 +28,9 @@ export default async function AdminCommissions() {
         { key: 'producer', header: 'Productor', render: (o: OrderRow) => <span className="text-sm text-brand-primary font-medium">{o.producers?.brand_name}</span> },
         { key: 'gmv', header: 'GMV Total', headerClassName: 'text-right', cellClassName: 'text-right', render: (o: OrderRow) => <span className="text-sm text-gray-900">{Number(o.total).toFixed(2)}€</span> },
         {
-            key: 'commission', header: `Comisión (${PLATFORM_FEE_RATE * 100}%)`, headerClassName: 'text-right text-green-600', cellClassName: 'text-right',
+            key: 'commission', header: `Comisión (${PLATFORM_MARKUP_RATE * 100}%)`, headerClassName: 'text-right text-green-600', cellClassName: 'text-right',
             render: (o: OrderRow) => {
-                const commission = Number(o.platform_fee || Number(o.total) * PLATFORM_FEE_RATE);
+                const commission = Number(o.platform_fee || 0);
                 return <span className="text-sm text-green-600 font-bold">+{commission.toFixed(2)}€</span>;
             }
         },
@@ -41,7 +41,7 @@ export default async function AdminCommissions() {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-brand-primary">Comisiones Generadas</h1>
-                    <p className="text-brand-text/60 mt-2">Rentabilidad bruta de la plataforma. (Fee: {PLATFORM_FEE_RATE * 100}%)</p>
+                    <p className="text-brand-text/60 mt-2">Rentabilidad bruta de la plataforma. (Markup: {PLATFORM_MARKUP_RATE * 100}%)</p>
                 </div>
                 <select className="px-4 py-2 border rounded-xl text-sm font-medium">
                     <option>Este mes</option>

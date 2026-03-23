@@ -1,6 +1,7 @@
 import React from 'react';
 import { createClient } from '@/utils/supabase/server';
 import { MarketClient } from './MarketClient';
+import { getRetailPrice } from '@/lib/constants';
 
 export const metadata = {
     title: 'Mercado | De la Finca',
@@ -39,6 +40,11 @@ export default async function MarketPage() {
                 .filter(Boolean) as string[]
         )
     ).sort();
+
+    const productsWithRetailPrice = (products || []).map(p => ({
+        ...p,
+        price: getRetailPrice(p.price)
+    }));
 
     return (
         <div className="w-full">
@@ -79,7 +85,7 @@ export default async function MarketPage() {
 
             {/* Client-side filters + product grid */}
             <MarketClient
-                products={products || []}
+                products={productsWithRetailPrice}
                 municipalities={municipalities}
             />
         </div>

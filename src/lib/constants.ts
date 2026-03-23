@@ -3,11 +3,13 @@
  * Single source of truth for business logic values.
  */
 
-/** Platform commission rate (0.12 = 12%) */
-export const PLATFORM_FEE_RATE = 0.12;
+/** Platform markup rate (0.10 = 10% added on top of producer net price) */
+export const PLATFORM_MARKUP_RATE = 0.10;
 
-/** Producer payout rate (1 - commission) */
-export const PRODUCER_PAYOUT_RATE = 1 - PLATFORM_FEE_RATE;
+/** Utility function to correctly calculate the retail price displayed to customers */
+export function getRetailPrice(basePrice: number): number {
+  return Number((basePrice * (1 + PLATFORM_MARKUP_RATE)).toFixed(2));
+}
 
 /** Flat shipping cost in EUR (MVP) */
 export const SHIPPING_FLAT_EUR = 3.90;

@@ -9,6 +9,7 @@ import { HeroCarousel } from '@/components/ui/HeroCarousel';
 import { getDummyCover, getDummyProductImage } from '@/utils/dummyImages';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { GravityRadarCTA } from '@/components/ui/GravityRadarCTA';
+import { getRetailPrice } from '@/lib/constants';
 
 export default async function LandingPage() {
     const t = await getTranslations('Index');
@@ -56,7 +57,13 @@ export default async function LandingPage() {
             .order('created_at', { ascending: false })
             .limit(4);
 
-        if (products) featuredProducts = products as FeaturedProductRow[];
+        if (products) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            featuredProducts = products.map((p: any) => ({
+                ...p,
+                price: getRetailPrice(p.price)
+            })) as FeaturedProductRow[];
+        }
     } catch (error) {
         console.error('Error fetching featured products:', error);
     }
