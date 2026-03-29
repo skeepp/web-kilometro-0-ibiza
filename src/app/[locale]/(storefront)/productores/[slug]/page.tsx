@@ -108,6 +108,7 @@ export default async function ProducerProfilePage({ params }: { params: { slug: 
                             producerId={producer.id} 
                             producerName={producer.brand_name} 
                             harvests={harvests || []} 
+                            producerImage={producer.profile_image_url}
                         />
                     </div>
                 </div>

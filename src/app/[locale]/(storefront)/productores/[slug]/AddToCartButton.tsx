@@ -4,7 +4,7 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
 
-export type ProductToCart = { id: string; name: string; price: number; producerId: string; producerName: string; unit: string };
+export type ProductToCart = { id: string; name: string; price: number; producerId: string; producerName: string; unit: string; image?: string | null; producerImage?: string | null; };
 export function AddToCartButton({ product }: { product: ProductToCart }) {
     const { addItem, items } = useCart();
 
@@ -19,7 +19,9 @@ export function AddToCartButton({ product }: { product: ProductToCart }) {
             quantity: 1,
             producerId: product.producerId,
             producerName: product.producerName,
-            unit: product.unit
+            unit: product.unit,
+            image: product.image,
+            producerImage: product.producerImage
         });
     };
 
@@ -34,7 +36,9 @@ export function AddToCartButton({ product }: { product: ProductToCart }) {
             quantity: -1,
             producerId: product.producerId,
             producerName: product.producerName,
-            unit: product.unit
+            unit: product.unit,
+            image: product.image,
+            producerImage: product.producerImage
         });
     };
 

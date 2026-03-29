@@ -36,6 +36,7 @@ export default async function LandingPage() {
             id: string;
             brand_name: string;
             slug: string;
+            profile_image_url?: string;
         };
         product_reviews?: { rating: number }[];
     };
@@ -48,7 +49,8 @@ export default async function LandingPage() {
                 producers (
                     id,
                     brand_name,
-                    slug
+                    slug,
+                    profile_image_url
                 ),
                 product_reviews (
                     rating
@@ -166,7 +168,9 @@ export default async function LandingPage() {
                                                 product={{
                                                     ...product,
                                                     producerId: producer?.id || '',
-                                                    producerName: producer?.brand_name || ''
+                                                    producerName: producer?.brand_name || '',
+                                                    image: product.images?.[0] || getDummyProductImage(product.name, product.slug),
+                                                    producerImage: producer?.profile_image_url || null
                                                 }}
                                             />
                                         </div>

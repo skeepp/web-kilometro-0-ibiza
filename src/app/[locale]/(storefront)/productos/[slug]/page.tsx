@@ -137,7 +137,13 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
 
                     <div className="max-w-sm">
                         <AddToCartButton
-                            product={{ ...product, producerId: producer.id, producerName: producer.brand_name }}
+                            product={{ 
+                                ...product, 
+                                producerId: producer.id, 
+                                producerName: producer.brand_name,
+                                image: product.image_url,
+                                producerImage: producer.profile_image_url
+                            }}
                         />
                     </div>
                     <p className="text-xs text-brand-text/50 mt-4 mb-8">

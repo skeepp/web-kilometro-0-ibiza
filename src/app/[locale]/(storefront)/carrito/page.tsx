@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
 import { SHIPPING_FLAT_EUR } from '@/lib/constants';
+import { getDummyProductImage } from '@/utils/dummyImages';
 
 export default function CartPage() {
     const { items, updateQuantity, removeItem, cartTotal, clearCart } = useCart();
@@ -52,9 +53,15 @@ export default function CartPage() {
                         <div key={producerId} className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-soft border border-brand-primary/10 overflow-hidden">
                             {/* Producer header */}
                             <div className="px-6 py-4 bg-brand-background/40 border-b border-brand-primary/10 flex items-center gap-3">
-                                <div className="w-10 h-10 bg-brand-primary/10 rounded-full flex items-center justify-center text-lg">👨‍🌾</div>
+                                {producerItems[0].producerImage ? (
+                                    <div className="relative w-10 h-10 rounded-full border border-brand-primary/20 overflow-hidden shadow-sm flex-shrink-0">
+                                        <Image src={producerItems[0].producerImage} alt={producerItems[0].producerName} fill className="object-cover" sizes="40px" />
+                                    </div>
+                                ) : (
+                                    <div className="w-10 h-10 bg-brand-primary/10 rounded-full flex items-center justify-center text-lg flex-shrink-0">👨‍🌾</div>
+                                )}
                                 <div>
-                                    <h3 className="font-bold text-brand-primary">{producerItems[0].producerName}</h3>
+                                    <h3 className="font-bold text-brand-primary line-clamp-1">{producerItems[0].producerName}</h3>
                                     <p className="text-xs text-brand-text/50">{producerItems.reduce((acc, i) => acc + i.quantity, 0)} artículos · {producerItems.reduce((acc, i) => acc + i.price * i.quantity, 0).toFixed(2)}€</p>
                                 </div>
                             </div>
@@ -73,8 +80,12 @@ export default function CartPage() {
                                             className="p-6 flex items-center justify-between bg-white"
                                         >
                                             <div className="flex items-center space-x-4">
-                                                <div className="w-16 h-16 bg-brand-background rounded-lg flex items-center justify-center text-2xl">
-                                                    📦
+                                                <div className="relative w-16 h-16 bg-brand-background rounded-lg flex items-center justify-center text-2xl overflow-hidden border border-brand-primary/10 flex-shrink-0">
+                                                    {item.image || getDummyProductImage(item.name, item.id) ? (
+                                                        <Image src={item.image || getDummyProductImage(item.name, item.id)} alt={item.name} fill className="object-cover" sizes="64px" />
+                                                    ) : (
+                                                        <span>📦</span>
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <h3 className="font-bold text-brand-text">{item.name}</h3>

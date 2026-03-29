@@ -40,6 +40,7 @@ interface Producer {
     brand_name: string | null;
     slug: string;
     municipality?: string | null;
+    profile_image_url?: string | null;
 }
 
 interface Product {
@@ -371,7 +372,9 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                                                 ...product,
                                                 unit: product.unit || 'unidad',
                                                 producerId: producer?.id || '',
-                                                producerName: producer?.brand_name || ''
+                                                producerName: producer?.brand_name || '',
+                                                image: product.images?.[0] || getDummyProductImage(product.name, product.slug),
+                                                producerImage: producer?.profile_image_url || null
                                             }}
                                         />
                                     </div>

@@ -19,7 +19,8 @@ export default async function MarketPage() {
                 id,
                 brand_name,
                 slug,
-                municipality
+                municipality,
+                profile_image_url
             ),
             product_reviews (
                 rating

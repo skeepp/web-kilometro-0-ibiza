@@ -53,7 +53,7 @@ const MOCK_POSTS = [
     }
 ];
 
-export function ProducerTabs({ products, producerId, producerName, harvests }: { products: Product[]; producerId: string; producerName: string; harvests?: HarvestEntry[] }) {
+export function ProducerTabs({ products, producerId, producerName, harvests, producerImage }: { products: Product[]; producerId: string; producerName: string; harvests?: HarvestEntry[]; producerImage?: string | null }) {
     const [activeTab, setActiveTab] = useState<'products' | 'feed' | 'harvests'>('products');
 
     return (
@@ -121,7 +121,13 @@ export function ProducerTabs({ products, producerId, producerName, harvests }: {
 
                                     <div className="mt-auto pt-4 border-t border-brand-primary/10 relative z-20">
                                         <AddToCartButton
-                                            product={{ ...product, producerId, producerName }}
+                                            product={{ 
+                                                ...product, 
+                                                producerId, 
+                                                producerName,
+                                                image: product.images?.[0] || getDummyProductImage(product.name, product.slug),
+                                                producerImage 
+                                            }}
                                         />
                                     </div>
                                 </CardContent>
@@ -138,7 +144,13 @@ export function ProducerTabs({ products, producerId, producerName, harvests }: {
                     {MOCK_POSTS.map(post => (
                         <div key={post.id} className="bg-white border text-sm sm:text-base border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col transition-shadow hover:shadow-md">
                             <div className="flex items-center gap-3 p-4 sm:p-5 border-b border-gray-50">
-                                <div className="w-10 h-10 rounded-full bg-brand-background flex items-center justify-center text-xl">👨‍🌾</div>
+                                {producerImage ? (
+                                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-brand-primary/20">
+                                        <Image src={producerImage} alt={producerName} fill className="object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-10 h-10 rounded-full bg-brand-background flex items-center justify-center text-xl">👨‍🌾</div>
+                                )}
                                 <div>
                                     <h4 className="font-bold text-brand-primary">{producerName}</h4>
                                     <span className="text-xs text-gray-500">{post.date}</span>

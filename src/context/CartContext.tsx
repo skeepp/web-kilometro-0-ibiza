@@ -10,6 +10,8 @@ export interface CartItem {
     producerId: string;
     producerName: string;
     unit: string;
+    image?: string | null;
+    producerImage?: string | null;
 }
 
 interface CartContextType {
