@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/Button';
-import { SHIPPING_FLAT_EUR } from '@/lib/constants';
 import { getDummyProductImage } from '@/utils/dummyImages';
 
 export default function CartPage() {
@@ -141,14 +140,31 @@ export default function CartPage() {
                                 <span className="font-medium">{cartTotal.toFixed(2)}€</span>
                             </div>
                             <div className="flex justify-between text-brand-text pb-2">
-                                <span>Envío <span className="text-xs bg-brand-background text-brand-primary px-2 py-0.5 rounded-full ml-1">Fijo</span></span>
-                                <span className="font-medium">{SHIPPING_FLAT_EUR.toFixed(2)}€</span>
+                                <span>Recogida <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-1 font-medium">Gratis</span></span>
+                                <span className="font-medium text-green-600">0.00€</span>
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-xl font-bold text-brand-primary mb-8 pt-6 border-t border-brand-primary/10">
+                        <div className="flex justify-between items-center text-xl font-bold text-brand-primary mb-6 pt-6 border-t border-brand-primary/10">
                             <span>Total</span>
-                            <span className="text-2xl">{(cartTotal + SHIPPING_FLAT_EUR).toFixed(2)}€</span>
+                            <span className="text-2xl">{cartTotal.toFixed(2)}€</span>
+                        </div>
+
+                        {/* Pickup Points Summary */}
+                        <div className="bg-brand-background/40 rounded-xl p-4 mb-6 border border-brand-primary/10">
+                            <h3 className="text-sm font-bold text-brand-primary mb-3 flex items-center gap-2">
+                                📍 {producerGroups.length === 1 ? '1 punto' : `${producerGroups.length} puntos`} de recogida
+                            </h3>
+                            <div className="space-y-2">
+                                {producerGroups.map(([producerId, producerItems]) => (
+                                    <div key={producerId} className="flex items-start gap-2 text-xs text-brand-text/70">
+                                        <span className="text-brand-primary mt-0.5">●</span>
+                                        <div>
+                                            <span className="font-medium text-brand-text">{producerItems[0].producerName}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <Link href="/es/checkout" className="block w-full">
@@ -156,7 +172,7 @@ export default function CartPage() {
                         </Link>
 
                         <p className="text-xs text-center text-brand-text/50 mt-4">
-                            Impuestos incluidos. Envío calculado en el checkout.
+                            Impuestos incluidos. Recogida gratuita en tienda.
                         </p>
                     </div>
                 </div>

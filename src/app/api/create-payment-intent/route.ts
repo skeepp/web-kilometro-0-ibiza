@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/utils/stripe/server';
 import { createClient } from '@/utils/supabase/server';
-import { SHIPPING_FLAT_EUR, getRetailPrice } from '@/lib/constants';
+import { getRetailPrice } from '@/lib/constants';
 
 import Stripe from 'stripe';
 
@@ -41,9 +41,8 @@ export async function POST(request: Request) {
             }
         });
 
-        const shipping = SHIPPING_FLAT_EUR;
-        // The customer pays the retail price + shipping
-        const totalAmount = subtotalRetail + shipping;
+        // Click & Collect: no shipping, customer pays retail price only
+        const totalAmount = subtotalRetail;
         
         // Generate a unique transfer group for this multi-vendor cart
         const transferGroup = `CART_${Date.now()}_${user.id.slice(0, 8)}`;

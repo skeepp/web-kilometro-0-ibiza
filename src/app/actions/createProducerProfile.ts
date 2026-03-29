@@ -28,6 +28,7 @@ export async function createProducerProfile(formData: FormData) {
     const municipality = formData.get('municipality') as string;
     const description = formData.get('description') as string;
     const sanitaryRegistration = formData.get('sanitary_registration') as string;
+    const pickupAddress = formData.get('pickup_address') as string;
 
     const profileImageUrl = formData.get('profile_image_url') as string | null;
     const coverImageUrl = formData.get('cover_image_url') as string | null;
@@ -63,6 +64,7 @@ export async function createProducerProfile(formData: FormData) {
             sanitary_registration: sanitaryRegistration || null,
             profile_image_url: profileImageUrl || null,
             cover_image_url: coverImageUrl || null,
+            pickup_address: pickupAddress || null,
             status: 'pending',
         });
 

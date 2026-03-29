@@ -1,9 +1,8 @@
 import React from 'react';
 import { requireProducer } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { OrderStatusSelect, STATUS_COLORS } from '@/components/orders/OrderStatusSelect';
-import { DataTable } from '@/components/ui/DataTable';
 import { PRODUCER_PAYOUT_RATE } from '@/lib/constants';
+import { ProducerOrdersClient } from './ProducerOrdersClient';
 
 export default async function ProducerOrders() {
     const { supabase, producer } = await requireProducer();
@@ -12,64 +11,30 @@ export default async function ProducerOrders() {
 
     const { data: orders } = await supabase
         .from('orders')
-        .select('*, profiles!orders_consumer_id_fkey(full_name, phone)')
+        .select(`
+            *,
+            profiles!orders_consumer_id_fkey(full_name, phone),
+            order_items(product_name, quantity, unit_price, subtotal)
+        `)
         .eq('producer_id', producer.id)
         .order('created_at', { ascending: false });
 
-    type StatusType = 'pending' | 'preparing' | 'shipped' | 'delivered' | 'cancelled';
-    type OrderRow = { id: string; created_at: string; total: string | number; status: StatusType; delivery_name?: string; delivery_address?: string; profiles?: { full_name: string; phone?: string } };
-
-    const columns = [
-        {
-            key: 'id', header: 'ID Pedido / Fecha', render: (o: OrderRow) => (
-                <div>
-                    <div className="text-sm font-mono font-medium text-gray-900">#{o.id.split('-')[0].toUpperCase()}</div>
-                    <div className="text-xs text-gray-500">{new Date(o.created_at).toLocaleDateString('es-ES')}</div>
-                </div>
-            )
-        },
-        {
-            key: 'client', header: 'Cliente', render: (o: OrderRow) => (
-                <div>
-                    <div className="text-sm font-medium text-gray-900">{o.delivery_name || o.profiles?.full_name}</div>
-                    <div className="text-xs text-gray-500">{o.delivery_address}</div>
-                    {o.profiles?.phone && <div className="text-xs text-brand-primary mt-0.5">📞 {o.profiles.phone}</div>}
-                </div>
-            )
-        },
-        {
-            key: 'total', header: 'Total (Neto)', render: (o: OrderRow) => (
-                <div>
-                    <div className="text-sm font-bold text-gray-900">{(Number(o.total) * PRODUCER_PAYOUT_RATE).toFixed(2)}€</div>
-                    <div className="text-xs text-gray-400">Total: {Number(o.total).toFixed(2)}€</div>
-                </div>
-            )
-        },
-        {
-            key: 'currentStatus', header: 'Estado Actual', render: (o: OrderRow) => (
-                <span className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${STATUS_COLORS[o.status] ?? 'bg-gray-100 text-gray-800'}`}>
-                    {o.status}
-                </span>
-            )
-        },
-        {
-            key: 'updateStatus', header: 'Actualizar Estado', headerClassName: 'text-right',
-            render: (o: OrderRow) => <OrderStatusSelect orderId={o.id} currentStatus={o.status} />
-        },
-    ];
+    // Serialize with payout rate for client
+    const ordersWithPayout = (orders || []).map(o => ({
+        ...o,
+        producer_payout: Number((Number(o.total) * PRODUCER_PAYOUT_RATE).toFixed(2)),
+    }));
 
     return (
         <div className="p-4 sm:p-8 max-w-7xl mx-auto">
-            <h1 className="text-2xl sm:text-3xl font-bold text-brand-primary mb-6 sm:mb-8">Gestión de Pedidos</h1>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-brand-primary">Gestión de Pedidos</h1>
+                    <p className="text-sm text-brand-text/60 mt-1">Click & Collect — Recogida en tu puesto</p>
+                </div>
+            </div>
 
-            <DataTable
-                columns={columns}
-                data={orders}
-                keyExtractor={(o) => o.id}
-                emptyIcon="📦"
-                emptyMessage="No has recibido pedidos aún."
-                emptySubMessage="Los nuevos pedidos aparecerán aquí."
-            />
+            <ProducerOrdersClient orders={ordersWithPayout} />
         </div>
     );
 }

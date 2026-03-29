@@ -206,6 +206,21 @@ export default function ProducerOnboardingPage() {
 
                 <div>
                     <label className="block text-sm font-medium text-brand-text mb-1.5">
+                        Dirección de recogida *
+                        <span className="text-brand-text/40 font-normal ml-1">(donde recogerán los clientes)</span>
+                    </label>
+                    <input
+                        name="pickup_address"
+                        type="text"
+                        required
+                        placeholder="Ej: Mercat Vell, Parada 12, Eivissa"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
+                    />
+                    <p className="text-xs text-brand-text/40 mt-1">📍 Esta dirección aparecerá en los pedidos de tus clientes para la recogida.</p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-brand-text mb-1.5">
                         Descripción de tu finca
                     </label>
                     <textarea

@@ -34,13 +34,22 @@ export default function GraciasPage() {
                             Tu pago se ha procesado correctamente.
                         </p>
                         <p className="text-brand-text/70 mb-8">
-                            El productor recibirá tu pedido y comenzará a prepararlo.
-                            Recibirás un email de confirmación en breve.
+                            Cada productor recibirá tu pedido y empezará a prepararlo.
+                            Te avisaremos por email cuando esté listo para recoger.
                         </p>
+
+                        <div className="bg-green-50 rounded-xl p-4 mb-4 border border-green-200">
+                            <div className="flex items-center gap-2 text-green-700 font-medium text-sm mb-2">
+                                <span>📍</span> Recogida en Tienda
+                            </div>
+                            <p className="text-xs text-green-600">
+                                Recibirás un código QR de recogida por email. Preséntalo al productor cuando vayas a recoger.
+                            </p>
+                        </div>
 
                         <div className="bg-brand-primary/5 rounded-xl p-4 mb-8 border border-brand-primary/10">
                             <p className="text-sm text-brand-text/60">
-                                Puedes revisar el estado de tu pedido en cualquier momento desde tu cuenta.
+                                Puedes revisar el estado y código de recogida de cada pedido en tu cuenta.
                             </p>
                         </div>
 

@@ -110,8 +110,8 @@ export default async function ProducerDashboard() {
                     </Link>
                     <Link href="/es/productor/pedidos" className="bg-white p-8 rounded-2xl border border-brand-primary/10 shadow-soft flex flex-col items-center justify-center cursor-pointer hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group">
                         <div className="w-12 h-12 rounded-full bg-brand-background text-brand-primary flex items-center justify-center text-2xl mb-4 group-hover:rotate-180 transition-transform duration-500">↻</div>
-                        <span className="font-semibold text-brand-primary group-hover:text-brand-accent">Revisar últimos pedidos</span>
-                        <p className="text-xs text-brand-text/50 mt-2 text-center">Gestiona ventas y envíos pendientes</p>
+                        <span className="font-semibold text-brand-primary group-hover:text-brand-accent">Gestionar pedidos</span>
+                        <p className="text-xs text-brand-text/50 mt-2 text-center">Notifica recogidas pendientes</p>
                     </Link>
                 </div>
             </div>

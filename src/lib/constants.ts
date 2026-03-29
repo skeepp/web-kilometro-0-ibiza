@@ -6,13 +6,13 @@
 /** Platform markup rate (0.10 = 10% added on top of producer net price) */
 export const PLATFORM_MARKUP_RATE = 0.10;
 
+/** Producer payout rate (inverse of markup — producer receives this fraction of retail) */
+export const PRODUCER_PAYOUT_RATE = 1 / (1 + PLATFORM_MARKUP_RATE);
+
 /** Utility function to correctly calculate the retail price displayed to customers */
 export function getRetailPrice(basePrice: number): number {
   return Number((basePrice * (1 + PLATFORM_MARKUP_RATE)).toFixed(2));
 }
-
-/** Flat shipping cost in EUR (MVP) */
-export const SHIPPING_FLAT_EUR = 3.90;
 
 /** Currency code */
 export const CURRENCY = 'eur';
@@ -30,13 +30,28 @@ export const PRODUCT_CATEGORIES = [
   { value: 'conservas', label: 'Conservas', icon: '🍯' },
 ] as const;
 
-/** Order statuses */
+/** Click & Collect order statuses */
 export const ORDER_STATUSES = [
-  { value: 'pending', label: 'Pendiente' },
-  { value: 'preparing', label: 'En preparación' },
-  { value: 'shipped', label: 'Enviado' },
-  { value: 'delivered', label: 'Entregado' },
-  { value: 'cancelled', label: 'Cancelado' },
+  { value: 'paid', label: 'Pago Confirmado', icon: '💰', color: 'bg-yellow-100 text-yellow-800' },
+  { value: 'preparing', label: 'En Preparación', icon: '📦', color: 'bg-blue-100 text-blue-800' },
+  { value: 'ready_pickup', label: 'Listo para Recoger', icon: '✅', color: 'bg-green-100 text-green-800' },
+  { value: 'picked_up', label: 'Recogido', icon: '🤝', color: 'bg-gray-100 text-gray-700' },
+  { value: 'cancelled', label: 'Cancelado', icon: '❌', color: 'bg-red-100 text-red-800' },
 ] as const;
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number]['value'];
+
+/** Generate a random 6-character pickup code */
+export function generatePickupCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars (0/O, 1/I)
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `RCG-${code.slice(0, 3)}-${code.slice(3)}`;
+}
+
+/** Get QR code URL for a pickup code */
+export function getPickupQRUrl(code: string): string {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(code)}`;
+}

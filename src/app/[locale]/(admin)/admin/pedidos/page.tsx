@@ -2,7 +2,6 @@ import React from 'react';
 import { requireAdmin } from '@/lib/auth';
 import { OrderStatusSelect } from '@/components/orders/OrderStatusSelect';
 import { DataTable } from '@/components/ui/DataTable';
-import { PLATFORM_MARKUP_RATE } from '@/lib/constants';
 
 export default async function AdminOrders() {
     const { supabase } = await requireAdmin();
@@ -12,7 +11,7 @@ export default async function AdminOrders() {
         .select('*, profiles!orders_consumer_id_fkey(full_name, phone), producers(brand_name)')
         .order('created_at', { ascending: false });
 
-    type OrderRow = { id: string; created_at: string; total: string | number; platform_fee: string | number; status: 'pending' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'; profiles?: { full_name: string; phone?: string }; producers?: { brand_name: string } };
+    type OrderRow = { id: string; created_at: string; total: string | number; platform_fee: string | number; status: 'paid' | 'preparing' | 'ready_pickup' | 'picked_up' | 'cancelled'; pickup_code?: string; profiles?: { full_name: string; phone?: string }; producers?: { brand_name: string } };
 
     const columns = [
         {

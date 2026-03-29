@@ -6,7 +6,6 @@ import { getStripe } from '@/utils/stripe/client';
 import { useCart } from '@/context/CartContext';
 import { CheckoutForm } from './CheckoutForm';
 import { useRouter } from 'next/navigation';
-import { SHIPPING_FLAT_EUR } from '@/lib/constants';
 import Link from 'next/link';
 
 export default function CheckoutPage() {
@@ -54,7 +53,7 @@ export default function CheckoutPage() {
         },
     };
 
-    const totalAmount = cartTotal + SHIPPING_FLAT_EUR;
+    const totalAmount = cartTotal; // Click & Collect: no shipping
 
     return (
         <div className="min-h-[calc(100vh-100px)] bg-gradient-to-b from-brand-background/30 to-white py-12 md:py-20 relative overflow-hidden">
@@ -71,9 +70,13 @@ export default function CheckoutPage() {
                     <h2 className="text-xl font-bold mb-6 text-brand-primary flex items-center gap-2">
                         <span className="text-2xl">🔒</span> Resumen del Pedido
                     </h2>
-                    <div className="flex justify-between items-center bg-brand-background/30 p-4 rounded-xl mb-8 border border-brand-primary/10">
-                        <span className="font-medium text-brand-text/80">{items.reduce((a, b) => a + b.quantity, 0)} artículos + envío</span>
+                    <div className="flex justify-between items-center bg-brand-background/30 p-4 rounded-xl mb-3 border border-brand-primary/10">
+                        <span className="font-medium text-brand-text/80">{items.reduce((a, b) => a + b.quantity, 0)} artículos</span>
                         <span className="text-xl font-bold text-brand-primary">{totalAmount.toFixed(2)}€</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-4 py-2 rounded-xl border border-green-100 mb-8">
+                        <span>📍</span>
+                        <span className="font-medium">Método: Recogida en Tienda (gratis)</span>
                     </div>
 
                     {paymentError ? (

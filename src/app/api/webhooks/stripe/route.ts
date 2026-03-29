@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/utils/stripe/server';
 import { createClient } from '@supabase/supabase-js';
-import { SHIPPING_FLAT_EUR, getRetailPrice } from '@/lib/constants';
+import { getRetailPrice, generatePickupCode } from '@/lib/constants';
 import { sendOrderConfirmationConsumer, sendOrderNotificationProducer } from '@/utils/resend/emails';
 import Stripe from 'stripe';
 
@@ -100,14 +100,6 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
         .eq('id', userId)
         .single();
 
-    // Fetch the default address for the user
-    const { data: address } = await supabase
-        .from('addresses')
-        .select('full_address')
-        .eq('user_id', userId)
-        .eq('is_default', true)
-        .maybeSingle();
-
     // Group items by producer
     const itemsByProducer: Record<string, typeof cartItems> = {};
     cartItems.forEach(cartItem => {
@@ -119,13 +111,17 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
     });
 
     const producerIds = Object.keys(itemsByProducer);
-    
-    // Distribute flat shipping cost evenly among producers for accounting
-    const splitShipping = SHIPPING_FLAT_EUR / producerIds.length;
+
+    // Fetch all producer details (including pickup_address)
+    const { data: allProducers } = await supabase
+        .from('producers')
+        .select('id, brand_name, stripe_account_id, user_id, pickup_address, municipality')
+        .in('id', producerIds);
 
     // Process each producer's order
     for (const producerId of producerIds) {
         const producerCartItems = itemsByProducer[producerId];
+        const producerData = allProducers?.find(p => p.id === producerId);
         let producerNetSubtotal = 0;
         let producerRetailSubtotal = 0;
 
@@ -143,13 +139,15 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
                 product_id: product.id,
                 product_name: product.name,
                 quantity: cartItem.q,
-                unit_price: retailItemPrice, // Store retail price for customer view
+                unit_price: retailItemPrice,
                 subtotal: retailItemSubtotal,
             };
         });
 
         const platformFee = Number((producerRetailSubtotal - producerNetSubtotal).toFixed(2));
-        const total = Number((producerRetailSubtotal + splitShipping).toFixed(2));
+        const total = Number(producerRetailSubtotal.toFixed(2)); // No shipping in Click & Collect!
+        const pickupCode = generatePickupCode();
+        const pickupAddress = producerData?.pickup_address || producerData?.municipality || 'Dirección pendiente';
 
         // Insert the order for this specific producer
         const { data: order, error: orderError } = await supabase
@@ -157,15 +155,16 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
             .insert({
                 consumer_id: userId,
                 producer_id: producerId,
-                status: 'pending',
+                status: 'paid', // Click & Collect: starts as 'paid'
                 delivery_name: profile?.full_name || 'Cliente',
-                delivery_address: address?.full_address || 'Dirección pendiente',
+                delivery_address: pickupAddress, // Store pickup address
                 delivery_phone: profile?.phone || null,
                 subtotal: Number(producerNetSubtotal.toFixed(2)),
-                shipping_cost: Number(splitShipping.toFixed(2)),
-                platform_fee: platformFee, // This is the markup added
+                shipping_cost: 0, // No shipping in Click & Collect
+                platform_fee: platformFee,
                 total: total,
                 stripe_payment_intent_id: paymentIntent.id,
+                pickup_code: pickupCode,
             })
             .select('id')
             .single();
@@ -179,50 +178,34 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
         const itemsWithOrderId = orderItemsData.map(item => ({ ...item, order_id: order.id }));
         await supabase.from('order_items').insert(itemsWithOrderId);
 
-        console.log(`✅ Order ${order.id} created for Producer ${producerId} (PaymentIntent ${paymentIntent.id})`);
+        console.log(`✅ Order ${order.id} created for Producer ${producerId} | Pickup Code: ${pickupCode}`);
 
-        // Handle SEPARATE TRANSFERS via Stripe Connect using the transfer_group
-        if (paymentIntent.transfer_group) {
-            const { data: producer } = await supabase
-                .from('producers')
-                .select('stripe_account_id, user_id')
-                .eq('id', producerId)
-                .single();
+        // NOTE: Stripe transfers are now DEFERRED until status changes to 'ready_pickup'
+        // This is handled in updateOrderStatus.ts
 
-            if (producer?.stripe_account_id) {
-                try {
-                    await stripe.transfers.create({
-                        amount: Math.round(producerNetSubtotal * 100), // Transfer ONLY the pure net value to the producer
-                        currency: 'eur',
-                        destination: producer.stripe_account_id,
-                        transfer_group: paymentIntent.transfer_group,
-                        metadata: {
-                            orderId: order.id,
-                        }
-                    });
-                    console.log(`💸 Successfully transferred ${producerNetSubtotal}€ to account ${producer.stripe_account_id}`);
-                } catch (transferErr) {
-                    console.error(`❌ Failed to transfer funds to producer ${producerId}:`, transferErr);
-                }
+        // Fire and forget email notifications
+        try {
+            // Get consumer email
+            const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+            if (authUser?.user?.email) {
+                await sendOrderConfirmationConsumer(
+                    authUser.user.email,
+                    order.id,
+                    total.toFixed(2),
+                    pickupCode,
+                    pickupAddress,
+                    producerData?.brand_name || 'Productor'
+                );
             }
 
-            // Fire and forget email notifications
-            try {
-                // Get consumer email
-                const { data: authUser } = await supabase.auth.admin.getUserById(userId);
-                if (authUser?.user?.email) {
-                    await sendOrderConfirmationConsumer(authUser.user.email, order.id, total.toFixed(2));
+            if (producerData?.user_id) {
+                const { data: producerAuth } = await supabase.auth.admin.getUserById(producerData.user_id);
+                if (producerAuth?.user?.email) {
+                    await sendOrderNotificationProducer(producerAuth.user.email, order.id);
                 }
-
-                if (producer?.user_id) {
-                    const { data: producerAuth } = await supabase.auth.admin.getUserById(producer.user_id);
-                    if (producerAuth?.user?.email) {
-                        await sendOrderNotificationProducer(producerAuth.user.email, order.id);
-                    }
-                }
-            } catch (emailError) {
-                console.error('⚠️ Email notification failed (non-critical):', emailError);
             }
+        } catch (emailError) {
+            console.error('⚠️ Email notification failed (non-critical):', emailError);
         }
     }
 }
