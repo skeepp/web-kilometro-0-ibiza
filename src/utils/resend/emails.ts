@@ -3,7 +3,7 @@ import { getPickupQRUrl } from '@/lib/constants';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = 'De la Finca <pedidos@delafinca.local>'; // Update with verified domain later
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'De la Finca <onboarding@resend.dev>';
 
 export async function sendConsumerWelcomeEmail(email: string, name: string) {
     return resend.emails.send({

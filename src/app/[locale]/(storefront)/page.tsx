@@ -60,10 +60,9 @@ export default async function LandingPage() {
             .limit(4);
 
         if (products) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            featuredProducts = products.map((p: any) => ({
+            featuredProducts = products.map((p: Record<string, unknown>) => ({
                 ...p,
-                price: getRetailPrice(p.price)
+                price: getRetailPrice(p.price as number)
             })) as FeaturedProductRow[];
         }
     } catch (error) {

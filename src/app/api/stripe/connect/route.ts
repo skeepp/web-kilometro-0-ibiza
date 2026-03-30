@@ -51,10 +51,11 @@ export async function POST() {
         }
 
         // Create an Account Link for onboarding
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
         const accountLink = await stripe.accountLinks.create({
             account: accountId,
-            refresh_url: `${process.env.NEXT_PUBLIC_SUPABASE_URL ? 'http://localhost:3000' : 'http://localhost:3000'}/api/stripe/connect/refresh?producer_id=${producer.id}`,
-            return_url: `http://localhost:3000/es/productor/dashboard?stripe_onboarding=complete`,
+            refresh_url: `${siteUrl}/api/stripe/connect/refresh?producer_id=${producer.id}`,
+            return_url: `${siteUrl}/es/productor/dashboard?stripe_onboarding=complete`,
             type: 'account_onboarding',
         });
 

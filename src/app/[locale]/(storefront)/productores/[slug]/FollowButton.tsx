@@ -45,11 +45,12 @@ export function FollowButton({ producerId }: { producerId: string }) {
             } else {
                 toast.info('Has dejado de seguir a este productor.');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             // Revert on error
             setIsFollowing(previousState);
             setFollowerCount(previousCount);
-            toast.error(error.message || 'Error al actualizar el seguimiento. ¿Estás conectado?');
+            const message = error instanceof Error ? error.message : 'Error al actualizar el seguimiento. ¿Estás conectado?';
+            toast.error(message);
         }
     };
 

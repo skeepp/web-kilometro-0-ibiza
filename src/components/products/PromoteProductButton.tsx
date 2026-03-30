@@ -40,9 +40,10 @@ export function PromoteProductButton({ productId, productName, producerId }: Pro
                 setStatus('idle');
                 toast.error(result.error || 'No se pudo completar la promoción.');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             setStatus('idle');
-            toast.error(error.message || 'Error inesperado al promocionar.');
+            const message = error instanceof Error ? error.message : 'Error inesperado al promocionar.';
+            toast.error(message);
         }
     };
 

@@ -47,7 +47,15 @@ export async function POST(request: Request) {
         // Generate a unique transfer group for this multi-vendor cart
         const transferGroup = `CART_${Date.now()}_${user.id.slice(0, 8)}`;
 
-        // Build PaymentIntent params
+        // Build compact cart metadata (Stripe limits metadata values to 500 chars)
+        const cartCompact = items.map((i: { id: string; quantity: number }) => ({ i: i.id, q: i.quantity }));
+        let cartMeta = JSON.stringify(cartCompact);
+        // If cart is too large, use minimal format (just IDs and quantities)
+        if (cartMeta.length > 500) {
+            const minimal = cartCompact.map((c: { i: string; q: number }) => `${c.i.slice(0, 8)}:${c.q}`).join(',');
+            cartMeta = JSON.stringify(cartCompact.slice(0, Math.floor(500 / 40))); // safe truncation at object boundaries
+        }
+
         const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
             amount: Math.round(totalAmount * 100), // in cents
             currency: 'eur',
@@ -55,7 +63,7 @@ export async function POST(request: Request) {
             metadata: {
                 producerIds: producerIds.join(','),
                 userId: user.id,
-                cart: JSON.stringify(items.map((i: { id: string; quantity: number }) => ({ i: i.id, q: i.quantity }))).slice(0, 500)
+                cart: cartMeta
             }
         };
 

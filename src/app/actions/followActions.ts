@@ -57,7 +57,7 @@ export async function getFollowStatus(producerId: string) {
             .single();
 
         return !!data;
-    } catch (error) {
+    } catch {
         return false;
     }
 }

@@ -101,8 +101,9 @@ export async function promoteProduct(productId: string) {
             message: `¡Notificación enviada a ${followersToNotify.length} seguidores!`
         };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error promoting product:', error);
-        return { success: false, error: error.message || 'Error desconocido' };
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        return { success: false, error: message };
     }
 }
