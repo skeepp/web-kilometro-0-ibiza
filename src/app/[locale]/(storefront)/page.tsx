@@ -74,22 +74,26 @@ export default async function LandingPage() {
     return (
         <div className="flex flex-col w-full">
             {/* Hero Section */}
-            <section className="relative w-full py-32 md:py-48 overflow-hidden flex items-center justify-center min-h-[80vh]">
+            <section className="relative w-full py-20 overflow-hidden flex items-center justify-center min-h-[45vh] h-[45vh] md:min-h-[55vh] md:h-[55vh]">
                 {/* Background Carousel */}
                 <HeroCarousel />
 
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                    <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-6 text-balance drop-shadow-md">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight mb-4 sm:mb-6 max-w-4xl mx-auto drop-shadow-lg [text-wrap:balance]">
                         {t('title')}
                     </h1>
-                    <p className="text-2xl text-white/95 mb-12 max-w-3xl mx-auto text-balance font-medium drop-shadow-sm">
+                    <p className="text-base sm:text-lg md:text-xl text-white/95 mb-8 sm:mb-12 max-w-2xl mx-auto font-medium drop-shadow-md [text-wrap:balance]">
                         {t('subtitle')}
                     </p>
                     <div className="flex flex-col justify-center items-center gap-6 text-center mb-12 sm:mb-20">
                         <GravityRadarCTA />
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm text-white/90 font-medium tracking-wide bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 shadow-soft max-w-fit mx-auto">
-                        <span>{t('trust_bar')}</span>
+                    <div className="flex justify-center items-center gap-2 sm:gap-6 text-[10px] sm:text-sm text-white/90 font-medium tracking-wide bg-white/10 backdrop-blur-md px-3 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-full border border-white/20 shadow-soft max-w-fit mx-auto w-full sm:w-auto">
+                        {t('trust_bar').split('|').map((item, i) => (
+                            <span key={i} className="text-center px-1 border-r border-white/20 last:border-0 leading-tight flex-1 sm:flex-none">
+                                {item.trim()}
+                            </span>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -110,7 +114,7 @@ export default async function LandingPage() {
                         </div>
                     </ScrollReveal>
 
-                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                         {featuredProducts.length > 0 ? featuredProducts.map((product) => {
                             const producer = product.producers;
                             const reviews = product.product_reviews as { rating: number }[] | undefined;
@@ -119,15 +123,18 @@ export default async function LandingPage() {
                                 : null;
 
                             return (
-                                <Card key={product.id} className="min-w-[80vw] sm:min-w-0 snap-center flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10 relative group">
-                                    <div className="h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden rounded-t-xl">
+                                <Card key={product.id} className="flex flex-col h-full hover:shadow-md transition-shadow bg-brand-background/10 relative group">
+                                    <div className="h-32 sm:h-48 bg-brand-background/50 flex items-center justify-center text-4xl relative overflow-hidden rounded-t-xl">
                                         {(product.images?.[0] || getDummyProductImage(product.name, product.slug)) ? (
                                             <Image
                                                 src={product.images?.[0] || getDummyProductImage(product.name, product.slug)}
                                                 alt={product.name}
                                                 fill
                                                 className="object-cover"
-                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                                sizes="(max-width: 640px) 50vw, 25vw"
+                                                quality={80}
+                                                placeholder="blur"
+                                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
                                             />
                                         ) : (
                                             '🥬'
@@ -201,10 +208,10 @@ export default async function LandingPage() {
                         </div>
                     </ScrollReveal>
 
-                    <div className="flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-8 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
+                    <div className="flex flex-nowrap overflow-x-auto pb-6 gap-4 snap-x snap-mandatory sm:grid sm:grid-cols-2 md:grid-cols-3 sm:gap-8 sm:overflow-visible sm:pb-0 sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
                         {producers.length > 0 ? producers.map((producer, index) => (
-                            <ScrollReveal key={producer.id} delay={index * 120}>
-                            <Link href={`/es/productores/${producer.slug}`} className="min-w-[80vw] sm:min-w-0 snap-center block h-full">
+                            <ScrollReveal key={producer.id} delay={index * 120} className="min-w-[85vw] sm:min-w-0 snap-center shrink-0 w-full sm:w-auto">
+                            <Link href={`/es/productores/${producer.slug}`} className="block h-full">
                                 <Card className="h-full hover:shadow-lg transition-all group">
                                     <div className="h-48 w-full bg-brand-earth/20 relative overflow-hidden">
                                         {(producer.cover_image_url || getDummyCover(producer.slug)) ? (
@@ -213,7 +220,10 @@ export default async function LandingPage() {
                                                 alt={`Portada de ${producer.brand_name}`}
                                                 fill
                                                 className="object-cover"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                                                sizes="(max-width: 640px) 100vw, 33vw"
+                                                quality={80}
+                                                placeholder="blur"
+                                                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
                                             />
                                         ) : (
                                             <div className="absolute inset-0 flex items-center justify-center text-4xl">🌾</div>
@@ -261,9 +271,9 @@ export default async function LandingPage() {
                         </ScrollReveal>
                         <ScrollReveal delay={300}>
                             <div className="flex flex-col items-center">
-                                <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">🚚</div>
-                                <h3 className="font-bold text-lg mb-2 text-brand-primary">3. Recibe en casa</h3>
-                                <p className="text-brand-text/70">El productor prepara y entrega tu pedido para asegurar la mayor frescura.</p>
+                                <div className="w-16 h-16 rounded-full bg-brand-primary/10 flex items-center justify-center text-2xl mb-4">📍</div>
+                                <h3 className="font-bold text-lg mb-2 text-brand-primary">3. Recoge tu pedido</h3>
+                                <p className="text-brand-text/70">El productor prepara tu pedido con los productos más frescos.</p>
                             </div>
                         </ScrollReveal>
                     </div>

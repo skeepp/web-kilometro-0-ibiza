@@ -15,9 +15,9 @@ export default function NosotrosPage() {
             description: 'Añade los productos que más te gusten a tu carrito. Compra directamente del productor, sin intermediarios ni sobrecostes.',
         },
         {
-            icon: '🚚',
-            title: 'Recibe en casa',
-            description: 'El productor prepara tu pedido con los productos más frescos y te lo entrega directamente. Producto de kilómetro cero garantizado.',
+            icon: '📍',
+            title: 'Recoge tu pedido',
+            description: 'El productor prepara tu pedido con los productos más frescos. Producto de kilómetro cero garantizado.',
         },
     ];
 

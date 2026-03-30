@@ -47,13 +47,12 @@ export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl
         }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-[72px]">
-                    {/* Logo */}
-                    <div className="flex-shrink-0 flex items-center">
-                        <Link href="/es" className="group flex items-center gap-2.5">
-                            <div className="w-9 h-9 bg-gradient-to-br from-brand-primary to-brand-accent rounded-xl flex items-center justify-center text-white font-serif font-bold text-lg shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
+                    <div className="flex-shrink-0 flex items-center min-w-0">
+                        <Link href="/es" className="group flex items-center gap-2">
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-brand-primary to-brand-accent rounded-xl flex shrink-0 items-center justify-center text-white font-serif font-bold text-lg shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
                                 F
                             </div>
-                            <span className="text-xl font-serif font-bold text-brand-primary group-hover:text-brand-accent transition-colors duration-300">
+                            <span className="text-lg sm:text-xl font-serif font-bold text-brand-primary group-hover:text-brand-accent transition-colors duration-300 truncate">
                                 De la Finca
                             </span>
                         </Link>
@@ -160,8 +159,8 @@ export function Navbar({ user, avatarUrl, role }: { user: User | null; avatarUrl
             </div>
 
             {/* Mobile Menu */}
-            <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
-                isMobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            <div className={`md:hidden overflow-y-auto transition-all duration-500 ease-in-out ${
+                isMobileMenuOpen ? 'max-h-[80vh] opacity-100' : 'max-h-0 opacity-0'
             }`}>
                 <div className="bg-white/95 backdrop-blur-xl border-t border-brand-primary/5 shadow-lg">
                     <div className="px-4 pt-3 pb-4 space-y-1">

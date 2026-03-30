@@ -9,14 +9,23 @@ import type { RadarProducer } from './page';
 import 'leaflet/dist/leaflet.css';
 import dynamic from 'next/dynamic';
 
+const MapLoading = () => (
+    <div className="w-full h-full flex items-center justify-center bg-brand-background min-h-[300px]">
+        <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-4 border-brand-primary/30 border-t-brand-accent rounded-full animate-spin" />
+            <p className="text-sm text-brand-text/60 font-medium">Cargando mapa interactivo...</p>
+        </div>
+    </div>
+);
+
 const DynamicMapInner = dynamic(
     () => import('./MapInner').then((mod) => mod.default),
-    { ssr: false }
+    { ssr: false, loading: MapLoading }
 );
 
 const DynamicGoogleMapInner = dynamic(
     () => import('./GoogleMapInner').then((mod) => mod.default),
-    { ssr: false }
+    { ssr: false, loading: MapLoading }
 );
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -50,7 +59,6 @@ export default function RadarMapClient({ producers }: Props) {
     const [geoStatus, setGeoStatus] = useState<'loading' | 'granted' | 'denied'>('loading');
     const [selectedProducer, setSelectedProducer] = useState<RadarProducer | null>(null);
     const [isMobile, setIsMobile] = useState(false);
-    const [mapReady, setMapReady] = useState(false);
 
     /* ── Icons ── */
     const [customIcon, setCustomIcon] = useState<L.Icon | null>(null);
@@ -62,7 +70,6 @@ export default function RadarMapClient({ producers }: Props) {
 
     /* ── Geolocation ── */
     useEffect(() => {
-        setMapReady(true);
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
@@ -299,42 +306,35 @@ export default function RadarMapClient({ producers }: Props) {
             <div className={`max-w-7xl mx-auto px-4 py-8 w-full flex-1 flex gap-6 ${isMobile ? 'flex-col' : 'flex-row'}`}>
                 {/* Map */}
                 <div className={`relative rounded-xl overflow-hidden border border-slate-200 shadow-sm ${isMobile ? 'h-[45vh]' : 'w-[65%] max-h-[75vh] min-h-[500px]'}`}>
-                    {mapReady ? (
-                        GOOGLE_MAPS_API_KEY ? (
-                            <DynamicGoogleMapInner
-                                apiKey={GOOGLE_MAPS_API_KEY}
-                                mappableProducers={filteredProducers}
-                                selectedProducer={selectedProducer}
-                                setSelectedProducer={setSelectedProducer}
-                                IBIZA_CENTER={activeCenter as [number, number]}
-                                DEFAULT_ZOOM={DEFAULT_ZOOM}
-                                userPosition={activeCenter as [number, number]}
-                                radiusKm={radiusKm}
-                                distances={distances}
-                            />
-                        ) : customIcon && selectedIcon && userIcon ? (
-                            <DynamicMapInner
-                                mappableProducers={filteredProducers}
-                                selectedProducer={selectedProducer}
-                                setSelectedProducer={setSelectedProducer}
-                                IBIZA_CENTER={activeCenter as [number, number]}
-                                DEFAULT_ZOOM={DEFAULT_ZOOM}
-                                isMobile={isMobile}
-                                customIcon={customIcon}
-                                selectedIcon={selectedIcon}
-                                userPosition={activeCenter as [number, number]}
-                                radiusKm={radiusKm}
-                                userIcon={userIcon}
-                                distances={distances}
-                            />
-                        ) : null
+                    {GOOGLE_MAPS_API_KEY ? (
+                        <DynamicGoogleMapInner
+                            apiKey={GOOGLE_MAPS_API_KEY}
+                            mappableProducers={filteredProducers}
+                            selectedProducer={selectedProducer}
+                            setSelectedProducer={setSelectedProducer}
+                            IBIZA_CENTER={activeCenter as [number, number]}
+                            DEFAULT_ZOOM={DEFAULT_ZOOM}
+                            userPosition={activeCenter as [number, number]}
+                            radiusKm={radiusKm}
+                            distances={distances}
+                        />
+                    ) : customIcon && selectedIcon && userIcon ? (
+                        <DynamicMapInner
+                            mappableProducers={filteredProducers}
+                            selectedProducer={selectedProducer}
+                            setSelectedProducer={setSelectedProducer}
+                            IBIZA_CENTER={activeCenter as [number, number]}
+                            DEFAULT_ZOOM={DEFAULT_ZOOM}
+                            isMobile={isMobile}
+                            customIcon={customIcon}
+                            selectedIcon={selectedIcon}
+                            userPosition={activeCenter as [number, number]}
+                            radiusKm={radiusKm}
+                            userIcon={userIcon}
+                            distances={distances}
+                        />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-brand-background min-h-[300px]">
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="w-10 h-10 border-4 border-brand-primary/30 border-t-brand-accent rounded-full animate-spin" />
-                                <p className="text-sm text-brand-text/60 font-medium">Cargando mapa...</p>
-                            </div>
-                        </div>
+                        <MapLoading />
                     )}
                 </div>
 

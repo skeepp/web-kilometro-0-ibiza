@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { DataTable } from '@/components/ui/DataTable';
 import Link from 'next/link';
 import { ToggleProductButton } from '@/components/products/ToggleProductButton';
+import { PromoteProductButton } from '@/components/products/PromoteProductButton';
 
 export default async function ProducerProducts() {
     const { supabase, producer } = await requireProducer();
@@ -48,7 +49,8 @@ export default async function ProducerProducts() {
         {
             key: 'actions', header: 'Acciones', headerClassName: 'text-right', cellClassName: 'text-right text-sm font-medium',
             render: (p: ProductRow) => (
-                <div className="flex justify-end gap-3">
+                <div className="flex justify-end gap-3 items-center">
+                    <PromoteProductButton productId={p.id} productName={p.name} producerId={producer.id} />
                     <Link href={`/es/productor/productos/${p.id}/editar`} className="text-brand-primary hover:text-brand-accent">Editar</Link>
                     <ToggleProductButton productId={p.id} available={p.available} />
                 </div>

@@ -22,8 +22,8 @@ export function GravityRadarCTA() {
             >
                 <div className="
                     relative overflow-hidden
-                    flex items-center gap-4 sm:gap-6
-                    px-6 py-4 sm:px-10 sm:py-6
+                    flex items-center gap-3 sm:gap-6
+                    px-4 py-3 sm:px-10 sm:py-6
                     bg-gradient-to-br from-brand-primary to-brand-accent
                     rounded-2xl sm:rounded-3xl
                     border-2 sm:border-4 border-white/30
@@ -37,17 +37,17 @@ export function GravityRadarCTA() {
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none"></div>
 
                     {/* Icon: Market Basket with subtle pulse */}
-                    <div className="relative flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center p-2 border border-white/30 group-hover:rotate-3 transition-transform">
-                        <span className="text-3xl sm:text-4xl">🧺</span>
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-brand-accent rounded-full animate-ping opacity-75"></div>
+                    <div className="relative flex-shrink-0 w-10 h-10 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center p-1.5 sm:p-2 border border-white/30 group-hover:rotate-3 transition-transform">
+                        <span className="text-2xl sm:text-4xl">🧺</span>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-brand-accent rounded-full animate-ping opacity-75"></div>
                     </div>
 
                     {/* Text Content */}
-                    <div className="text-left flex flex-col gap-0.5 sm:gap-1">
-                        <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight leading-tight">
+                    <div className="text-left flex flex-col gap-0.5 sm:gap-1 flex-1 min-w-0 break-words">
+                        <h2 className="text-lg sm:text-3xl font-bold text-white tracking-tight leading-tight [text-wrap:balance]">
                             Mercado
                         </h2>
-                        <p className="text-xs sm:text-base font-medium text-white/90">
+                        <p className="text-[11px] sm:text-base font-medium text-white/90 leading-tight">
                             Explora y compra productos locales directos de la finca
                         </p>
                     </div>

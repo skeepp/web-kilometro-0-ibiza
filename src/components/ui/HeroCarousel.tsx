@@ -34,15 +34,16 @@ export function HeroCarousel() {
                         src={src}
                         alt="Fondo de Baleares"
                         fill
-                        sizes="100vw"
-                        quality={100}
+                        sizes="(max-width: 640px) 640px, (max-width: 1280px) 1280px, 1920px"
+                        quality={85}
                         className="object-cover object-center"
                         priority={index === 0}
                     />
                 </div>
             ))}
             {/* Gradient Overlays for contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-900/40 to-transparent z-20"></div>
+            <div className="absolute inset-0 bg-gray-950/30 z-20"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-900/50 to-transparent z-20"></div>
         </div>
     );
 }

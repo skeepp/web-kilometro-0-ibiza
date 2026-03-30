@@ -130,7 +130,7 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
                             </Link>
                         </div>
                         <div className="flex text-sm text-brand-text/70 gap-4 mt-4 border-t border-brand-primary/10 pt-4">
-                            <div className="flex items-center"><span className="mr-2">🚚</span> Envío local</div>
+                            <div className="flex items-center"><span className="mr-2">📍</span> Recogida local</div>
                             <div className="flex items-center"><span className="mr-2">🌱</span> Temporada</div>
                         </div>
                     </div>
