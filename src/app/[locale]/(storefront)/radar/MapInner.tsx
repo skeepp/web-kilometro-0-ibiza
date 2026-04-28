@@ -138,7 +138,20 @@ export default function MapInner({
                     <Marker
                         key={producer.id}
                         position={[producer.lat!, producer.lng!]}
-                        icon={isSelected ? (selectedIcon ?? customIcon!) : customIcon!}
+                        icon={L.divIcon({
+                            className: 'custom-div-icon bg-transparent border-0',
+                            html: `
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-xl border-2 relative overflow-hidden ${isSelected ? 'bg-[#D4A017] border-white z-10' : 'bg-[#2D6A4F] border-white'}">
+                                    ${producer.profile_image_url 
+                                        ? `<img src="${producer.profile_image_url}" class="w-full h-full object-cover" />` 
+                                        : `<span>👨‍🌾</span>`
+                                    }
+                                </div>
+                                <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent ${isSelected ? 'border-t-[8px] border-t-[#D4A017]' : 'border-t-[8px] border-t-[#2D6A4F]'}"></div>
+                            `,
+                            iconSize: [40, 48],
+                            iconAnchor: [20, 48],
+                        })}
                         eventHandlers={{
                             click: () => setSelectedProducer?.(producer),
                         }}

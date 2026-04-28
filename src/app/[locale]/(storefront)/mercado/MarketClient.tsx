@@ -53,6 +53,7 @@ interface Product {
     category: string | null;
     origin: string | null;
     images: string[] | null;
+    created_at?: string;
     producers: Producer | null;
     product_reviews: { rating: number }[] | null;
 }
@@ -81,9 +82,33 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
         }
     }, [productoParam]);
 
+    const searchPlaceholders = useMemo(() => [
+        "Busca tomates...",
+        "Queso de Can Bufí...",
+        "Miel de azahar...",
+        "Huevos ecológicos...",
+        "Sobrasada ibicenca..."
+    ], []);
+    
+    const [placeholderIdx, setPlaceholderIdx] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPlaceholderIdx(prev => (prev + 1) % searchPlaceholders.length);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [searchPlaceholders]);
+
     // Current month's peak products
     const currentMonth = new Date().getMonth();
     const peakProducts = PEAK_SEASON_BY_MONTH[currentMonth] || [];
+    
+    const inSeasonCount = useMemo(() => {
+        return products.filter(p => {
+            const name = p.name.toLowerCase();
+            return peakProducts.some(sp => name.includes(sp.toLowerCase()));
+        }).length;
+    }, [products, peakProducts]);
 
     const filtered = useMemo(() => {
         let result = [...products];
@@ -164,10 +189,10 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                 </div>
                 <input
                     type="text"
-                    placeholder="Buscar productos, productores..."
+                    placeholder={searchPlaceholders[placeholderIdx]}
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary shadow-sm"
+                    className="w-full pl-12 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary shadow-sm transition-all"
                 />
                 {search && (
                     <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-text/40 hover:text-brand-text p-1">
@@ -182,12 +207,15 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                     {/* Productos de Temporada - special button */}
                     <button
                         onClick={() => { setShowOnlySeason(!showOnlySeason); setCategory(''); }}
-                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border flex-shrink-0 ${showOnlySeason
+                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all border flex items-center gap-1.5 flex-shrink-0 ${showOnlySeason
                             ? 'bg-gradient-to-r from-brand-accent to-brand-primary text-white border-brand-accent shadow-md'
                             : 'bg-gradient-to-r from-brand-accent/10 to-brand-primary/10 text-brand-primary border-brand-accent/30 hover:border-brand-accent/60'
                             }`}
                     >
                         🌿 De Temporada
+                        <span className="bg-white/30 text-brand-primary px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs leading-none">
+                            {inSeasonCount}
+                        </span>
                     </button>
                     
                     {/* Separator */}
@@ -307,17 +335,39 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5" id="productos">
                     {filtered.map((product) => {
                         const producer = product.producers;
                         const reviews = product.product_reviews;
                         const avgRating = reviews && reviews.length > 0
                             ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
                             : null;
+                            
+                        const isTemporada = peakProducts.some(sp => product.name.toLowerCase().includes(sp.toLowerCase()));
+                        
+                        let harvestedDaysAgo = null;
+                        if (product.created_at) {
+                            const days = Math.floor((Date.now() - new Date(product.created_at).getTime()) / (1000 * 3600 * 24));
+                            if (days >= 0 && days < 14) {
+                                harvestedDaysAgo = days;
+                            }
+                        }
+
+                        // Softer category badge colors
+                        const categoryColors: Record<string, string> = {
+                            fruta: 'bg-rose-50 text-rose-500 border-rose-100',
+                            verdura: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                            carne: 'bg-red-50 text-red-500 border-red-100',
+                            lacteos: 'bg-amber-50 text-amber-600 border-amber-100',
+                            huevos: 'bg-orange-50 text-orange-500 border-orange-100',
+                            conservas: 'bg-stone-50 text-stone-500 border-stone-200',
+                        };
+                        const catColor = categoryColors[product.category || ''] || 'bg-gray-50 text-gray-500 border-gray-100';
 
                         return (
-                            <Card key={product.id} className="flex flex-col h-full hover:shadow-lg transition-all duration-300 relative group overflow-hidden border border-brand-primary/10 bg-white rounded-2xl">
-                                <Link href={`/${locale}/productos/${product.slug}`} className="block relative h-36 sm:h-48 overflow-hidden bg-brand-background/50">
+                            <Card key={product.id} className="flex flex-col h-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 relative group overflow-hidden border border-gray-100 bg-white rounded-2xl">
+                                {/* Image */}
+                                <Link href={`/${locale}/productos/${product.slug}`} className="block relative h-36 sm:h-44 overflow-hidden bg-brand-background/30">
                                     {(product.images?.[0] || getDummyProductImage(product.name, product.slug)) ? (
                                         <Image
                                             src={product.images?.[0] || getDummyProductImage(product.name, product.slug)}
@@ -329,44 +379,70 @@ export function MarketClient({ products, municipalities }: MarketClientProps) {
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-3xl transition-transform duration-300 group-hover:scale-110">🥬</div>
                                     )}
+                                    {/* Season badge */}
+                                    {isTemporada && (
+                                        <span className="absolute top-2 right-2 bg-emerald-500/90 text-white backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-sm">
+                                            🌿 Temporada
+                                        </span>
+                                    )}
+                                    {/* Category badge — softer muted colors */}
                                     {product.category && (
-                                        <span className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full text-brand-primary capitalize z-10 shadow-sm border border-brand-primary/5">
+                                        <span className={`absolute top-2 left-2 backdrop-blur-sm text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize z-10 border ${catColor}`}>
                                             {product.category}
+                                        </span>
+                                    )}
+                                    {/* Harvested badge */}
+                                    {harvestedDaysAgo !== null && (
+                                        <span className="absolute bottom-2 right-2 bg-black/50 text-white backdrop-blur-sm text-[9px] font-medium px-2 py-0.5 rounded-md z-10">
+                                            {harvestedDaysAgo === 0 ? 'Cosechado hoy' : `Hace ${harvestedDaysAgo}d`}
                                         </span>
                                     )}
                                 </Link>
 
-                                <CardContent className="p-3 sm:p-5 flex flex-col flex-1">
-                                    <div className="flex flex-col mb-2">
-                                        <div className="flex justify-between items-start gap-1 mb-1">
-                                            <h3 className="font-bold text-sm sm:text-base text-brand-text line-clamp-1">
+                                {/* Card body */}
+                                <CardContent className="p-3 sm:p-4 flex flex-col flex-1">
+                                    {/* Product name + price */}
+                                    <div className="flex justify-between items-start gap-1 mb-1">
+                                        <Link href={`/${locale}/productos/${product.slug}`} className="flex-1 min-w-0">
+                                            <h3 className="font-bold text-sm sm:text-[15px] text-gray-900 line-clamp-1 leading-tight hover:text-brand-primary transition-colors">
                                                 {product.name}
                                             </h3>
-                                            <div className="font-bold text-brand-primary whitespace-nowrap text-xs sm:text-sm bg-brand-background px-1.5 py-0.5 rounded border border-brand-primary/5">
-                                                {product.price}€<span className="text-[10px] text-brand-text/40 opacity-70">/{product.unit}</span>
-                                            </div>
+                                        </Link>
+                                        <div className="font-extrabold text-brand-primary whitespace-nowrap text-sm sm:text-base flex-shrink-0">
+                                            {product.price}€<span className="text-[10px] text-gray-400 font-medium">/{product.unit || 'ud'}</span>
                                         </div>
-
-                                        {avgRating && (
-                                            <div className="flex items-center gap-1 text-[10px] sm:text-xs">
-                                                <span className="text-yellow-400">★</span>
-                                                <span className="font-medium text-brand-text">{avgRating}</span>
-                                                <span className="text-brand-text/40">({reviews?.length})</span>
-                                            </div>
-                                        )}
                                     </div>
 
+                                    {/* Rating */}
+                                    {avgRating && (
+                                        <div className="flex items-center gap-1 text-[10px] sm:text-xs mb-1.5">
+                                            <span className="text-amber-400">★</span>
+                                            <span className="font-medium text-gray-700">{avgRating}</span>
+                                            <span className="text-gray-400">({reviews?.length})</span>
+                                        </div>
+                                    )}
+
+                                    {/* Producer */}
                                     {producer && (
-                                        <Link href={`/${locale}/productores/${producer.slug}`} className="text-[10px] sm:text-xs text-brand-accent hover:underline mb-2 line-clamp-1 inline-block">
-                                            👨‍🌾 {producer.brand_name}
+                                        <Link href={`/${locale}/productores/${producer.slug}`} className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 hover:text-brand-accent mb-2 transition-colors">
+                                            {producer.profile_image_url ? (
+                                                <img src={producer.profile_image_url} alt={producer.brand_name || ''} className="w-4 h-4 rounded-full object-cover border border-gray-200" />
+                                            ) : (
+                                                <div className="w-4 h-4 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary font-bold text-[8px] border border-brand-primary/20">
+                                                    {producer.brand_name?.charAt(0) || '👨‍🌾'}
+                                                </div>
+                                            )}
+                                            <span className="font-medium line-clamp-1">{producer.brand_name}</span>
                                         </Link>
                                     )}
 
-                                    <p className="hidden sm:block text-xs text-brand-text/60 mb-4 flex-1 line-clamp-2">
+                                    {/* Description — only on larger screens */}
+                                    <p className="hidden lg:block text-[11px] text-gray-400 mb-2 flex-1 line-clamp-2 leading-relaxed">
                                         {product.description || 'Producto fresco y local.'}
                                     </p>
 
-                                    <div className="mt-auto pt-3 border-t border-brand-primary/5">
+                                    {/* Quick Buy area — quantity + add button on same line */}
+                                    <div className="mt-auto pt-2">
                                         <AddToCartButton
                                             product={{
                                                 ...product,

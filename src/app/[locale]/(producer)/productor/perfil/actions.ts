@@ -12,6 +12,10 @@ export interface UpdateProducerProfileData {
     lng?: string;
     profile_image_url?: string;
     cover_image_url?: string;
+    phone?: string;
+    contact_email?: string;
+    instagram?: string;
+    website?: string;
 }
 
 export async function updateProducerProfile(data: UpdateProducerProfileData): Promise<{ success: boolean; error?: string }> {
@@ -37,6 +41,10 @@ export async function updateProducerProfile(data: UpdateProducerProfileData): Pr
         municipality: data.municipality,
         description: data.description,
         sanitary_registration: data.sanitary_registration,
+        phone: data.phone || null,
+        contact_email: data.contact_email || null,
+        instagram: data.instagram || null,
+        website: data.website || null,
     };
 
     if (data.lat) updatePayload.lat = parseFloat(data.lat);

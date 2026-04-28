@@ -130,7 +130,16 @@ export default function CartPage() {
                             {/* Per-producer subtotals */}
                             {producerGroups.map(([producerId, producerItems]) => (
                                 <div key={producerId} className="flex justify-between text-sm text-brand-text/70 pb-2">
-                                    <span className="truncate mr-2">👨‍🌾 {producerItems[0].producerName}</span>
+                                    <span className="truncate mr-2 flex items-center gap-1.5">
+                                        {producerItems[0].producerImage ? (
+                                            <div className="relative w-5 h-5 rounded-full overflow-hidden flex-shrink-0 border border-brand-primary/10">
+                                                <Image src={producerItems[0].producerImage} alt="" fill className="object-cover" sizes="20px" />
+                                            </div>
+                                        ) : (
+                                            <span>👨‍🌾</span>
+                                        )}
+                                        {producerItems[0].producerName}
+                                    </span>
                                     <span className="font-medium whitespace-nowrap">{producerItems.reduce((acc, i) => acc + i.price * i.quantity, 0).toFixed(2)}€</span>
                                 </div>
                             ))}

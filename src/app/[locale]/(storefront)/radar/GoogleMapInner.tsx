@@ -116,10 +116,14 @@ export default function GoogleMapInner({
                         >
                             <div className={`p-1 transition-all duration-300 ${selectedProducer?.id === producer.id ? 'scale-125' : 'scale-100'}`}>
                                 <div className={`
-                                    w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-xl border-2
-                                    ${selectedProducer?.id === producer.id ? 'bg-[#D4A017] border-white' : 'bg-brand-primary border-white'}
+                                    w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-xl border-2 relative overflow-hidden
+                                    ${selectedProducer?.id === producer.id ? 'bg-[#D4A017] border-white z-10' : 'bg-brand-primary border-white'}
                                 `}>
-                                    🌱
+                                    {producer.profile_image_url ? (
+                                        <Image src={producer.profile_image_url} alt={producer.brand_name} fill className="object-cover" sizes="40px" />
+                                    ) : (
+                                        "👨‍🌾"
+                                    )}
                                 </div>
                                 <div className={`
                                     absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 

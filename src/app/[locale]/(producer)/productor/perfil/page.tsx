@@ -14,16 +14,5 @@ export default async function ProducerProfile() {
         );
     }
 
-    return (
-        <div className="p-8 max-w-4xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-brand-primary">Mi Perfil Público</h1>
-                <p className="text-brand-text/60 mt-2">Esta información aparecerá en tu página pública de la tienda.</p>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-brand-primary/10 p-8">
-                <ProducerProfileForm producer={producer} />
-            </div>
-        </div>
-    );
+    return <ProducerProfileForm producer={producer} />;
 }

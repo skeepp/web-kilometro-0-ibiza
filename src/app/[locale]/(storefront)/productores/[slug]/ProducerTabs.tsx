@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { AddToCartButton } from './AddToCartButton';
 import { getDummyProductImage } from '@/utils/dummyImages';
 import { HarvestTimeline } from '@/components/ui/HarvestTimeline';
+import ProducerMap from './ProducerMap';
 
 interface ProductReview {
     rating: number;
@@ -34,49 +35,36 @@ interface HarvestEntry {
     notes: string | null;
 }
 
-// Mock Feed Data
-const MOCK_POSTS = [
-    {
-        id: 1,
-        date: 'Hace 2 días',
-        content: '¡Acabamos de recolectar los primeros tomates de la temporada! 🍅 Ya disponibles en la tienda. Su sabor es espectacular este año gracias al sol de las últimas semanas.',
-        image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=800&q=80',
-        likes: 24,
-        comments: 3
-    },
-    {
-        id: 2,
-        date: 'Hace 1 semana',
-        content: 'Preparando la tierra para la siembra de invierno. 🚜 Es fundamental dejar descansar ciertas parcelas para mantener los nutrientes naturales sin químicos.',
-        likes: 56,
-        comments: 12
-    }
-];
 
-export function ProducerTabs({ products, producerId, producerName, harvests, producerImage }: { products: Product[]; producerId: string; producerName: string; harvests?: HarvestEntry[]; producerImage?: string | null }) {
-    const [activeTab, setActiveTab] = useState<'products' | 'feed' | 'harvests'>('products');
+
+export function ProducerTabs({ products, producer, harvests }: { products: Product[]; producer: any; harvests?: HarvestEntry[] }) {
+    const [activeTab, setActiveTab] = useState<'products' | 'harvests' | 'info'>('products');
+
+    const producerId = producer.id;
+    const producerName = producer.brand_name;
+    const producerImage = producer.profile_image_url;
 
     return (
         <div className="w-full">
-            {/* Tab Headers */}
-            <div className="flex gap-8 border-b border-brand-primary/10 mb-8 mx-4 sm:mx-0">
+            {/* Sticky Tab Headers */}
+            <div className="sticky top-[56px] sm:top-0 z-40 bg-slate-50 pt-2 pb-0 mb-8 mx-0 flex gap-4 sm:gap-8 border-b border-brand-primary/10 overflow-x-auto hide-scrollbar">
                 <button 
                     onClick={() => setActiveTab('products')}
-                    className={`pb-4 text-lg font-bold transition-all border-b-2 ${activeTab === 'products' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
+                    className={`pb-4 text-sm sm:text-lg font-bold transition-all border-b-2 whitespace-nowrap ${activeTab === 'products' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
                 >
                     Productos ({products?.length || 0})
                 </button>
                 <button 
                     onClick={() => setActiveTab('harvests')}
-                    className={`pb-4 text-lg font-bold transition-all border-b-2 ${activeTab === 'harvests' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
+                    className={`pb-4 text-sm sm:text-lg font-bold transition-all border-b-2 whitespace-nowrap ${activeTab === 'harvests' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
                 >
                     🌱 Cosechas
                 </button>
                 <button 
-                    onClick={() => setActiveTab('feed')}
-                    className={`pb-4 text-lg font-bold transition-all border-b-2 ${activeTab === 'feed' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
+                    onClick={() => setActiveTab('info')}
+                    className={`pb-4 text-sm sm:text-lg font-bold transition-all border-b-2 whitespace-nowrap ${activeTab === 'info' ? 'text-brand-primary border-brand-primary' : 'text-gray-400 border-transparent hover:text-brand-text/80'}`}
                 >
-                    Publicaciones
+                    Sobre la Finca
                 </button>
             </div>
 
@@ -84,7 +72,7 @@ export function ProducerTabs({ products, producerId, producerName, harvests, pro
             {activeTab === 'harvests' ? (
                 <HarvestTimeline harvests={harvests || []} />
             ) : activeTab === 'products' ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-6 px-4 sm:px-0">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 px-1 lg:px-0">
                     {products?.length ? products.map((product) => {
                         const reviews = product.product_reviews;
                         const avgRating = reviews && reviews.length > 0
@@ -140,42 +128,35 @@ export function ProducerTabs({ products, producerId, producerName, harvests, pro
                     )}
                 </div>
             ) : (
-                <div className="flex flex-col gap-6 px-4 sm:px-0">
-                    {MOCK_POSTS.map(post => (
-                        <div key={post.id} className="bg-white border text-sm sm:text-base border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col transition-shadow hover:shadow-md">
-                            <div className="flex items-center gap-3 p-4 sm:p-5 border-b border-gray-50">
-                                {producerImage ? (
-                                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-brand-primary/20">
-                                        <Image src={producerImage} alt={producerName} fill className="object-cover" />
-                                    </div>
-                                ) : (
-                                    <div className="w-10 h-10 rounded-full bg-brand-background flex items-center justify-center text-xl">👨‍🌾</div>
-                                )}
-                                <div>
-                                    <h4 className="font-bold text-brand-primary">{producerName}</h4>
-                                    <span className="text-xs text-gray-500">{post.date}</span>
-                                </div>
+                <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto">
+                    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-brand-primary/10">
+                        <h3 className="font-bold text-xl text-brand-primary mb-6">Nuestra historia</h3>
+                        
+                        <div className="prose text-brand-text/80 max-w-none text-sm sm:text-base leading-relaxed mb-8">
+                            <p>{producer.description || 'Productor tradicional enfocado en métodos sostenibles y productos de proximidad (Km 0).'}</p>
+                        </div>
+
+                        <div className="space-y-4 text-sm sm:text-base text-brand-text/80 mb-8 border-t border-brand-primary/10 pt-6">
+                            <div className="flex items-center gap-3">
+                                <span className="text-xl">🌾</span>
+                                <p>Cultivo 100% natural, respetando los ciclos de la tierra.</p>
                             </div>
-                            <div className="p-4 sm:p-5">
-                                <p className="text-gray-700 leading-relaxed">{post.content}</p>
-                            </div>
-                            {post.image && (
-                                <div className="w-full h-64 relative">
-                                    <Image src={post.image} alt="Publicación" fill className="object-cover" />
-                                </div>
-                            )}
-                            <div className="px-5 py-3 bg-gray-50 flex items-center gap-6 border-t border-gray-100 text-gray-500 text-sm font-medium">
-                                <button className="flex items-center gap-1.5 hover:text-red-500 transition-colors">
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                                    {post.likes}
-                                </button>
-                                <button className="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                                    {post.comments}
-                                </button>
+                            <div className="flex items-center gap-3">
+                                <span className="text-xl">🤝</span>
+                                <p>Venta directa del agricultor al consumidor en {producer.municipality || 'Ibiza'}.</p>
                             </div>
                         </div>
-                    ))}
+
+                        {/* Interactive Map */}
+                        {(producer.lat && producer.lng) ? (
+                            <div className="mt-8">
+                                <h4 className="font-bold text-lg text-brand-primary mb-4">¿Dónde estamos?</h4>
+                                <div className="w-full h-64 rounded-xl overflow-hidden border border-slate-200 shadow-inner relative z-0 bg-gray-50">
+                                    <ProducerMap lat={producer.lat} lng={producer.lng} name={producer.brand_name} />
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
                 </div>
             )}
         </div>

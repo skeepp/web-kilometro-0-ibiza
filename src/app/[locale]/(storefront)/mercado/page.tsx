@@ -10,6 +10,9 @@ export const metadata = {
 
 export default async function MarketPage() {
     const supabase = await createClient();
+    
+    const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const currentMonthName = months[new Date().getMonth()];
 
     const { data: products, error } = await supabase
         .from('products')
@@ -68,10 +71,10 @@ export default async function MarketPage() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                         <div className="max-w-lg">
                             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-2 leading-tight drop-shadow-md">
-                                ¡Las mejores cosechas, directas a tu mesa!
+                                Cosecha de {currentMonthName} en Ibiza
                             </h1>
                             <p className="text-sm md:text-base text-white/90 mb-4 max-w-sm drop-shadow hidden sm:block">
-                                Seleccionados hoy por agricultores de Ibiza.
+                                Recogido esta semana por nuestros agricultores
                             </p>
                             <a
                                 href="#productos"

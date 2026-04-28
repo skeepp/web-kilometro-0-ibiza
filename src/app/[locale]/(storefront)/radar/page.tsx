@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import RadarMapClient from './RadarMapClient';
+import { isOnIsland } from '@/utils/geoValidation';
 
 export const metadata = {
     title: 'Radar de Agricultores | Kilómetro 0',
@@ -26,11 +27,15 @@ export default async function RadarPage() {
         .select('id, brand_name, slug, municipality, description, cover_image_url, profile_image_url, lat, lng')
         .in('status', ['active', 'pending']);
 
-    const allProducers: RadarProducer[] = (producers || []) as RadarProducer[];
+    // Filter out producers whose coordinates fall in the sea (off-island)
+    const allProducers: RadarProducer[] = ((producers || []) as RadarProducer[]).map((p) => {
+        if (p.lat != null && p.lng != null && !isOnIsland(p.lat, p.lng)) {
+            // Nullify coordinates so the producer still appears in the list
+            // but NOT as a marker on the map
+            return { ...p, lat: null, lng: null };
+        }
+        return p;
+    });
 
-    return (
-        <div className="flex flex-col w-full min-h-[calc(100vh-4rem)]">
-            <RadarMapClient producers={allProducers} />
-        </div>
-    );
+    return <RadarMapClient producers={allProducers} />;
 }

@@ -146,7 +146,7 @@ export default function RadarMapClient({ producers }: Props) {
         });
     }, []);
 
-    /* ── Producers with coordinates ── */
+    /* ── Producers with valid coordinates (already pre-filtered server-side) ── */
     const mappableProducers = useMemo(
         () => producers.filter((p) => p.lat != null && p.lng != null),
         [producers]
@@ -176,9 +176,11 @@ export default function RadarMapClient({ producers }: Props) {
             setIsSearching(true);
             try {
                 if (GOOGLE_MAPS_API_KEY) {
-                    // Use Google Geocoding for premium results
+                    // Use Google Geocoding with component restrictions for accuracy
                     const res = await fetch(
-                        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchQuery + ', Baleares, España')}&key=${GOOGLE_MAPS_API_KEY}`
+                        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+                            searchQuery
+                        )}&components=country:ES&bounds=38.6,1.1|39.2,1.65&key=${GOOGLE_MAPS_API_KEY}`
                     );
                     const data = await res.json();
                     if (data?.results?.[0]?.geometry?.location) {
@@ -188,9 +190,11 @@ export default function RadarMapClient({ producers }: Props) {
                     }
                 }
 
-                // Fallback to Nominatim (OpenStreetMap)
+                // Fallback to Nominatim (OpenStreetMap) — bounded to Ibiza area
                 const res = await fetch(
-                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery + ', Baleares, España')}&limit=5`
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+                        searchQuery + ', Ibiza, España'
+                    )}&viewbox=1.1,38.6,1.65,39.2&bounded=1&limit=5`
                 );
                 const data = await res.json();
                 if (data?.[0]) {
@@ -221,91 +225,91 @@ export default function RadarMapClient({ producers }: Props) {
 
     /* ═══════════════════════════════════ RENDER ═══════════════════════════════════ */
     return (
-        <div className="flex flex-col w-full min-h-[calc(100vh-4rem)]">
-            {/* ── TOP BAR: Search + Distance ── */}
-            <div className="bg-white shadow-md border-b border-gray-100 z-20 relative">
-                <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col gap-4">
-                    {/* Title row */}
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-xl sm:text-2xl font-serif font-bold text-brand-primary flex items-center gap-2">
-                            📡 Radar de Agricultores
-                        </h1>
-                        <Link href="/es/productores">
-                            <span className="text-sm font-medium text-brand-accent hover:underline flex items-center gap-1">
-                                👁️ Ver lista
-                            </span>
-                        </Link>
-                    </div>
+        /* Full-height dashboard layout: fills viewport below the navbar (72px) */
+        <div className="flex flex-col w-full overflow-hidden" style={{ height: 'calc(100vh - 72px)' }}>
 
-                    {/* Search bar */}
-                    <form onSubmit={handleSearch} className="relative flex items-center">
-                        <svg className="w-5 h-5 text-gray-400 absolute left-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input
-                            type="text"
-                            placeholder="¿Dónde? Ej. Santa Eulària, Ibiza..."
-                            className="w-full pl-10 pr-24 py-3 bg-white border border-gray-200 shadow-sm focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 rounded-xl text-sm transition-all outline-none text-gray-800 placeholder-gray-400"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        {searchCenter && (
+            {/* ── COMPACT TOP BAR: Search + Distance ── */}
+            <div className="bg-white shadow-sm border-b border-gray-100 z-20 relative flex-shrink-0">
+                <div className="max-w-[1920px] mx-auto px-4 py-3">
+                    <div className="flex flex-col md:flex-row md:items-center gap-3">
+
+                        {/* Title */}
+                        <div className="flex items-center justify-between md:justify-start gap-3 flex-shrink-0">
+                            <h1 className="text-lg font-serif font-bold text-brand-primary flex items-center gap-2">
+                                📡 Radar
+                            </h1>
+                            <Link href="/es/productores">
+                                <span className="text-xs font-medium text-brand-accent hover:underline flex items-center gap-1">
+                                    👁️ Ver lista
+                                </span>
+                            </Link>
+                        </div>
+
+                        {/* Search bar */}
+                        <form onSubmit={handleSearch} className="relative flex items-center flex-1 max-w-md">
+                            <svg className="w-4 h-4 text-gray-400 absolute left-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="¿Dónde? Ej. Santa Eulària..."
+                                className="w-full pl-9 pr-20 py-2 bg-white border border-gray-200 shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 rounded-lg text-sm transition-all outline-none text-gray-800 placeholder-gray-400"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            {searchCenter && (
+                                <button
+                                    type="button"
+                                    onClick={handleClearSearch}
+                                    className="absolute right-14 text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    ✕
+                                </button>
+                            )}
                             <button
-                                type="button"
-                                onClick={handleClearSearch}
-                                className="absolute right-16 text-gray-400 hover:text-gray-600 transition-colors"
+                                type="submit"
+                                disabled={isSearching}
+                                className="absolute right-1.5 px-2.5 py-1 text-xs font-semibold text-white bg-brand-primary rounded-md hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
                             >
-                                ✕
+                                {isSearching ? '...' : 'Buscar'}
                             </button>
+                        </form>
+
+                        {/* Distance slider — compact inline */}
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Radio</span>
+                            <span className="text-sm font-bold text-brand-primary whitespace-nowrap min-w-[52px]">+{radiusKm}km</span>
+                            <input
+                                type="range"
+                                min="1"
+                                max="200"
+                                value={radiusKm}
+                                onChange={(e) => setRadiusKm(parseInt(e.target.value))}
+                                className="w-24 md:w-32 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-accent"
+                            />
+                        </div>
+
+                        {/* Geo status */}
+                        {geoStatus === 'loading' && (
+                            <p className="text-xs text-gray-400 flex items-center gap-1 flex-shrink-0">
+                                <span className="w-3 h-3 border-2 border-brand-primary/30 border-t-brand-accent rounded-full animate-spin inline-block" />
+                                Ubicando…
+                            </p>
                         )}
-                        <button
-                            type="submit"
-                            disabled={isSearching}
-                            className="absolute right-2 px-3 py-1.5 text-xs font-semibold text-white bg-brand-primary rounded-lg hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
-                        >
-                            {isSearching ? '...' : 'Buscar'}
-                        </button>
-                    </form>
-
-                    {/* Distance slider */}
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 min-w-fit">
-                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Radio</span>
-                            <span className="text-lg font-bold text-brand-primary">+{radiusKm}km</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="1"
-                            max="200"
-                            value={radiusKm}
-                            onChange={(e) => setRadiusKm(parseInt(e.target.value))}
-                            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-accent hover:accent-brand-primary transition-colors"
-                        />
-                        <div className="flex gap-2 text-[10px] text-gray-400 font-medium">
-                            <span>1km</span>
-                            <span>200km</span>
-                        </div>
+                        {geoStatus === 'denied' && !searchCenter && (
+                            <p className="text-xs text-amber-600 flex items-center gap-1 flex-shrink-0">
+                                ⚠️ Sin ubicación
+                            </p>
+                        )}
                     </div>
-
-                    {/* Geo status message */}
-                    {geoStatus === 'loading' && (
-                        <p className="text-xs text-gray-400 flex items-center gap-1.5">
-                            <span className="w-3 h-3 border-2 border-brand-primary/30 border-t-brand-accent rounded-full animate-spin inline-block" />
-                            Obteniendo tu ubicación…
-                        </p>
-                    )}
-                    {geoStatus === 'denied' && !searchCenter && (
-                        <p className="text-xs text-amber-600 flex items-center gap-1.5">
-                            ⚠️ No se pudo obtener tu ubicación. Usa el buscador o permite la geolocalización.
-                        </p>
-                    )}
                 </div>
             </div>
 
-            {/* ── MAIN AREA: Map + Producer List ── */}
-            <div className={`max-w-7xl mx-auto px-4 py-8 w-full flex-1 flex gap-6 ${isMobile ? 'flex-col' : 'flex-row'}`}>
-                {/* Map */}
-                <div className={`relative rounded-xl overflow-hidden border border-slate-200 shadow-sm ${isMobile ? 'h-[45vh]' : 'w-[65%] max-h-[75vh] min-h-[500px]'}`}>
+            {/* ── MAIN AREA: Map + Producer List — fills all remaining space ── */}
+            <div className={`flex-1 flex min-h-0 ${isMobile ? 'flex-col' : 'flex-row'}`}>
+
+                {/* Map — takes all available width, overflow-hidden prevents layout shift */}
+                <div className={`relative overflow-hidden ${isMobile ? 'h-[50%] w-full' : 'flex-1'}`}>
                     {GOOGLE_MAPS_API_KEY ? (
                         <DynamicGoogleMapInner
                             apiKey={GOOGLE_MAPS_API_KEY}
@@ -338,21 +342,21 @@ export default function RadarMapClient({ producers }: Props) {
                     )}
                 </div>
 
-                {/* Producer list sidebar */}
+                {/* Producer list sidebar — independent scroll */}
                 <aside className={`
-                    bg-white border text-sm border-slate-200 rounded-xl overflow-y-auto shadow-sm max-h-[75vh]
-                    ${isMobile ? 'flex-1 w-full' : 'w-[35%]'}
+                    bg-white border-l border-gray-100 flex flex-col
+                    ${isMobile ? 'h-[50%] w-full' : 'w-[340px] xl:w-[380px]'}
                 `}>
-                    {/* Count header */}
-                    <div className="sticky top-0 bg-white/95 backdrop-blur-md z-10 px-6 py-4 border-b border-gray-100 shadow-sm">
+                    {/* Sticky count header */}
+                    <div className="flex-shrink-0 bg-white/95 backdrop-blur-md z-10 px-5 py-3 border-b border-gray-100 shadow-sm">
                         <p className="text-sm font-semibold text-brand-primary">
                             {filteredProducers.length} productor{filteredProducers.length !== 1 ? 'es' : ''}
                             <span className="font-normal text-brand-text/50"> en {radiusKm} km</span>
                         </p>
                     </div>
 
-                    {/* List */}
-                    <div className="flex flex-col">
+                    {/* Scrollable list */}
+                    <div className="flex-1 overflow-y-auto overscroll-contain">
                         {filteredProducers.map((producer) => {
                             const isSelected = selectedProducer?.id === producer.id;
                             const coverImg = producer.cover_image_url || getDummyCover(producer.slug);
@@ -363,53 +367,52 @@ export default function RadarMapClient({ producers }: Props) {
                                     key={producer.id}
                                     onClick={() => handleSelectProducer(producer)}
                                     className={`
-                                        w-full text-left p-6 transition-all duration-300 flex gap-4 items-start border-b border-gray-50 cursor-pointer
+                                        w-full text-left px-5 py-4 transition-all duration-200 flex gap-3 items-start border-b border-gray-50 cursor-pointer
                                         ${isSelected
-                                            ? 'bg-brand-background/30 ring-inset ring-2 ring-brand-accent shadow-sm'
-                                            : 'hover:bg-brand-background/10 hover:-translate-y-0.5 hover:shadow-md'
+                                            ? 'bg-brand-background/30 ring-inset ring-2 ring-brand-accent/40'
+                                            : 'hover:bg-gray-50'
                                         }
                                     `}
                                 >
                                     {/* Thumbnail */}
-                                    <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 shadow-sm">
+                                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 shadow-sm">
                                         {coverImg ? (
                                             <Image
                                                 src={coverImg}
                                                 alt={producer.brand_name}
-                                                width={80}
-                                                height={80}
-                                                className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
+                                                width={64}
+                                                height={64}
+                                                className="object-cover w-full h-full"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-2xl">🌾</div>
+                                            <div className="w-full h-full flex items-center justify-center text-xl">🌾</div>
                                         )}
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-2 mb-1">
-                                            <h3 className={`font-bold text-base truncate ${isSelected ? 'text-brand-accent' : 'text-gray-900'}`}>
+                                        <div className="flex items-start justify-between gap-2">
+                                            <h3 className={`font-bold text-sm truncate leading-tight ${isSelected ? 'text-brand-accent' : 'text-gray-900'}`}>
                                                 {producer.brand_name}
                                             </h3>
-                                            {/* Distance badge */}
                                             {dist != null && (
-                                                <span className="flex-shrink-0 text-xs font-semibold text-brand-accent bg-brand-accent/10 px-2 py-1 rounded-full whitespace-nowrap">
+                                                <span className="flex-shrink-0 text-[11px] font-semibold text-brand-accent bg-brand-accent/10 px-2 py-0.5 rounded-full whitespace-nowrap">
                                                     {fmtDist(dist)}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
-                                            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                             {producer.municipality}
                                         </p>
-                                        {/* Expandable Content container */}
-                                        <div className={`overflow-hidden transition-all duration-300 ${isSelected ? 'max-h-[300px] opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0 pointer-events-none'}`}>
+                                        {/* Expandable detail */}
+                                        <div className={`overflow-hidden transition-all duration-300 ${isSelected ? 'max-h-[200px] opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0 pointer-events-none'}`}>
                                             {producer.description && (
-                                                <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">{producer.description}</p>
+                                                <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">{producer.description}</p>
                                             )}
                                             <Link
                                                 href={`/es/productores/${producer.slug}`}
-                                                className="inline-flex items-center justify-center w-full py-2.5 px-4 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
+                                                className="inline-flex items-center justify-center w-full py-2 px-3 bg-brand-primary text-white text-xs font-semibold rounded-lg hover:bg-brand-primary/90 transition-colors shadow-sm"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 Ver Finca →

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De la Finca — Device Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #f8f6f2;
+            --sidebar:   #1a3c28;
+            --sidebar-hover: #244832;
+            --card:      #fff;
+            --border:    rgba(26, 60, 40, 0.12);
+            --primary:   #2d5a3d;
+            --primary-l: #3a7a52;
+            --accent:    #d4a574;
+            --accent-glow: rgba(212, 165, 116, 0.2);
+            --text:      #f0ebe4;
+            --text-dark: #2c3e2d;
+            --muted:     rgba(240, 235, 228, 0.55);
+            --panel:     280px;
+            --danger:    #c54b4b;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: var(--panel);
+            background: var(--sidebar);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 100;
+            gap: 24px;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+        .logo {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 18px;
+        }
+
+        .logo-name {
+            font-family: 'Lora', serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .logo-sub {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .logo-badge {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #7ac47a;
+            background: rgba(122, 196, 122, 0.12);
+            border: 1px solid rgba(122, 196, 122, 0.3);
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .section { display: flex; flex-direction: column; gap: 8px; }
+
+        .section-label {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .btn-list { display: flex; flex-direction: column; gap: 4px; }
+
+        .ui-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(240, 235, 228, 0.65);
+            padding: 9px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 12px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .ui-btn:hover {
+            background: var(--sidebar-hover);
+            border-color: rgba(212, 165, 116, 0.2);
+            color: var(--text);
+        }
+
+        .ui-btn.active {
+            background: var(--accent-glow);
+            border-color: rgba(212, 165, 116, 0.4);
+            color: var(--accent);
+            box-shadow: 0 0 14px rgba(212, 165, 116, 0.1);
+        }
+
+        .ui-btn .icon { font-size: 14px; flex-shrink: 0; }
+
+        .ui-btn .tag {
+            margin-left: auto;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.45;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: rgba(0,0,0,0.25);
+            padding: 3px;
+            border-radius: 8px;
+            gap: 3px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 7px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid rgba(122, 196, 122, 0.3);
+            color: #7ac47a;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(122, 196, 122, 0.1);
+            border-color: rgba(122, 196, 122, 0.5);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-size: 10px;
+            color: var(--muted);
+            line-height: 1.6;
+            opacity: 0.6;
+        }
+
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .status-dot.red { background: var(--danger); }
+        .status-dot.amber { background: #e8a838; }
+        .status-dot.green { background: #4caf50; }
+
+        .category-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(122,196,122,0.65);
+            padding: 6px 0 2px;
+        }
+
+        /* ── Canvas ── */
+        .canvas {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #eae6df;
+            background-image:
+                radial-gradient(circle at 70% 20%, rgba(45,90,61,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(212,165,116,0.05) 0%, transparent 50%),
+                radial-gradient(rgba(0,0,0,0.035) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px;
+            overflow: auto;
+            padding: 80px;
+        }
+
+        .viewport-wrap {
+            position: relative;
+            flex-shrink: 0;
+            box-shadow:
+                0 0 0 1px rgba(0,0,0,0.08),
+                0 30px 80px rgba(0,0,0,0.15),
+                0 0 60px rgba(45,90,61,0.05);
+            background: #fff;
+            border-radius: 6px;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                        width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center center;
+        }
+
+        .frame-mobile {
+            border: 14px solid #1a3c28;
+            border-radius: 44px;
+            box-shadow:
+                0 0 0 1px rgba(212,165,116,0.2),
+                0 40px 80px rgba(0,0,0,0.25);
+        }
+
+        .frame-tablet {
+            border: 16px solid #1a3c28;
+            border-radius: 22px;
+            box-shadow:
+                0 0 0 1px rgba(212,165,116,0.15),
+                0 40px 80px rgba(0,0,0,0.2);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            border-radius: inherit;
+        }
+
+        .device-tag {
+            position: absolute;
+            bottom: -44px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--sidebar);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            white-space: nowrap;
+            color: rgba(240,235,228,0.7);
+            font-weight: 400;
+        }
+
+        .device-tag b { color: var(--accent); font-weight: 500; }
+
+        /* Banner */
+        .server-banner {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(232,168,56,0.25);
+            color: #e8a838;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .server-banner .icon { font-size: 16px; flex-shrink: 0; line-height: 1; }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-name">🌿 De la Finca</div>
+            <div class="logo-sub">Kilómetro 0 · Mallorca & Ibiza</div>
+            <div class="logo-badge">Device Lab</div>
+        </div>
+
+        <!-- Server reminder -->
+        <div class="server-banner">
+            <span class="icon">⚡</span>
+            <span>Ejecuta <b>npm run dev</b> antes de usar. El preview carga <b>localhost:3000</b>.</span>
+        </div>
+
+        <!-- Pages -->
+        <div class="section">
+            <div class="section-label">Páginas</div>
+            <div class="btn-list" id="page-list">
+
+                <div class="category-label">🛒 Storefront</div>
+                <button class="ui-btn active" onclick="changePage('/es', this)">
+                    <span class="icon">🏠</span> Landing / Home
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/productores', this)">
+                    <span class="icon">👨‍🌾</span> Productores
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/carrito', this)">
+                    <span class="icon">🛒</span> Carrito
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/checkout', this)">
+                    <span class="icon">💳</span> Checkout
+                    <span class="tag">Stripe</span>
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/cuenta', this)">
+                    <span class="icon">👤</span> Mi Cuenta
+                </button>
+
+                <div class="category-label" style="margin-top:8px;">👨‍🌾 Panel Productor</div>
+                <button class="ui-btn" onclick="changePage('/es/productor/dashboard', this)">
+                    <span class="icon">📊</span> Dashboard
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/productor/productos', this)">
+                    <span class="icon">📦</span> Mis Productos
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/productor/pedidos', this)">
+                    <span class="icon">🧾</span> Pedidos
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/productor/perfil', this)">
+                    <span class="icon">✏️</span> Mi Perfil
+                </button>
+
+                <div class="category-label" style="margin-top:8px;">⚙️ Panel Admin</div>
+                <button class="ui-btn" onclick="changePage('/es/admin/dashboard', this)">
+                    <span class="icon">📈</span> Dashboard Global
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/admin/pedidos', this)">
+                    <span class="icon">📋</span> Todos los Pedidos
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/admin/productores', this)">
+                    <span class="icon">🧑‍🌾</span> Gestión Productores
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/admin/usuarios', this)">
+                    <span class="icon">👥</span> Usuarios
+                </button>
+                <button class="ui-btn" onclick="changePage('/es/admin/comisiones', this)">
+                    <span class="icon">💰</span> Comisiones
+                </button>
+            </div>
+        </div>
+
+        <!-- Devices -->
+        <div class="section">
+            <div class="section-label">Dispositivo</div>
+            <div class="btn-list" id="device-list">
+                <button class="ui-btn active" onclick="setDevice('iphone', this)">
+                    <span class="icon">📱</span> iPhone 14
+                    <span class="tag">390px</span>
+                </button>
+                <button class="ui-btn" onclick="setDevice('iphonese', this)">
+                    <span class="icon">📱</span> iPhone SE
+                    <span class="tag">375px</span>
+                </button>
+                <button class="ui-btn" onclick="setDevice('tablet', this)">
+                    <span class="icon">📟</span> iPad
+                    <span class="tag">768px</span>
+                </button>
+                <button class="ui-btn" onclick="setDevice('ipadpro', this)">
+                    <span class="icon">📟</span> iPad Pro
+                    <span class="tag">1024px</span>
+                </button>
+                <button class="ui-btn" onclick="setDevice('mba', this)">
+                    <span class="icon">💻</span> MacBook Air
+                    <span class="tag">1440px</span>
+                </button>
+                <button class="ui-btn" onclick="setDevice('fhd', this)">
+                    <span class="icon">🖥️</span> Full HD
+                    <span class="tag">1920px</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Zoom -->
+        <div class="section">
+            <div class="section-label">Zoom</div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('fit', this)">Fit Screen</button>
+                <button class="mode-btn" onclick="setMode('real', this)">100% Pixels</button>
+            </div>
+        </div>
+
+        <!-- Refresh -->
+        <div class="section">
+            <div class="section-label">Preview</div>
+            <button class="refresh-btn" onclick="refreshFrame()">
+                <span>↺</span> Refrescar iframe
+            </button>
+        </div>
+
+        <!-- Server URL -->
+        <div class="section">
+            <div class="section-label">Servidor</div>
+            <div style="display:flex; gap:4px;">
+                <input id="base-url" type="text" value="http://localhost:3000"
+                    style="flex:1; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.1); color:var(--text); padding:8px 10px; border-radius:8px; font-family:'Inter',sans-serif; font-size:11px; outline:none;">
+                <button onclick="applyBase()" style="background:rgba(122,196,122,0.15); border:1px solid rgba(122,196,122,0.3); color:#7ac47a; padding:8px 10px; border-radius:8px; cursor:pointer; font-size:11px; font-family:'Inter',sans-serif;">OK</button>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            De la Finca Device Lab v1.0<br>
+            Next.js · Supabase · Stripe Connect<br>
+            Ejecuta <b>npm run dev</b> primero.
+        </div>
+
+    </aside>
+
+    <main class="canvas" id="canvas">
+        <div class="viewport-wrap" id="viewport">
+            <iframe src="http://localhost:3000/es" id="frame"></iframe>
+            <div class="device-tag" id="device-tag">
+                <b>iPhone 14</b> · 390 × 844
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let BASE_URL = 'http://localhost:3000';
+
+        const devices = {
+            iphone:   { w: 390,  h: 844,  name: 'iPhone 14',     cls: 'frame-mobile'  },
+            iphonese: { w: 375,  h: 667,  name: 'iPhone SE',      cls: 'frame-mobile'  },
+            tablet:   { w: 768,  h: 1024, name: 'iPad',           cls: 'frame-tablet'  },
+            ipadpro:  { w: 1024, h: 1366, name: 'iPad Pro',       cls: 'frame-tablet'  },
+            mba:      { w: 1440, h: 900,  name: 'MacBook Air',    cls: ''              },
+            fhd:      { w: 1920, h: 1080, name: 'Full HD',        cls: ''              },
+        };
+
+        let currentDevice = 'iphone';
+        let currentMode   = 'fit';
+        let currentPath   = '/es';
+
+        function updateUI() {
+            const vp     = document.getElementById('viewport');
+            const canvas = document.getElementById('canvas');
+            const tag    = document.getElementById('device-tag');
+            const d      = devices[currentDevice];
+
+            vp.style.width  = d.w + 'px';
+            vp.style.height = d.h + 'px';
+            vp.className    = 'viewport-wrap ' + d.cls;
+            tag.innerHTML   = `<b>${d.name}</b> · ${d.w} × ${d.h}`;
+
+            if (currentMode === 'fit') {
+                const availW = canvas.clientWidth  - 160;
+                const availH = canvas.clientHeight - 160;
+                const scale  = Math.min(availW / d.w, availH / d.h, 1);
+                vp.style.transform = `scale(${scale})`;
+            } else {
+                vp.style.transform = 'scale(1)';
+            }
+        }
+
+        function setDevice(id, btn) {
+            currentDevice = id;
+            document.querySelectorAll('#device-list .ui-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateUI();
+        }
+
+        function setMode(mode, btn) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateUI();
+        }
+
+        function changePage(path, btn) {
+            currentPath = path;
+            document.getElementById('frame').src = BASE_URL + path;
+            document.querySelectorAll('#page-list .ui-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function refreshFrame() {
+            const frame = document.getElementById('frame');
+            frame.src = BASE_URL + currentPath + '?t=' + Date.now();
+            const btn = event.currentTarget;
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> Refrescando…';
+            setTimeout(() => { btn.innerHTML = orig; }, 900);
+        }
+
+        function applyBase() {
+            BASE_URL = document.getElementById('base-url').value.replace(/\/$/, '');
+            document.getElementById('frame').src = BASE_URL + currentPath;
+        }
+
+        window.addEventListener('resize', updateUI);
+        updateUI();
+    </script>
+
+</body>
+</html>

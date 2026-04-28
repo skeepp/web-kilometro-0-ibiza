@@ -73,18 +73,18 @@ export default async function LandingPage() {
     return (
         <div className="flex flex-col w-full">
             {/* Hero Section */}
-            <section className="relative w-full py-20 overflow-hidden flex items-center justify-center min-h-[45vh] h-[45vh] md:min-h-[55vh] md:h-[55vh]">
+            <section className="relative w-full py-20 sm:py-28 overflow-hidden flex items-center justify-center min-h-[50vh] md:min-h-[65vh]">
                 {/* Background Carousel */}
                 <HeroCarousel />
 
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight mb-4 sm:mb-6 max-w-4xl mx-auto drop-shadow-lg [text-wrap:balance]">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center w-full">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight mb-4 sm:mb-6 w-full max-w-4xl mx-auto drop-shadow-lg [text-wrap:balance]">
                         {t('title')}
                     </h1>
-                    <p className="text-base sm:text-lg md:text-xl text-white/95 mb-8 sm:mb-12 max-w-2xl mx-auto font-medium drop-shadow-md [text-wrap:balance]">
+                    <p className="text-base sm:text-lg md:text-xl md:leading-relaxed text-white/95 mb-8 sm:mb-12 w-full max-w-2xl mx-auto font-medium drop-shadow-md text-center [text-wrap:balance] px-4">
                         {t('subtitle')}
                     </p>
-                    <div className="flex flex-col justify-center items-center gap-6 text-center mb-12 sm:mb-20">
+                    <div className="flex flex-col justify-center items-center gap-6 text-center mb-12 sm:mb-20 w-full">
                         <GravityRadarCTA />
                     </div>
                     <div className="flex justify-center items-center gap-2 sm:gap-6 text-[10px] sm:text-sm text-white/90 font-medium tracking-wide bg-white/10 backdrop-blur-md px-3 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-full border border-white/20 shadow-soft max-w-fit mx-auto w-full sm:w-auto">
@@ -160,8 +160,13 @@ export default async function LandingPage() {
                                         )}
 
                                         {producer && (
-                                            <Link href={`/es/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1 relative z-20">
-                                                👨‍🌾 {producer.brand_name}
+                                            <Link href={`/es/productores/${producer.slug}`} className="text-sm text-brand-accent hover:underline mb-3 inline-flex items-center gap-1.5 relative z-20">
+                                                {producer.profile_image_url ? (
+                                                    <img src={producer.profile_image_url} alt="" className="w-4 h-4 rounded-full object-cover border border-brand-primary/20" />
+                                                ) : (
+                                                    <span>👨‍🌾</span>
+                                                )}
+                                                {producer.brand_name}
                                             </Link>
                                         )}
 
@@ -199,7 +204,7 @@ export default async function LandingPage() {
                         <div className="flex justify-between items-end mb-12">
                             <div>
                                 <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-primary text-balance">Productores Locales</h2>
-                                <p className="text-brand-text/70 mt-2">Apoya el comercio local en Mallorca e Ibiza.</p>
+                                <p className="text-brand-text/70 mt-2">Apoya el comercio local en Baleares.</p>
                             </div>
                             <Link href="/es/productores">
                                 <Button variant="ghost">Ver todos &rarr;</Button>

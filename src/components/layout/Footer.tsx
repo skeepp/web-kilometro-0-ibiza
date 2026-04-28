@@ -11,7 +11,7 @@ export function Footer() {
                             De la Finca
                         </Link>
                         <p className="text-brand-background/80 max-w-sm mx-auto md:mx-0">
-                            Conectamos productores locales de Mallorca e Ibiza con consumidores que buscan producto real, trazable y de kilómetro cero.
+                            Conectamos productores locales de Baleares con consumidores que buscan producto real, trazable y de kilómetro cero.
                         </p>
                     </div>
 

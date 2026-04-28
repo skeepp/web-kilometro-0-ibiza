@@ -29,10 +29,10 @@ export function Sidebar({ role, activePath }: SidebarProps) {
     const navigation = role === 'admin' ? adminNav : producerNav;
 
     return (
-        <div className="flex flex-col w-full md:w-72 border-b md:border-r border-brand-primary/10 bg-white/80 backdrop-blur-xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] md:min-h-screen z-20 sticky top-0">
-            <div className="flex items-center justify-between h-16 md:h-20 px-4 md:px-6 border-b border-brand-primary/10 bg-white/50 backdrop-blur-md sticky top-0 z-10 transition-colors hover:bg-white/80">
-                <Link href="/es" className="text-xl font-serif font-bold text-brand-primary hover:text-brand-accent transition-colors flex items-center gap-2">
-                    <span className="text-2xl">🌿</span>
+        <div className="flex flex-col w-full md:w-64 border-b md:border-r border-gray-100 bg-white md:min-h-screen z-20 sticky top-0">
+            <div className="flex items-center justify-between h-14 md:h-16 px-4 md:px-5 border-b border-gray-100 sticky top-0 z-10 bg-white">
+                <Link href="/es" className="text-base font-bold text-gray-900 hover:text-brand-primary transition-colors flex items-center gap-2">
+                    <span className="text-lg">🌿</span>
                     <span className="truncate">{role === 'admin' ? 'Panel Admin' : 'Mi Finca'}</span>
                 </Link>
                 <div className="md:hidden">
@@ -41,26 +41,26 @@ export function Sidebar({ role, activePath }: SidebarProps) {
                     </Button>
                 </div>
             </div>
-            <div className="md:flex-1 overflow-x-auto md:overflow-y-auto py-2 md:py-6 hide-scrollbar">
-                <nav className="flex md:flex-col gap-2 md:gap-0 md:space-y-2 px-4 whitespace-nowrap min-w-max md:min-w-0 pb-1 md:pb-0">
+            <div className="md:flex-1 overflow-x-auto md:overflow-y-auto py-2 md:py-4 hide-scrollbar">
+                <nav className="flex md:flex-col gap-1 md:gap-0 md:space-y-1 px-3 whitespace-nowrap min-w-max md:min-w-0 pb-1 md:pb-0">
                     {navigation.map((item) => {
                         const isActive = activePath === item.href || (activePath.startsWith(item.href) && item.href !== '/es/admin');
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`group flex items-center px-3 md:px-4 py-2 md:py-3 text-sm font-medium rounded-xl transition-all duration-200 border border-transparent ${isActive
-                                    ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/20 scale-[1.02]'
-                                    : 'text-brand-text/70 hover:bg-brand-primary/5 hover:text-brand-primary hover:border-brand-primary/10'
+                                className={`group flex items-center px-3 md:px-3 py-2 md:py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${isActive
+                                    ? 'bg-brand-primary/8 text-brand-primary font-bold border-l-[3px] border-brand-primary md:ml-0'
+                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-[3px] border-transparent'
                                     }`}
                             >
                                 <svg
-                                    className={`mr-3 h-5 w-5 flex-shrink-0 transition-all duration-200 ${isActive ? 'text-white' : 'text-brand-text/40 group-hover:text-brand-primary group-hover:scale-110'
+                                    className={`mr-2.5 h-[18px] w-[18px] flex-shrink-0 transition-all duration-200 ${isActive ? 'text-brand-primary' : 'text-gray-400 group-hover:text-gray-600'
                                         }`}
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
+                                    strokeWidth={isActive ? 2 : 1.5}
                                     stroke="currentColor"
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
