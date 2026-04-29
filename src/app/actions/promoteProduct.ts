@@ -1,6 +1,5 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
 import { requireProducer } from '@/lib/auth';
 
 export async function promoteProduct(productId: string) {

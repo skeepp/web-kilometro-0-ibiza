@@ -31,7 +31,7 @@ export default async function ProducerDashboard() {
     let recentOrders: RecentOrder[] = [];
 
     // Weekly revenue data (last 7 days)
-    let weeklyData: { day: string; revenue: number }[] = [];
+    const weeklyData: { day: string; revenue: number }[] = [];
 
     try {
         // Pending orders count
@@ -78,6 +78,7 @@ export default async function ProducerDashboard() {
             .order('created_at', { ascending: false })
             .limit(5);
         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         recentOrders = (rOrders || []).map((order: any) => ({
             ...order,
             profiles: Array.isArray(order.profiles) ? order.profiles[0] : order.profiles

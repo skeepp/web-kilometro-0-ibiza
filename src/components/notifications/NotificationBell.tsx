@@ -4,9 +4,20 @@ import { useState, useEffect, useRef } from 'react';
 import { getUnreadNotificationCount, getUserNotifications, markNotificationRead, markAllNotificationsRead } from '@/app/actions/notificationActions';
 import { NotificationCard } from './NotificationCard';
 
+interface NotificationData {
+    id: string;
+    type: string;
+    title: string;
+    body: string;
+    image_url?: string;
+    action_url?: string;
+    created_at: string;
+    read: boolean;
+}
+
 export function NotificationBell() {
     const [unreadCount, setUnreadCount] = useState(0);
-    const [notifications, setNotifications] = useState<unknown[]>([]);
+    const [notifications, setNotifications] = useState<NotificationData[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);

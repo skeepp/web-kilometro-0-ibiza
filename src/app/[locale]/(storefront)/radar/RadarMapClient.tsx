@@ -61,8 +61,6 @@ export default function RadarMapClient({ producers }: Props) {
     const [isMobile, setIsMobile] = useState(false);
 
     /* ── Icons ── */
-    const [customIcon, setCustomIcon] = useState<L.Icon | null>(null);
-    const [selectedIcon, setSelectedIcon] = useState<L.Icon | null>(null);
     const [userIcon, setUserIcon] = useState<L.Icon | null>(null);
 
     /* ── The active center for distance calculations ── */
@@ -96,38 +94,7 @@ export default function RadarMapClient({ producers }: Props) {
     useEffect(() => {
         if (typeof window === 'undefined') return;
         import('leaflet').then((L) => {
-            setCustomIcon(
-                new L.Icon({
-                    iconUrl:
-                        'data:image/svg+xml;charset=utf-8,' +
-                        encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="32" height="48">
-                                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#2D6A4F"/>
-                                <circle cx="12" cy="11" r="5" fill="white"/>
-                                <text x="12" y="14" text-anchor="middle" font-size="8" fill="#2D6A4F">🌱</text>
-                            </svg>
-                        `),
-                    iconSize: [32, 48],
-                    iconAnchor: [16, 48],
-                    popupAnchor: [0, -48],
-                })
-            );
-            setSelectedIcon(
-                new L.Icon({
-                    iconUrl:
-                        'data:image/svg+xml;charset=utf-8,' +
-                        encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="40" height="56">
-                                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#D4A017"/>
-                                <circle cx="12" cy="11" r="5" fill="white"/>
-                                <text x="12" y="14" text-anchor="middle" font-size="8" fill="#D4A017">🌱</text>
-                            </svg>
-                        `),
-                    iconSize: [40, 56],
-                    iconAnchor: [20, 56],
-                    popupAnchor: [0, -56],
-                })
-            );
+
             setUserIcon(
                 new L.Icon({
                     iconUrl:
@@ -322,7 +289,7 @@ export default function RadarMapClient({ producers }: Props) {
                             radiusKm={radiusKm}
                             distances={distances}
                         />
-                    ) : customIcon && selectedIcon && userIcon ? (
+                    ) : userIcon ? (
                         <DynamicMapInner
                             mappableProducers={filteredProducers}
                             selectedProducer={selectedProducer}
@@ -330,8 +297,6 @@ export default function RadarMapClient({ producers }: Props) {
                             IBIZA_CENTER={activeCenter as [number, number]}
                             DEFAULT_ZOOM={DEFAULT_ZOOM}
                             isMobile={isMobile}
-                            customIcon={customIcon}
-                            selectedIcon={selectedIcon}
                             userPosition={activeCenter as [number, number]}
                             radiusKm={radiusKm}
                             userIcon={userIcon}

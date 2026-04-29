@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         let cartMeta = JSON.stringify(cartCompact);
         // If cart is too large, use minimal format (just IDs and quantities)
         if (cartMeta.length > 500) {
-            const minimal = cartCompact.map((c: { i: string; q: number }) => `${c.i.slice(0, 8)}:${c.q}`).join(',');
+
             cartMeta = JSON.stringify(cartCompact.slice(0, Math.floor(500 / 40))); // safe truncation at object boundaries
         }
 

@@ -1,6 +1,5 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
 import { requireAuth } from '@/lib/auth';
 
 export async function getUnreadNotificationCount() {
@@ -15,7 +14,7 @@ export async function getUnreadNotificationCount() {
 
         if (error) throw error;
         return count || 0;
-    } catch (error) {
+    } catch {
         return 0;
     }
 }
