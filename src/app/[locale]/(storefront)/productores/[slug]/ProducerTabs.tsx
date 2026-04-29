@@ -37,7 +37,17 @@ interface HarvestEntry {
 
 
 
-export function ProducerTabs({ products, producer, harvests }: { products: Product[]; producer: any; harvests?: HarvestEntry[] }) {
+interface Producer {
+    id: string;
+    brand_name: string;
+    profile_image_url?: string | null;
+    description?: string | null;
+    municipality?: string | null;
+    lat?: number | null;
+    lng?: number | null;
+}
+
+export function ProducerTabs({ products, producer, harvests }: { products: Product[]; producer: Producer; harvests?: HarvestEntry[] }) {
     const [activeTab, setActiveTab] = useState<'products' | 'harvests' | 'info'>('products');
 
     const producerId = producer.id;

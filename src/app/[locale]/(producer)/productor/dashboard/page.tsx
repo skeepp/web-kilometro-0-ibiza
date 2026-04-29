@@ -77,7 +77,11 @@ export default async function ProducerDashboard() {
             .eq('producer_id', producer.id)
             .order('created_at', { ascending: false })
             .limit(5);
-        recentOrders = (rOrders || []) as RecentOrder[];
+        
+        recentOrders = (rOrders || []).map((order: any) => ({
+            ...order,
+            profiles: Array.isArray(order.profiles) ? order.profiles[0] : order.profiles
+        })) as RecentOrder[];
 
         // Weekly revenue (last 7 days)
         const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];

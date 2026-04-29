@@ -63,8 +63,7 @@ export default async function ProductProfilePage({ params }: { params: { slug: s
                                     <div key={review.id} className="bg-white p-4 rounded-xl border border-brand-primary/10">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="font-medium text-brand-text text-sm">
-                                                {/* @ts-expect-error - Supabase join typing returns array instead of single object */}
-                                                {review.profiles?.full_name || 'Usuario Anónimo'}
+                                                {(Array.isArray(review.profiles) ? review.profiles[0] : review.profiles)?.full_name || 'Usuario Anónimo'}
                                             </span>
                                             <span className="text-sm text-brand-text/50">
                                                 {new Date(review.created_at).toLocaleDateString('es-ES')}

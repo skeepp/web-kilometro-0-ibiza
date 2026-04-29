@@ -1,7 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
-import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import { getDummyCover } from '@/utils/dummyImages';
 import { ProducerTabs } from './ProducerTabs';

@@ -4,8 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { useCart } from '@/context/CartContext';
 
 /* ── Unit configuration ── */
-const WEIGHT_UNITS = ['kg', 'g'];
-const VOLUME_UNITS = ['L', 'ml'];
+
 
 /** Determines the step increment for quantity based on the unit */
 function getStep(unit: string): number {
@@ -41,11 +40,7 @@ function fmtQty(qty: number, unit: string): string {
     return `${qty} ${unit}${qty !== 1 ? (unit === 'unidad' ? 'es' : '') : ''}`;
 }
 
-/** Is this a weight/volume unit that allows decimals? */
-function isDecimalUnit(unit: string): boolean {
-    const u = unit.toLowerCase();
-    return WEIGHT_UNITS.includes(u) || VOLUME_UNITS.includes(u);
-}
+
 
 /* ── Props ── */
 export type ProductToCart = {
@@ -61,11 +56,9 @@ export type ProductToCart = {
 
 type AddToCartButtonProps = {
     product: ProductToCart;
-    /** Compact = inline on the card. Full = standalone (product detail page) */
-    variant?: 'compact' | 'full';
 };
 
-export function AddToCartButton({ product, variant = 'compact' }: AddToCartButtonProps) {
+export function AddToCartButton({ product }: AddToCartButtonProps) {
     const { addItem, items, updateQuantity, removeItem } = useCart();
     const unit = product.unit || 'unidad';
     const step = getStep(unit);

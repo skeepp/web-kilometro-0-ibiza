@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { getUnreadNotificationCount, getUserNotifications, markNotificationRead, markAllNotificationsRead } from '@/app/actions/notificationActions';
 import { NotificationCard } from './NotificationCard';
 
 export function NotificationBell() {
     const [unreadCount, setUnreadCount] = useState(0);
-    const [notifications, setNotifications] = useState<any[]>([]);
+    const [notifications, setNotifications] = useState<unknown[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);
@@ -18,7 +17,7 @@ export function NotificationBell() {
             try {
                 const count = await getUnreadNotificationCount();
                 setUnreadCount(count);
-            } catch (error) {
+            } catch {
                 // Silent fail for polling
             }
         };
@@ -64,7 +63,7 @@ export function NotificationBell() {
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
         try {
             await markAllNotificationsRead();
-        } catch (e) {
+        } catch {
             setUnreadCount(optimisticUnread);
         }
     };
@@ -74,7 +73,7 @@ export function NotificationBell() {
         setUnreadCount(prev => Math.max(0, prev - 1));
         try {
             await markNotificationRead(id);
-        } catch (e) {
+        } catch {
             // silent fail
         }
     };

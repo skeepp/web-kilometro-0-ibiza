@@ -51,8 +51,6 @@ interface MapInnerProps {
     IBIZA_CENTER: [number, number];
     DEFAULT_ZOOM: number;
     isMobile?: boolean;
-    customIcon?: L.Icon;
-    selectedIcon?: L.Icon;
     /* new props for user location & radius */
     userPosition?: [number, number] | null;
     radiusKm?: number;
@@ -68,8 +66,6 @@ export default function MapInner({
     IBIZA_CENTER,
     DEFAULT_ZOOM,
     isMobile,
-    customIcon,
-    selectedIcon,
     userPosition,
     radiusKm,
     userIcon,
