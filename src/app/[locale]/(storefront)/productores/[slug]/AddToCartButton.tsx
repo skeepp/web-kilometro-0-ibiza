@@ -5,7 +5,6 @@ import { useCart } from '@/context/CartContext';
 
 /* ── Unit configuration ── */
 
-
 /** Determines the step increment for quantity based on the unit */
 function getStep(unit: string): number {
     switch (unit.toLowerCase()) {
@@ -102,19 +101,13 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     const increment = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setLocalQty(prev => {
-            const next = Math.round((prev + step) * 100) / 100;
-            return next;
-        });
+        setLocalQty(prev => Math.round((prev + step) * 100) / 100);
     };
 
     const decrement = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setLocalQty(prev => {
-            const next = Math.round((prev - step) * 100) / 100;
-            return Math.max(min, next);
-        });
+        setLocalQty(prev => Math.max(min, Math.round((prev - step) * 100) / 100));
     };
 
     /* ── Cart quantity controls (when already in cart) ── */
@@ -138,31 +131,31 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     /* ═══ ALREADY IN CART STATE ═══ */
     if (cartQty > 0 && feedback === 'idle') {
         return (
-            <div className="flex items-center gap-1.5 w-full" onClick={e => e.preventDefault()}>
+            <div className="flex items-center gap-2 w-full" onClick={e => e.preventDefault()}>
                 {/* Quantity controls */}
-                <div className="flex items-center border border-brand-primary/20 rounded-lg bg-brand-background/40 h-9 flex-shrink-0">
+                <div className="flex items-center border border-brand-primary/20 rounded-xl bg-brand-background/40 h-[42px] flex-shrink-0">
                     <button
                         onClick={cartDecrement}
-                        className="w-8 h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-l-lg transition-colors text-base font-bold"
+                        className="w-[42px] h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-l-xl transition-colors text-lg font-bold active:scale-90"
                     >
                         −
                     </button>
-                    <span className="px-1.5 text-xs font-bold text-brand-primary select-none min-w-[40px] text-center whitespace-nowrap">
+                    <span className="px-2 text-xs font-bold text-brand-primary select-none min-w-[44px] text-center whitespace-nowrap">
                         {fmtQty(cartQty, unit)}
                     </span>
                     <button
                         onClick={cartIncrement}
-                        className="w-8 h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-r-lg transition-colors text-base font-bold"
+                        className="w-[42px] h-full flex items-center justify-center text-brand-primary hover:bg-brand-primary/10 rounded-r-xl transition-colors text-lg font-bold active:scale-90"
                     >
                         +
                     </button>
                 </div>
                 {/* In-cart badge */}
-                <div className="flex-1 h-9 flex items-center justify-center bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-[11px] font-bold gap-1">
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <div className="flex-1 h-[42px] flex items-center justify-center bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-xs font-bold gap-1.5">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    En cesta
+                    En cesta · {(product.price * cartQty).toFixed(2)}€
                 </div>
             </div>
         );
@@ -171,9 +164,9 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     /* ═══ FEEDBACK: ADDING ═══ */
     if (feedback === 'adding') {
         return (
-            <div className="flex items-center gap-1.5 w-full">
-                <div className="flex-1 h-9 flex items-center justify-center bg-brand-accent/10 border border-brand-accent/30 rounded-lg">
-                    <div className="w-4 h-4 border-2 border-brand-accent/30 border-t-brand-accent rounded-full animate-spin" />
+            <div className="flex items-center gap-2 w-full">
+                <div className="flex-1 h-[42px] flex items-center justify-center bg-brand-accent/10 border border-brand-accent/30 rounded-xl">
+                    <div className="w-5 h-5 border-2 border-brand-accent/30 border-t-brand-accent rounded-full animate-spin" />
                 </div>
             </div>
         );
@@ -182,9 +175,9 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     /* ═══ FEEDBACK: JUST ADDED ═══ */
     if (feedback === 'added') {
         return (
-            <div className="flex items-center gap-1.5 w-full">
-                <div className="flex-1 h-9 flex items-center justify-center bg-emerald-500 text-white rounded-lg text-xs font-bold gap-1.5 animate-pulse">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <div className="flex items-center gap-2 w-full">
+                <div className="flex-1 h-[42px] flex items-center justify-center bg-emerald-500 text-white rounded-xl text-sm font-bold gap-2 animate-pulse">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     ¡Añadido!
@@ -195,39 +188,38 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
 
     /* ═══ DEFAULT STATE: Quantity selector + Add button ═══ */
     return (
-        <div className="flex flex-col gap-1.5 w-full" onClick={e => e.preventDefault()}>
-            {/* Row: Qty selector + Add button (same line) */}
-            <div className="flex items-center gap-1.5 w-full">
-                {/* Quantity selector */}
-                <div className="flex items-center border border-gray-200 rounded-lg bg-gray-50/80 h-9 flex-shrink-0">
+        <div className="flex flex-col gap-2 w-full" onClick={e => e.preventDefault()}>
+            {/* Row: Qty selector + Add button */}
+            <div className="flex items-center gap-2 w-full">
+                {/* Quantity selector — 42px touch targets */}
+                <div className="flex items-center border border-gray-200 rounded-xl bg-gray-50/80 h-[42px] flex-shrink-0">
                     <button
                         onClick={decrement}
                         disabled={localQty <= min}
-                        className="w-7 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-l-lg transition-colors text-sm font-bold"
+                        className="w-[42px] h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-l-xl transition-colors text-lg font-bold active:scale-90"
                     >
                         −
                     </button>
-                    <span className="px-1 text-[11px] font-bold text-gray-800 select-none min-w-[36px] text-center whitespace-nowrap">
+                    <span className="px-2 text-xs font-bold text-gray-800 select-none min-w-[44px] text-center whitespace-nowrap">
                         {fmtQty(localQty, unit)}
                     </span>
                     <button
                         onClick={increment}
-                        className="w-7 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-r-lg transition-colors text-sm font-bold"
+                        className="w-[42px] h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-r-xl transition-colors text-lg font-bold active:scale-90"
                     >
                         +
                     </button>
                 </div>
 
-                {/* Add to Cart button */}
+                {/* Add to Cart button with live total */}
                 <button
                     onClick={handleAdd}
-                    className="flex-1 h-9 flex items-center justify-center gap-1.5 bg-gradient-to-r from-brand-primary to-emerald-700 hover:from-emerald-700 hover:to-brand-primary text-white rounded-lg text-[11px] sm:text-xs font-bold transition-all duration-300 shadow-sm hover:shadow-md active:scale-95"
+                    className="flex-1 h-[42px] flex items-center justify-center gap-2 bg-gradient-to-r from-brand-primary to-emerald-700 hover:from-emerald-700 hover:to-brand-primary text-white rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-lg active:scale-[0.97]"
                 >
-                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
                     </svg>
-                    <span className="hidden sm:inline">Añadir</span>
-                    <span className="font-extrabold">{totalPrice.toFixed(2)}€</span>
+                    <span className="font-extrabold text-sm">{totalPrice.toFixed(2)}€</span>
                 </button>
             </div>
         </div>

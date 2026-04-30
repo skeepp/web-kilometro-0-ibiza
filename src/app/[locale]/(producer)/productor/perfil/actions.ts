@@ -47,8 +47,25 @@ export async function updateProducerProfile(data: UpdateProducerProfileData): Pr
         website: data.website || null,
     };
 
-    if (data.lat) updatePayload.lat = parseFloat(data.lat);
-    if (data.lng) updatePayload.lng = parseFloat(data.lng);
+    let parsedLat = data.lat ? parseFloat(data.lat) : null;
+    let parsedLng = data.lng ? parseFloat(data.lng) : null;
+
+    if ((!parsedLat || !parsedLng) && data.municipality) {
+        try {
+            const searchQuery = encodeURIComponent(data.municipality + ', Ibiza, España');
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${searchQuery}&limit=1`);
+            const geoData = await res.json();
+            if (geoData && geoData[0]) {
+                parsedLat = parseFloat(geoData[0].lat);
+                parsedLng = parseFloat(geoData[0].lon);
+            }
+        } catch (e) {
+            console.error("Geocoding failed:", e);
+        }
+    }
+
+    updatePayload.lat = parsedLat;
+    updatePayload.lng = parsedLng;
     if (data.profile_image_url) updatePayload.profile_image_url = data.profile_image_url;
     if (data.cover_image_url) updatePayload.cover_image_url = data.cover_image_url;
 

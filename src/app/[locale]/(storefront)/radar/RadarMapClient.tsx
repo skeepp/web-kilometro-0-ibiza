@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { getDummyCover } from '@/utils/dummyImages';
 import type { RadarProducer } from './page';
 
-import 'leaflet/dist/leaflet.css';
 import dynamic from 'next/dynamic';
 
 const MapLoading = () => (
@@ -16,11 +15,6 @@ const MapLoading = () => (
             <p className="text-sm text-brand-text/60 font-medium">Cargando mapa interactivo...</p>
         </div>
     </div>
-);
-
-const DynamicMapInner = dynamic(
-    () => import('./MapInner').then((mod) => mod.default),
-    { ssr: false, loading: MapLoading }
 );
 
 const DynamicGoogleMapInner = dynamic(
@@ -59,10 +53,6 @@ export default function RadarMapClient({ producers }: Props) {
     const [geoStatus, setGeoStatus] = useState<'loading' | 'granted' | 'denied'>('loading');
     const [selectedProducer, setSelectedProducer] = useState<RadarProducer | null>(null);
     const [isMobile, setIsMobile] = useState(false);
-
-    /* ── Icons ── */
-    const [userIcon, setUserIcon] = useState<L.Icon | null>(null);
-
     /* ── The active center for distance calculations ── */
     const activeCenter = searchCenter ?? userPos ?? IBIZA_CENTER;
 
@@ -90,28 +80,7 @@ export default function RadarMapClient({ producers }: Props) {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    /* ── Create Leaflet icons ── */
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        import('leaflet').then((L) => {
 
-            setUserIcon(
-                new L.Icon({
-                    iconUrl:
-                        'data:image/svg+xml;charset=utf-8,' +
-                        encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="28" height="28">
-                                <circle cx="14" cy="14" r="13" fill="#4A90D9" stroke="white" stroke-width="2.5"/>
-                                <circle cx="14" cy="14" r="5" fill="white"/>
-                            </svg>
-                        `),
-                    iconSize: [28, 28],
-                    iconAnchor: [14, 14],
-                    popupAnchor: [0, -14],
-                })
-            );
-        });
-    }, []);
 
     /* ── Producers with valid coordinates (already pre-filtered server-side) ── */
     const mappableProducers = useMemo(
@@ -289,21 +258,10 @@ export default function RadarMapClient({ producers }: Props) {
                             radiusKm={radiusKm}
                             distances={distances}
                         />
-                    ) : userIcon ? (
-                        <DynamicMapInner
-                            mappableProducers={filteredProducers}
-                            selectedProducer={selectedProducer}
-                            setSelectedProducer={setSelectedProducer}
-                            IBIZA_CENTER={activeCenter as [number, number]}
-                            DEFAULT_ZOOM={DEFAULT_ZOOM}
-                            isMobile={isMobile}
-                            userPosition={activeCenter as [number, number]}
-                            radiusKm={radiusKm}
-                            userIcon={userIcon}
-                            distances={distances}
-                        />
                     ) : (
-                        <MapLoading />
+                        <div className="flex h-full items-center justify-center bg-gray-50 p-4 text-center text-sm text-gray-500">
+                            Falta configurar la clave API de Google Maps (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY).
+                        </div>
                     )}
                 </div>
 

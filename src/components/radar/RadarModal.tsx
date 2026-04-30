@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 
-// Dynamically load the map so it doesn't break SSR
-const DynamicMapInner = dynamic(
-    () => import('@/app/[locale]/(storefront)/radar/MapInner').then((mod) => mod.default),
+// Dynamically load the Google map so it doesn't break SSR
+const DynamicGoogleMapInner = dynamic(
+    () => import('@/app/[locale]/(storefront)/radar/GoogleMapInner').then((mod) => mod.default),
     { ssr: false }
 );
 
@@ -96,7 +96,8 @@ export function RadarModal({ isOpen, onClose, onApply, initialDistance = 50, ini
 
                 {/* Map Area */}
                 <div className="flex-1 relative min-h-[300px] sm:min-h-[400px] bg-gray-100">
-                    <DynamicMapInner 
+                    <DynamicGoogleMapInner
+                        apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
                         IBIZA_CENTER={[center.lat, center.lng] as [number, number]}
                         userPosition={[center.lat, center.lng] as [number, number]}
                         DEFAULT_ZOOM={10}
